@@ -10,11 +10,6 @@ Preprocessor 模組的 YAML 設定檔案格式，用於資料前處理。
 
 ## 使用範例
 
-請點擊下方按鈕在 Colab 中執行範例：
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/preprocessor-yaml/preprocessor-yaml.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
-
 ### 使用預設前處理
 
 ```yaml
@@ -57,11 +52,34 @@ Preprocessor:
         income: 'scaler_standard'
 ```
 
+### 缺失資料補償
+
+以公開或外部參考資料擬合Median、KNN或MICE補值策略，補償數值特徵欄位的缺失值。完整參數、搭配Splitter及以`method: composite`串接的方式，請參見[缺失資料補償]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}})。
+
+```yaml
+Preprocessor:
+  compensation:
+    method: custom_method
+    module_path: petsard/processor/missing_compensation.py
+    class_name: MissingCompensation
+    missing_compensation:
+      method: median   # 或knn、mice
+    feature_columns: [age, income]
+    key_columns: [member_id]
+    fit_data:
+      filepath: reference.csv
+    fit_source:
+      id: reference-2026
+      role: public
+    transform_source: local-2026
+```
+
 ## 主要參數
 
 - **method** (`string`, 必要)
   - 前處理方法
   - 可用值：`'default'`（預設處理序列）
+  - 擴充可用值：`'custom_method'`(外部前處理模組，例如[缺失資料補償]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}}))及`'composite'`(依序串接內建離群值與遺失值步驟及一個`custom_method`步驟)
 
 - **sequence** (`list`, 選用)
   - 自訂處理序列
@@ -106,6 +124,7 @@ Preprocessor 支援以下處理步驟，依序執行：
 - [編碼]({{< ref "encoding" >}})
 - [縮放]({{< ref "scaling" >}})
 - [離散化]({{< ref "discretizing" >}})
+- [缺失資料補償]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}})
 
 ## 精度保持
 

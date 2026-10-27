@@ -196,7 +196,7 @@ class MediatorOutlier(Mediator):
     Deal with global behaviours in OutlierHandler.
     """
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict, freeze_model: bool = False) -> None:
         """
         Args:
             config (dict): The config related to the processing data
@@ -206,6 +206,8 @@ class MediatorOutlier(Mediator):
         self._logger = logging.getLogger(f"PETsARD.{self.__class__.__name__}")
         self._config: dict = config["outlier"]
         self.model = None
+        self._freeze_model = freeze_model
+        self._fit_count = 0
 
         # indicator for using global outlier methods,
         # such as Isolation Forest and Local Outlier Factor
@@ -227,7 +229,7 @@ class MediatorOutlier(Mediator):
             elif isinstance(obj, OutlierLOF):
                 global_methods_found.append((_col, "LOF"))
                 if not self._global_model_indicator:
-                    self.model = LocalOutlierFactor()
+                    self.model = LocalOutlierFactor(novelty=True) if freeze_model else LocalOutlierFactor()
                     self._global_model_indicator = True
             elif isinstance(obj, (OutlierIQR, OutlierZScore)):
                 field_specific_methods.append((_col, type(obj).__name__))
@@ -273,6 +275,9 @@ class MediatorOutlier(Mediator):
                     "There should be at least one numerical column \
                         to fit the model."
                 )
+            if self._freeze_model:
+                self.model.fit(data[self._process_col].to_numpy())
+                self._fit_count += 1
         else:
             for col, obj in self._config.items():
                 if type(obj) in [OutlierIQR, OutlierZScore]:
@@ -292,7 +297,11 @@ class MediatorOutlier(Mediator):
             # the model may classify most data as outliers
             # after transformation by other processors
             # so fit_predict will be used in _transform
-            predict_result: np.ndarray = self.model.fit_predict(data[self._process_col])
+            if self._freeze_model:
+                predict_result = self.model.predict(data[self._process_col].to_numpy())
+            else:
+                predict_result = self.model.fit_predict(data[self._process_col])
+                self._fit_count += 1
             self.result: np.ndarray = predict_result
             process_filter: np.ndarray = predict_result == -1.0
 
@@ -332,6 +341,11 @@ class MediatorOutlier(Mediator):
 
     def _inverse_transform(self, data: pd.DataFrame):
         raise NotImplementedError("_inverse_transform is not supported in this class")
+
+
+    @property
+    def fit_count(self) -> int:
+        return self._fit_count
 
 
 class MediatorEncoder(Mediator):

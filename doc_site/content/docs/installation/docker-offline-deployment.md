@@ -32,8 +32,8 @@ If you need to customize or modify the container, you can build your own image:
 
 ```bash
 # Clone the repository
-git clone https://github.com/nics-dp/petsard.git
-cd petsard
+git clone https://github.com/moda-gov-tw/PETsARD.git
+cd PETsARD
 
 # Build standard version (default - without Jupyter)
 docker build -t petsard:latest .

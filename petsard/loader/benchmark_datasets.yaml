@@ -1,6 +1,5 @@
-region_name: ap-southeast-1 # Asia Pacific (Singapore)
-bucket_name:
-  public: petsard-benchmark
+# GitHub release of PETsARD that hosts the benchmark files
+base_url: https://github.com/moda-gov-tw/PETsARD/releases/download/benchmark-datasets-v1
 
 datasets:
 
@@ -74,3 +73,30 @@ datasets:
     filename: best-practices_categorical_high-cardinality.csv
     access: public
     sha256: 5635a07a252f833e785bb26b3d8cc47b6eaffc08d2ca86d77aacf49079b6259e
+
+# JSON and text examples
+  # Adult income dataset converted to a JSON array of records
+  adult-income-json:
+    filename: adult-income.json
+    access: public
+    sha256: 2fcb9aac7a81b81da7c5ebde181081889e31cb85f84636a805e4525907882c39
+  # Customer churn records generated for the JSON examples
+  customer-churn:
+    filename: customer_churn.json
+    access: public
+    sha256: afdd7c4aa761820cbb6586290883969e57aa2d7876c9200ce7b008f941334594
+  # Salary records with Traditional Chinese column names and values
+  tw-salary:
+    filename: tw_salary.json
+    access: public
+    sha256: 5a77b0ad20b832768623158b3962bb1084e4d2eee6c02b0a563d3d65938c284d
+  # Small JSON sample for the AdvGAN example
+  test-json-data:
+    filename: test_json_data.json
+    access: public
+    sha256: 8df32c27a40a961eb8bb93b4cb319cb82d434cd7090cfe7864eaa22ffdf4afda
+  # Blood pressure records, one Chinese sentence per row, for the LLM text synthesizer
+  bloodpressure-text:
+    filename: real_bloodpressure2.csv
+    access: public
+    sha256: af7ac2d6160c6d5681448567b7d36a38b593b0376f6ab95b4a404af459caef28

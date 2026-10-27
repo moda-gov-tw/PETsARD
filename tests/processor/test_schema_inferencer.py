@@ -80,7 +80,7 @@ class TestProcessorTransformRules:
         new_attr = ProcessorTransformRules.apply_rule(original_attr, rule)
 
         # missing 處理後應該不允許 null
-        assert new_attr.type_attr["nullable"] == False
+        assert new_attr.type_attr["nullable"] is False
 
 
 class TestSchemaInferencer:
@@ -160,7 +160,7 @@ class TestSchemaInferencer:
         )
 
         # 應該不允許 null（因為 missing_mean）並且是 float（因為 scaler_standard）
-        assert output_schema.attributes["value"].type_attr["nullable"] == False
+        assert output_schema.attributes["value"].type_attr["nullable"] is False
         assert output_schema.attributes["value"].type == "float"
 
     def test_inference_history_recorded(self):
@@ -233,14 +233,14 @@ class TestIntegration:
 
         # age: missing_mean + scaler_standard -> float, no null
         assert preprocessor_schema.attributes["age"].type == "float"
-        assert preprocessor_schema.attributes["age"].type_attr["nullable"] == False
+        assert preprocessor_schema.attributes["age"].type_attr["nullable"] is False
 
         # category: encoder_label -> int or int64 (encoder converts to int)
         assert preprocessor_schema.attributes["category"].type in ["int", "int64"]
 
         # value: missing_median + scaler_minmax -> float, no null
         assert preprocessor_schema.attributes["value"].type == "float"
-        assert preprocessor_schema.attributes["value"].type_attr["nullable"] == False
+        assert preprocessor_schema.attributes["value"].type_attr["nullable"] is False
 
 
 if __name__ == "__main__":

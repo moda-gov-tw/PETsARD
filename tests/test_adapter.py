@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pandas as pd
@@ -92,9 +93,9 @@ class TestBaseAdapter:
         assert operator.run_called
 
         # 驗證計時 logging 訊息
-        mock_logger.info.assert_any_call("TIMING_START|TestOp|run|1000.0")
+        mock_logger.debug.assert_any_call("TIMING_START|TestOp|run|1000.0")
         mock_logger.info.assert_any_call("Starting TestOp execution")
-        mock_logger.info.assert_any_call("TIMING_END|TestOp|run|1001.0|1.0")
+        mock_logger.debug.assert_any_call("TIMING_END|TestOp|run|1001.0|1.0")
 
     def test_log_and_raise_config_error_decorator(self):
         """測試配置錯誤裝飾器"""
@@ -161,9 +162,9 @@ class TestBaseAdapter:
                     operator.run({})
 
         # 驗證錯誤計時 logging 訊息
-        mock_logger.info.assert_any_call("TIMING_START|ErrorOp|run|1000.0")
+        mock_logger.debug.assert_any_call("TIMING_START|ErrorOp|run|1000.0")
         mock_logger.info.assert_any_call("Starting ErrorOp execution")
-        mock_logger.error.assert_any_call(
+        mock_logger.debug.assert_any_call(
             "TIMING_ERROR|ErrorOp|run|1001.5|1.5|Test error"
         )
 
@@ -200,7 +201,7 @@ class TestLoaderAdapter:
                     # 設置 get_benchmarker_config 的返回值
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income.csv",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income.csv",
                     }
@@ -227,7 +228,10 @@ class TestLoaderAdapter:
                     # 檢查 Loader 被呼叫時使用本地路徑
                     mock_loader_class.assert_called_once()
                     call_args = mock_loader_class.call_args[1]
-                    assert call_args["filepath"] == "benchmark/adult-income.csv"
+                    assert (
+                        Path(call_args["filepath"]).as_posix()
+                        == "benchmark/adult-income.csv"
+                    )
 
                     # 檢查屬性設置
                     assert operator.is_benchmark is True
@@ -280,7 +284,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config.benchmark_name = "adult-income"
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income.csv",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income.csv",
                     }
@@ -313,7 +317,7 @@ class TestLoaderAdapter:
         """測試 benchmark 下載失敗"""
         config = {"filepath": "benchmark://adult-income"}
 
-        with patch("petsard.adapter.Loader") as mock_loader_class:
+        with patch("petsard.adapter.Loader"):
             with patch(
                 "petsard.loader.benchmarker.BenchmarkerConfig"
             ) as mock_benchmarker_config_class:
@@ -326,7 +330,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config.benchmark_name = "adult-income"
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income.csv",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income.csv",
                     }
@@ -406,7 +410,7 @@ class TestLoaderAdapter:
                         mock_benchmarker_config.benchmark_name = "adult-income"
                         mock_benchmarker_config.get_benchmarker_config.return_value = {
                             "benchmark_filename": "adult-income.csv",
-                            "benchmark_bucket_name": "test-bucket",
+                            "benchmark_url": "https://example.com/benchmark-data/test.csv",
                             "benchmark_sha256": "test-sha256",
                             "filepath": "benchmark/adult-income.csv",
                         }
@@ -441,7 +445,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config.benchmark_name = "adult-income-schema"
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income-schema.yaml",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income-schema.yaml",
                     }
@@ -469,7 +473,10 @@ class TestLoaderAdapter:
                     mock_loader_class.assert_called_once()
                     call_args = mock_loader_class.call_args[1]
                     assert call_args["filepath"] == "test.csv"
-                    assert call_args["schema"] == "benchmark/adult-income-schema.yaml"
+                    assert (
+                        Path(call_args["schema"]).as_posix()
+                        == "benchmark/adult-income-schema.yaml"
+                    )
 
                     # 檢查屬性設置
                     assert operator.is_benchmark is False
@@ -496,7 +503,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config_file.benchmark_name = "adult-income"
                     mock_benchmarker_config_file.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income.csv",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256-file",
                         "filepath": "benchmark/adult-income.csv",
                     }
@@ -510,7 +517,7 @@ class TestLoaderAdapter:
                     )
                     mock_benchmarker_config_schema.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income-schema.yaml",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256-schema",
                         "filepath": "benchmark/adult-income-schema.yaml",
                     }
@@ -552,8 +559,14 @@ class TestLoaderAdapter:
                     # 檢查 Loader 被呼叫時使用本地路徑
                     mock_loader_class.assert_called_once()
                     call_args = mock_loader_class.call_args[1]
-                    assert call_args["filepath"] == "benchmark/adult-income.csv"
-                    assert call_args["schema"] == "benchmark/adult-income-schema.yaml"
+                    assert (
+                        Path(call_args["filepath"]).as_posix()
+                        == "benchmark/adult-income.csv"
+                    )
+                    assert (
+                        Path(call_args["schema"]).as_posix()
+                        == "benchmark/adult-income-schema.yaml"
+                    )
 
                     # 檢查屬性設置
                     assert operator.is_benchmark is True
@@ -611,7 +624,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config.benchmark_name = "adult-income-schema"
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income-schema.yaml",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income-schema.yaml",
                     }
@@ -666,7 +679,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config_file.benchmark_name = "adult-income"
                     mock_benchmarker_config_file.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income.csv",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256-file",
                         "filepath": "benchmark/adult-income.csv",
                     }
@@ -680,7 +693,7 @@ class TestLoaderAdapter:
                     )
                     mock_benchmarker_config_schema.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income-schema.yaml",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256-schema",
                         "filepath": "benchmark/adult-income-schema.yaml",
                     }
@@ -717,7 +730,7 @@ class TestLoaderAdapter:
         """測試 schema benchmark 下載失敗"""
         config = {"filepath": "test.csv", "schema": "benchmark://adult-income-schema"}
 
-        with patch("petsard.adapter.Loader") as mock_loader_class:
+        with patch("petsard.adapter.Loader"):
             with patch(
                 "petsard.loader.benchmarker.BenchmarkerConfig"
             ) as mock_benchmarker_config_class:
@@ -732,7 +745,7 @@ class TestLoaderAdapter:
                     mock_benchmarker_config.benchmark_name = "adult-income-schema"
                     mock_benchmarker_config.get_benchmarker_config.return_value = {
                         "benchmark_filename": "adult-income-schema.yaml",
-                        "benchmark_bucket_name": "test-bucket",
+                        "benchmark_url": "https://example.com/benchmark-data/test.csv",
                         "benchmark_sha256": "test-sha256",
                         "filepath": "benchmark/adult-income-schema.yaml",
                     }
@@ -1150,7 +1163,7 @@ class TestConstrainerAdapter:
         """測試基本初始化"""
         config = {"field_constraints": {"A": {"min": 0, "max": 10}}}
 
-        with patch("petsard.adapter.Constrainer") as mock_constrainer_class:
+        with patch("petsard.adapter.Constrainer"):
             operator = ConstrainerAdapter(config)
 
             # Constrainer initialization is now delayed, so it won't be called in __init__

@@ -12,8 +12,8 @@ Describer 模組的 YAML 設定檔案格式。提供資料集的統計描述與�
 
 請點擊下方按鈕在 Colab 中執行範例：
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/describer-yaml/describer.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/describer-yaml/describer.ipynb)
+> **注意**：使用 Colab 請參考[執行環境設定](/PETsARD/zh-tw/docs/#colab-執行說明)。
 
 ### 單一資料集描述 (describe 模式)
 

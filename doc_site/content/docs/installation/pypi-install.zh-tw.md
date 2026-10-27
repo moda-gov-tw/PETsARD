@@ -141,8 +141,8 @@ pip install petsard[ds] \
 
 ```bash
 # 複製儲存庫
-git clone https://github.com/nics-dp/petsard.git
-cd petsard
+git clone https://github.com/moda-gov-tw/PETsARD.git
+cd PETsARD
 
 # 使用現代化 pip（>= 25.0）搭配 dependency-groups
 pip install --group all -e .   # 完整功能
@@ -165,16 +165,16 @@ uv sync --group dev    # 開發環境
 
 **步驟 1：下載原始碼**
 
-前往 [PETsARD GitHub Releases](https://github.com/nics-dp/petsard/releases) 或直接下載：
-- 最新穩定版本：https://github.com/nics-dp/petsard/archive/refs/heads/main.zip
+前往 [PETsARD GitHub Releases](https://github.com/moda-gov-tw/PETsARD/releases) 或直接下載：
+- 最新穩定版本：https://github.com/moda-gov-tw/PETsARD/archive/refs/heads/main.zip
 - 或從 Releases 頁面選擇特定版本
 
 **步驟 2：解壓縮並安裝**
 
 ```bash
 # 解壓縮下載的檔案
-unzip petsard-main.zip
-cd petsard-main
+unzip PETsARD-main.zip
+cd PETsARD-main
 
 # 使用現代化 pip（>= 25.0）搭配 dependency-groups
 pip install --group all -e .   # 完整功能

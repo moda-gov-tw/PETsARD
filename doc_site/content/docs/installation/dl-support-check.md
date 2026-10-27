@@ -3,7 +3,7 @@ title: Deep Learning Support Check
 type: docs
 weight: 250
 prev: docs/installation/package-predownload
-next: docs/installation
+next: docs/installation/extended-features
 ---
 
 For environments that need to use **deep learning synthesizers**.

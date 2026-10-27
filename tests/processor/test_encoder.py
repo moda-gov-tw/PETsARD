@@ -29,7 +29,7 @@ class Test_EncoderUniform:
         # Call the method to be tested
         encoder.fit(df_data["col1"])
 
-        assert set(encoder.labels) == set(["A", "B", "C", "D"])
+        assert set(encoder.labels) == {"A", "B", "C", "D"}
         assert len(encoder.lower_values) == 4
         assert len(encoder.upper_values) == 4
         assert encoder.lower_values[2] == encoder.upper_values[1]
@@ -81,7 +81,7 @@ class Test_EncoderLabel:
         # Call the method to be tested
         encoder.fit(df_data["col1"])
 
-        assert set(encoder.labels) == set(["A", "B", "C", "D"])
+        assert set(encoder.labels) == {"A", "B", "C", "D"}
 
         with pytest.raises(ValueError):
             encoder.transform(df_data_error["col1"])

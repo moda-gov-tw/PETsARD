@@ -12,8 +12,8 @@ next: docs/petsard-yaml/synthesizer-yaml/sdv-methods
 
 Click the button below to run the example in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.ipynb)
+> **Note**: If using Colab, please see the [runtime setup guide](/PETsARD/docs/#colab-execution-guide).
 
 ```yaml
 Loader:
@@ -139,7 +139,7 @@ pip install sdv
 
 ### 2. Download Script
 
-Download [`sdv-custom-methods.py`](https://github.com/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.py) to the same directory as your YAML file.
+Download [`sdv-custom-methods.py`](https://github.com/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.py) to the same directory as your YAML file.
 
 ### 3. Check CUDA Availability (Optional)
 
@@ -396,10 +396,10 @@ No, GaussianCopula is a pure statistical method without neural networks, so it d
 
 ## File Sources
 
-- **Script**: [`sdv-custom-methods.py`](https://github.com/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.py)
-- **YAML Example**: [`sdv-custom-methods.yaml`](https://github.com/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.yaml)
-- **Check Script**: [`check_cuda.py`](https://github.com/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/check_cuda.py)
-- **Jupyter Notebook**: [`sdv-custom-methods.ipynb`](https://github.com/nics-tw/petsard/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.ipynb)
+- **Script**: [`sdv-custom-methods.py`](https://github.com/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.py)
+- **YAML Example**: [`sdv-custom-methods.yaml`](https://github.com/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.yaml)
+- **Check Script**: [`check_cuda.py`](https://github.com/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/check_cuda.py)
+- **Jupyter Notebook**: [`sdv-custom-methods.ipynb`](https://github.com/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/synthesizer-yaml/sdv-custom-methods.ipynb)
 
 ## Related Documentation
 

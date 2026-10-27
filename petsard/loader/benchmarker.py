@@ -27,8 +27,7 @@ class BenchmarkerConfig(BaseConfig):
         benchmark_name (str): The benchmark name.
         benchmark_filename (str): The benchmark filename.
         benchmark_access (str): The benchmark access type.
-        benchmark_region_name (str): The benchmark region name.
-        benchmark_bucket_name (str): The benchmark bucket name.
+        benchmark_url (str): The download URL of the benchmark file.
         benchmark_sha256 (str): The benchmark SHA-256 value.
         filepath_raw (str): The raw file path.
     """
@@ -38,8 +37,7 @@ class BenchmarkerConfig(BaseConfig):
     benchmark_name: str | None = None
     benchmark_filename: str | None = None
     benchmark_access: str | None = None
-    benchmark_region_name: str | None = None
-    benchmark_bucket_name: str | None = None
+    benchmark_url: str | None = None
     benchmark_sha256: str | None = None
     filepath_raw: str | None = None
 
@@ -75,8 +73,7 @@ class BenchmarkerConfig(BaseConfig):
             raise UnsupportedMethodError(error_msg)
 
         self.benchmark_access = benchmark_value["access"]
-        self.benchmark_region_name = benchmark_value["region_name"]
-        self.benchmark_bucket_name = benchmark_value["bucket_name"]
+        self.benchmark_url = benchmark_value["url"]
         self.benchmark_sha256 = benchmark_value["sha256"]
         self._logger.info(
             f"Configured benchmark dataset: {self.benchmark_name}, filename: {self.benchmark_filename}"
@@ -90,9 +87,8 @@ class BenchmarkerConfig(BaseConfig):
             config (dict):
                 key (str): benchmark dataset name
                     filename (str): Its filename
-                    access (str): Belong to public or private bucket.
-                    region_name (str): Its AWS S3 region.
-                    bucket_name (str): Its AWS S3 bucket.
+                    access (str): Access type; only "public" is supported.
+                    url (str): Its download URL, base_url + "/" + filename.
                     sha256 (str): Its SHA-256 value.
         """
         self._logger.debug(f"Loading benchmark configuration from {self.YAML_FILENAME}")
@@ -109,15 +105,13 @@ class BenchmarkerConfig(BaseConfig):
             self._logger.error(error_msg)
             raise BenchmarkDatasetsError(error_msg) from e
 
-        REGION_NAME = config["region_name"]
-        BUCKET_NAME = config["bucket_name"]
+        BASE_URL = config["base_url"].rstrip("/")
 
         config["datasets"] = {
             key: {
                 "filename": value["filename"],
                 "access": value["access"],
-                "region_name": REGION_NAME,
-                "bucket_name": BUCKET_NAME[value["access"]],
+                "url": f"{BASE_URL}/{value['filename']}",
                 "sha256": value["sha256"],
             }
             for key, value in config["datasets"].items()
@@ -135,7 +129,7 @@ class BenchmarkerConfig(BaseConfig):
         """
         return {
             "benchmark_filename": self.benchmark_filename,
-            "benchmark_bucket_name": self.benchmark_bucket_name,
+            "benchmark_url": self.benchmark_url,
             "benchmark_sha256": self.benchmark_sha256,
             "filepath": Path("benchmark").joinpath(self.benchmark_filename),
         }
@@ -171,7 +165,7 @@ class BaseBenchmarker(ABC):
         Attributes:
             _logger (logging.Logger): The logger object.
             config (dict) The configuration of the benchmarker.
-                benchmark_bucket_name (str) The name of the S3 bucket.
+                benchmark_url (str) The download URL of the benchmark data.
                 benchmark_filename (str)
                     The name of the benchmark data from benchmark_datasets.yaml.
                 benchmark_sha256 (str)
@@ -244,7 +238,7 @@ class BaseBenchmarker(ABC):
             else:
                 error_msg = (
                     f"SHA-256 verification FAILED for downloaded file: {self.config['benchmark_filename']}\n"
-                    f"  Source: {self.config['benchmark_bucket_name']}\n"
+                    f"  Source: {self.config['benchmark_url']}\n"
                     f"  Expected SHA-256: {expected_sha256}\n"
                     f"  Actual SHA-256:   {file_sha256hash}\n"
                     f"The download may be corrupted. Please try again."
@@ -265,7 +259,7 @@ class BenchmarkerRequests(BaseBenchmarker):
     """
     BenchmarkerRequests
         Download benchmark dataset via requests.
-        Expect for public bucket.
+        Downloads public files over HTTPS from the URL in benchmark_datasets.yaml.
 
     """
 
@@ -293,12 +287,7 @@ class BenchmarkerRequests(BaseBenchmarker):
         if self.config["benchmark_already_exist"]:
             self._logger.info(f"Using existing local file: {self.config['filepath']}")
         else:
-            url = (
-                f"https://"
-                f"{self.config['benchmark_bucket_name']}"
-                f".s3.amazonaws.com/"
-                f"{self.config['benchmark_filename']}"
-            )
+            url = self.config["benchmark_url"]
             self._logger.info(f"Downloading benchmark file from: {url}")
 
             try:

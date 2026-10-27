@@ -331,7 +331,7 @@ class TestReporterSaveSchemaReport:
         reporter = ReporterSaveSchema(config)
 
         processed_data = reporter.create(sample_schema_data)
-        result = reporter.report(processed_data)
+        reporter.report(processed_data)
 
         # 檢查 YAML 檔案是否生成
         yaml_file = Path(f"{output_file}_schema_Loader[default].yaml")
@@ -466,5 +466,5 @@ class TestReporterSaveSchemaEdgeCases:
         # 嘗試寫入無效路徑
         invalid_path = "/invalid/path/that/does/not/exist/test.yaml"
 
-        with pytest.raises(Exception):
+        with pytest.raises(OSError):
             reporter._save_schema_to_yaml({"test": "data"}, invalid_path)

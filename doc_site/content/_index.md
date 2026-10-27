@@ -9,7 +9,7 @@ toc: false
   Privacy Enhancing Technologies Analysis, Research, and Development
 </p>
 
-<p align="center"><img src="/petsard/images/PETsARD-logo.png"></p>
+<p align="center"><img src="/PETsARD/images/PETsARD-logo.png"></p>
 
 <div style="display: flex; justify-content: center; flex-wrap: nowrap; gap: 10px;">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-v3.10-blue.svg" alt="Python 3.10"></a>

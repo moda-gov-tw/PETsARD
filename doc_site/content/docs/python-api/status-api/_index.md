@@ -12,7 +12,7 @@ Status is PETsARD's internal state management module, responsible for tracking w
 
 ## Class Architecture
 
-{{< mermaid-file="status-class-diagram.mmd" >}}
+{{< mermaid-file file="content/docs/python-api/status-api/status-class-diagram.mmd" >}}
 
 ## Basic Usage
 

@@ -12,8 +12,8 @@ YAML configuration file format for the Evaluator module.
 
 Click the below button to run this example in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/evaluator-yaml/evaluator.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/evaluator-yaml/evaluator.ipynb)
+> **Note**: If using Colab, please see the [runtime setup guide](/PETsARD/docs/#colab-execution-guide).
 
 ### Recommended Evaluation Workflow
 
@@ -182,6 +182,7 @@ Evaluator:
 | **Data Fidelity** | `sdmetrics-qualityreport` | Statistical distribution similarity assessment | Score ≥ 0.75¹ |
 | **Data Utility** | `mlutility` | Machine learning model utility | Task-dependent⁴ |
 | **Custom Assessment** | `custom_method` | Custom evaluation method | - |
+| **Text Data** | `custom_method` (`TextEvaluator`, `TextEvaluatorWithControl`) | Parse free text into columns, then run the methods above on the parsed columns | Same as each nested method |
 
 ### Recommended Standards Notes
 
@@ -199,6 +200,10 @@ Evaluator:
 > **Default Method**: When `method: default` is used, the system automatically executes `sdmetrics-qualityreport` to evaluate data fidelity.
 
 > **Threshold Adjustment**: The above recommended standards are general reference values. Please adjust appropriate thresholds based on your specific use case and risk tolerance. For detailed theoretical foundations and references for each metric, please refer to the corresponding subdocumentation.
+
+## Text Data Evaluation
+
+Synthetic free text, such as the output of the [LLM Text Synthesizer]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}}), is evaluated with the text evaluation module. A parser converts the original, synthetic and control text into typed columns, and the evaluation methods in the table above then run on the parsed columns with the same arguments and standards. See [Text Data Evaluation]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}}).
 
 ## Execution Notes
 

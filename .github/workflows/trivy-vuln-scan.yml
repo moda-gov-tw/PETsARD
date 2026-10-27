@@ -1,0 +1,85 @@
+# 弱點掃描 Scan vulnerabilities
+# 依資安院數位韌性教材「CI/CD - 於GitHub上建立自動生成SBOM及漏洞掃描」設定
+# Follows the NICS guide: https://material.nics.nat.gov.tw/material/maintainable/github-action-sbom-vuln/
+# 除教材之套件弱點(vuln)外，兩個Trivy步驟亦掃描機密資訊(secret)及組態設定(misconfig，例如Dockerfile)
+# Besides package vulnerabilities (vuln) as in the guide, both Trivy steps also scan for secrets (secret)
+# and misconfigurations (misconfig, e.g. the Dockerfile)
+# pull request除教材之觸發類型外，亦於建立(opened)及推送新提交(synchronize)時掃描
+# Besides the guide's trigger types, pull requests are also scanned when opened and on each new push (synchronize)
+# 定期掃描"0 21 * * 0"為UTC，即臺灣時間(UTC+8)每週一05:00
+# Scheduled scan "0 21 * * 0" is UTC, i.e. every Monday 05:00 Taiwan time (UTC+8)
+# 所有actions均以完整commit SHA鎖定，版本標示於行尾註解；更新由Dependabot提出
+# All actions are pinned by full commit SHA, with the version in the trailing comment; Dependabot proposes updates
+# 經評估不影響本套件之弱點列於.trivyignore.yaml(含評估說明與到期日)，兩個Trivy步驟均以trivyignores載入
+# Vulnerabilities assessed as not affecting PETsARD are listed in .trivyignore.yaml (statement and expiry date);
+# both Trivy steps load it through trivyignores
+name: Scan Vulnerabilities
+
+on:
+  push:
+  pull_request:
+    types: ["opened", "synchronize", "ready_for_review", "edited", "reopened", "unlocked"]
+  schedule:
+    - cron: "0 21 * * 0"
+  workflow_dispatch:
+
+## GITHUB_TOKEN authentication, add only if you're not going to use a PAT
+permissions:
+  contents: read
+
+jobs:
+  vuln-scan:
+    name: Scan vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: "fs"
+          format: "table"
+          vuln-type: "os,library"
+          scanners: "vuln,secret,misconfig"
+          output: "trivy-vuln.txt"
+          severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+          hide-progress: true
+          ignore-unfixed: true
+          list-all-pkgs: false
+          trivyignores: ".trivyignore.yaml"
+        env:
+          TRIVY_FORMAT: table # sometime the `with: format:` does not work, use env var to force assign
+          TRIVY_DISABLE_VEX_NOTICE: true
+          TRIVY_SHOW_SUPPRESSED: true
+
+      - name: Publish Trivy Output to Summary
+        run: |
+          cat trivy-vuln.txt && if [[ -s trivy-vuln.txt ]]; then
+            {
+              echo "### Security Output"
+              echo "<details><summary>Click to expand</summary>"
+              echo ""
+              echo '```'
+              cat trivy-vuln.txt
+              echo '```'
+              echo "</details>"
+            } >> $GITHUB_STEP_SUMMARY
+          fi
+        shell: bash
+
+      - name: Block Pull Requests if there are any vuln issues
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: "fs"
+          vuln-type: "os,library"
+          scanners: "vuln,secret,misconfig"
+          severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+          hide-progress: true
+          ignore-unfixed: true
+          list-all-pkgs: false
+          skip-setup-trivy: true
+          trivyignores: ".trivyignore.yaml"
+          exit-code: 1

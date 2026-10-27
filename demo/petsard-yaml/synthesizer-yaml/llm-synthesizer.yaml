@@ -1,0 +1,46 @@
+---
+Loader:
+  load_bloodpressure:
+    filepath: benchmark://bloodpressure-text
+
+Synthesizer:
+  llm-synth:
+    method: custom_method
+    epochs: 1
+    sample_num_rows: 50
+    module_path: petsard/synthesizer/LLM_synthesizer.py
+    class_name: LLM_synthesizer
+    api_type: lmstudio
+    api_url: "http://localhost:1234/v1"
+    model: openai/gpt-oss-20b
+    variation_api_type: lmstudio
+    variation_api_url: "http://localhost:1234/v1"
+    variation_model: openai/gpt-oss-20b
+    post_processing_api_type: lmstudio
+    post_processing_api_url: "http://localhost:1234/v1"
+    post_processing_model: openai/gpt-oss-20b
+    variation_type: healthcare_blank_fill
+    temperature: 1.0
+    seed: 42
+    do_sample: true
+    compute_fid: true
+    no_cuda: true
+    num_procs: 4
+    fewshot_n_examples: 10
+    max_token_limit: 100000
+    sleep_time: 0
+    max_retries: 3
+    exit_on_api_error: false
+    verbose: 0
+    output_dir: ./llm_synth_output
+    continue: false
+    log_folder: ./LOG_FILES
+    additional_info: >-
+      While use random tool to generate blood pressure, DO NOT exceed the range of +-5%
+
+Reporter:
+  save_synth:
+    method: save_data
+    source: Synthesizer
+    output: 'llm_synth_result'
+...

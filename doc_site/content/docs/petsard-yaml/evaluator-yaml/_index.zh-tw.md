@@ -12,8 +12,8 @@ Evaluator 模組的 YAML 設定檔案格式。
 
 請點擊下方按鈕在 Colab 中執行範例：
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/evaluator-yaml/evaluator.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/evaluator-yaml/evaluator.ipynb)
+> **注意**：使用 Colab 請參考[執行環境設定](/PETsARD/zh-tw/docs/#colab-執行說明)。
 
 ### 建議評估流程
 
@@ -179,6 +179,7 @@ Evaluator:
 | **資料保真度** | `sdmetrics-qualityreport` | 統計分佈相似度評估 | 分數 ≥ 0.75¹ |
 | **資料實用性** | `mlutility` | 機器學習模型效用 | 依任務類型⁴ |
 | **自訂評估** | `custom_method` | 自訂評估方法 | - |
+| **文字資料** | `custom_method`(`TextEvaluator`、`TextEvaluatorWithControl`) | 將自由文字解析為欄位，再以上列方法評估解析後的欄位 | 依各巢狀方法的標準 |
 
 ### 建議標準說明
 
@@ -196,6 +197,10 @@ Evaluator:
 > **預設方法**：當 `method: default` 時，系統會自動執行 `sdmetrics-qualityreport` 評估資料保真度。
 
 > **閾值調整**：以上建議標準為一般參考值，請根據您的具體應用場景和風險容忍度調整適當的閾值。各指標的詳細理論基礎和參考文獻請見對應子文件。
+
+## 文字資料評測
+
+合成的自由文字(例如[LLM文字合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}})的輸出)以文字評測模組評估：先以解析程式將原始資料、合成資料及控制資料的文字轉為具型別的欄位，再以上表的評估方法，依相同的參數與建議標準評估解析後的欄位。詳見[文字資料評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}})。
 
 ## 執行說明
 

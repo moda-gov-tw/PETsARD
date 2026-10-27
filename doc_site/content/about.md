@@ -12,7 +12,7 @@ In December 2024, PETsARD v1.0 was officially released to the Ministry of Digita
 
 ## Project History
 
-![PETsARD Initial Logo Design Sketch](/images/2023-12-13 11.41.43.jpg)
+![PETsARD Initial Logo Design Sketch](</images/2023-12-13 11.41.43.jpg>)
 
 This is the initial logo design sketch for PETsARD-0.0, photographed on December 13, 2023.
 

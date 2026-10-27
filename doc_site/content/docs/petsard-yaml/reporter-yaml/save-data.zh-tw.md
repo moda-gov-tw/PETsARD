@@ -6,14 +6,14 @@ prev: docs/petsard-yaml/reporter-yaml
 next: docs/petsard-yaml/reporter-yaml/save-report
 ---
 
-使用 `save_data` 方法將合成資料或其他模組的輸出儲存為 CSV 檔案。
+使用 `save_data` 方法將合成資料或其他模組的輸出儲存為 CSV 檔案。設定`type: 'json'`時，改以JSON檔案儲存。
 
 ## 使用範例
 
 請點擊下方按鈕在 Colab 中執行範例：
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/reporter-yaml/reporter_save-data.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/reporter-yaml/reporter_save-data.ipynb)
+> **注意**：使用 Colab 請參考[執行環境設定](/PETsARD/zh-tw/docs/#colab-執行說明)。
 
 ```yaml
 Loader:
@@ -51,6 +51,35 @@ Reporter:
     # output: petsard  # 選用：輸出檔案名稱前綴（預設：petsard）
     # naming_strategy: traditional  # 選用：檔名命名策略，可選 traditional 或 compact（預設：traditional）
 ```
+
+### 儲存為JSON
+
+加入`type: 'json'`，即以JSON檔案輸出相同內容，適合搭配JSON讀取使用(見[JSON格式](../../loader-yaml/json-format))：
+
+```yaml
+Loader:
+  load_json:
+    filepath: benchmark://customer-churn
+Preprocessor:
+  default:
+    method: default
+
+Synthesizer:
+  default:
+    method: default
+
+Postprocessor:
+  default:
+    method: default
+Reporter:
+  save_synthetic:
+    method: save_data      # 必要：固定使用save_data方法
+    source: Postprocessor  # 必要：指定要儲存的資料來源
+    output: churn          # 選用：輸出檔案名稱前綴(預設：petsard)
+    type: 'json'           # 選用：輸出檔案格式，設為'json'時輸出JSON(預設：CSV)
+```
+
+合成資料儲存為`churn_Loader[load_json]_Preprocessor[default]_Synthesizer[default]_Postprocessor[default].json`。
 
 ## 主要參數
 
@@ -97,16 +126,45 @@ Reporter:
 |------|------|--------|------|------|
 | `output` | `string` | `petsard` | 輸出檔案名稱前綴 | `my_experiment` |
 | `naming_strategy` | `string` | `traditional` | 檔名命名策略，詳見主頁面說明 | `compact` |
+| `type` | `string` | CSV輸出 | 輸出檔案格式。設為`json`(不區分大小寫)時輸出JSON檔案；未設定`type`時輸出CSV檔案 | `json` |
 
 ## 輸出格式
 
-所有資料會儲存為 CSV 格式，檔案命名遵循主頁面說明的命名策略。
+預設情況下，所有資料會儲存為 CSV 格式，檔案命名遵循主頁面說明的命名策略。設定`type: 'json'`時，沿用相同檔名並以`.json`為副檔名。
 
 **CSV 檔案內容：**
 - 原始資料的所有欄位
 - 保持資料類型和結構
 - 使用 UTF-8 編碼
 - 包含標題列
+
+**JSON檔案內容**(`type: 'json'`)：
+- 最上層為紀錄陣列，每筆資料列為1個物件，格式與JSON Loader讀取格式相同
+- 欄位名稱為鍵；缺失值輸出為`null`
+- 繁體中文等非ASCII欄位名稱與內容，以UTF-8原文輸出
+- 以4個空格縮排，方便閱讀
+- 日期時間欄位以Unix紀元毫秒數輸出
+
+JSON輸出檔範例：
+
+```json
+[
+    {
+        "age":38,
+        "region":"North",
+        "contract_type":"Two-year",
+        "payment_method":"Credit-card",
+        "tenure_months":54,
+        "num_products":1,
+        "monthly_charges":28.45,
+        "total_charges":7017.77,
+        "has_support":"No",
+        "churn":"No"
+    }
+]
+```
+
+`type`為Reporter各項表格輸出方法共用設定：設定`type: 'json'`時，`save_report`、`save_timing`及`save_validation`亦輸出JSON檔案。
 
 ## 常見問題
 
@@ -122,6 +180,10 @@ Reporter:
 
 2. **使用不同的實驗名稱**：在 YAML 中為實驗定義有意義的名稱，會自動反映在輸出檔名中
 
+### Q: 如何將資料儲存為JSON？
+
+**A:** 於`save_data`區塊加入`type: 'json'`。輸出檔沿用相同檔名並以`.json`為副檔名，內容為紀錄陣列，Loader可直接以`filepath`指向該檔案讀回。
+
 ## 注意事項
 
 - **檔案覆寫**：同名檔案會被覆寫，請使用不同的 `output` 前綴
@@ -129,4 +191,5 @@ Reporter:
 - **編碼格式**：所有檔案使用 UTF-8 編碼
 - **資料完整性**：儲存時會保留所有欄位和資料類型
 - **實驗追蹤**：建議使用有意義的實驗名稱和輸出前綴
+- **輸出格式**：設定`type: 'json'`時輸出JSON檔案；未設定`type`時輸出CSV檔案
 

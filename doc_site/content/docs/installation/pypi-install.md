@@ -141,8 +141,8 @@ For development or custom builds.
 
 ```bash
 # Clone the repository
-git clone https://github.com/nics-dp/petsard.git
-cd petsard
+git clone https://github.com/moda-gov-tw/PETsARD.git
+cd PETsARD
 
 # Using modern pip (>= 25.0) with dependency-groups
 pip install --group all -e .   # Complete functionality
@@ -165,16 +165,16 @@ If Git is not available in your environment, you can download the source code di
 
 **Step 1: Download the Source Code**
 
-Visit [PETsARD GitHub Releases](https://github.com/nics-dp/petsard/releases) or download directly:
-- Latest stable version: https://github.com/nics-dp/petsard/archive/refs/heads/main.zip
+Visit [PETsARD GitHub Releases](https://github.com/moda-gov-tw/PETsARD/releases) or download directly:
+- Latest stable version: https://github.com/moda-gov-tw/PETsARD/archive/refs/heads/main.zip
 - Or select a specific version from the Releases page
 
 **Step 2: Extract and Install**
 
 ```bash
 # Extract the downloaded file
-unzip petsard-main.zip
-cd petsard-main
+unzip PETsARD-main.zip
+cd PETsARD-main
 
 # Using modern pip (>= 25.0) with dependency-groups
 pip install --group all -e .   # Complete functionality

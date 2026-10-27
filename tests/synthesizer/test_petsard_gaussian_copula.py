@@ -288,7 +288,7 @@ class TestPetsardGaussianCopulaSynthesizer(unittest.TestCase):
         synthesizer = PetsardGaussianCopulaSynthesizer(config)
 
         # Should handle empty data gracefully 應該能夠優雅地處理空數據
-        with self.assertRaises(Exception):
+        with self.assertRaises((ValueError, ZeroDivisionError)):
             synthesizer.fit(empty_data)
 
     def test_single_column(self):

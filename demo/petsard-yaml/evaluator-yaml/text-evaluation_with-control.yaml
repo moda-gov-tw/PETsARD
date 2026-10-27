@@ -1,0 +1,131 @@
+---
+# =============================================================================
+# LLM synth -> text_evaluator: Anonymeter + MLUtility
+#
+# The privacy and utility counterpart to text-evaluation.yaml, which covers SDMetrics.
+# Everything here needs `control` -- original rows held out from synthesis --
+# hence the Splitter and class_name: TextEvaluatorWithControl.
+#
+# Why control is required:
+#   Anonymeter runs its attack against the training rows AND against control rows
+#   the synthesizer never saw, then reports the residual
+#       (attack_rate - control_rate) / (1 - control_rate)
+#   Without control it cannot separate a real leak from the model having learnt
+#   the population distribution.
+#   MLUtility trains one model on ori and one on syn, then tests both on control.
+#
+# Run:  python -c "from petsard import Executor; Executor('demo/petsard-yaml/evaluator-yaml/text-evaluation_with-control.yaml').run()"
+# =============================================================================
+
+Loader:
+  load_bloodpressure:
+    filepath: benchmark://bloodpressure-text
+
+# 101 rows -> 80 train (fed to the synthesizer) + 21 validation (control).
+# Keep train larger than validation: Anonymeter defaults to max_n_attacks, which
+# sets n_attacks to the control size and then samples that many rows from ori.
+Splitter:
+  holdout:
+    num_samples: 1
+    train_split_ratio: 0.8
+
+Synthesizer:
+  llm-synth:
+    method: custom_method
+    module_path: petsard/synthesizer/LLM_synthesizer.py
+    class_name: LLM_synthesizer
+
+    # Sized to roughly the training set. Below ~50 rows these scores are noise:
+    # Anonymeter attacks a synthetic set too small to hold a pattern, and
+    # MLUtility trains XGBoost on a handful of rows. With epochs: 0 this is one
+    # LLM call per row -- lower it for a smoke test, but do not read the numbers.
+    sample_num_rows: 10
+    epochs: 1
+
+    api_type: lmstudio
+    api_url: "http://localhost:1234/v1"
+    model: google/gemma-4-12b-qat
+    variation_api_type: lmstudio
+    variation_api_url: "http://localhost:1234/v1"
+    variation_model: google/gemma-4-12b-qat
+    post_processing_api_type: lmstudio
+    post_processing_api_url: "http://localhost:1234/v1"
+    post_processing_model: google/gemma-4-12b-qat
+
+    variation_type: healthcare_blank_fill
+    temperature: 1.0
+    seed: 42
+    do_sample: true
+    compute_fid: true
+    no_cuda: false
+    num_procs: 4
+    fewshot_n_examples: 10
+    max_token_limit: 100000
+    sleep_time: 0
+    max_retries: 3
+    exit_on_api_error: false
+    verbose: 0
+    output_dir: ./llm_synth_output
+    continue: false
+    log_folder: ./LOG_FILES
+    additional_info: >-
+      While use random tool to generate blood pressure, DO NOT exceed the range of +-5%
+
+Evaluator:
+  text_eval:
+    method: custom_method
+    module_path: petsard/evaluator/text_evaluator.py
+    class_name: TextEvaluatorWithControl
+
+    # Your parser. Contract:  def text_parser(df) -> pd.DataFrame
+    text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
+    # text_parser_entry: text_parser
+
+    # Written for inspection -- check these when a score looks wrong; a column
+    # that is empty in every row means the parser missed, not that synthesis did.
+    output_dir: ./llm_synth_output/parsed
+
+    Evaluator:
+      singling_out_risk:
+        method: anonymeter-singlingout
+        n_attacks: 400
+        max_attempts: 4000
+        # Leave mode at its default (multivariate). mode: univariate raises
+        # TypeError inside PETsARD: AnonymeterConfig sets n_cols to None for
+        # univariate (anonymeter.py:156) then compares it against the column
+        # count (anonymeter.py:247).
+
+      linkability_risk:
+        method: anonymeter-linkability
+        aux_cols:
+          # Group 1: what an attacker might hold from a demographic source
+          - [gender, age]
+          # Group 2: what a separate clinical source might hold
+          - [systolic, diastolic]
+
+      inference_risk:
+        method: anonymeter-inference
+        secret: age
+        max_n_attacks: false
+        n_attacks: 8
+
+      classification_utility:
+        method: mlutility
+        task_type: classification
+        # bp_label is largely derivable from systolic, so both absolute scores
+        # will be high. The meaningful number is the ori-vs-syn difference.
+        target: bp_label
+
+Reporter:
+  save_synth:
+    method: save_data
+    source: Synthesizer
+    output: 'llm_synth_result4'
+  save_eval:
+    method: save_report
+    granularity:
+      - global
+      - columnwise
+      - details
+    output: 'llm_synth_result4'
+...

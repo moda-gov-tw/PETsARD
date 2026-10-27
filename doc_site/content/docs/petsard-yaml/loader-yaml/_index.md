@@ -12,8 +12,8 @@ YAML configuration file format for the Loader module.
 
 Click the below button to run this example in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/loader-yaml/loader-yaml.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/loader-yaml/loader-yaml.ipynb)
+> **Note**: If using Colab, please see the [runtime setup guide](/PETsARD/docs/#colab-execution-guide).
 
 ### Basic Loading
 
@@ -70,6 +70,7 @@ Loader:
 | **CSV** | `.csv`, `.tsv` | Comma/tab-separated files | - |
 | **Excel** | `.xlsx`, `.xls` | Excel spreadsheets | Requires `openpyxl` |
 | **OpenDocument** | `.ods`, `.odf`, `.odt` | OpenDocument formats | Requires `openpyxl` |
+| **JSON** | `.json` | JSON array of records, see [JSON Format](json-format) | - |
 | **Benchmark** | `benchmark://` | Benchmark dataset protocol | Requires network (first download) |
 
 \* Excel and OpenDocument formats require the `openpyxl` package, see installation instructions.

@@ -1,10 +1,11 @@
+import subprocess
+import sys
 from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
 
-from petsard.exceptions import (ConfigError, MissingDependencyError,
-                                UncreatedError)
+from petsard.exceptions import ConfigError, MissingDependencyError, UncreatedError
 from petsard.synthesizer.synthesizer import Synthesizer, SynthesizerMap
 
 
@@ -23,8 +24,9 @@ class TestSynthesizer:
 
     # 測試 SDV 方法需要依賴檢查
     def test_sdv_method_requires_dependency(self):
-        with pytest.raises(MissingDependencyError):
-            Synthesizer(method="petsard-gaussian_copula")
+        with patch.dict(sys.modules, {"sdv": None}):
+            with pytest.raises(MissingDependencyError):
+                Synthesizer(method="sdv-single_table-gaussiancopula")
 
     # 測試 create 方法 - 使用內建方法
     def test_create_basic(self):
@@ -66,3 +68,34 @@ class TestSynthesizer:
         result = synthesizer.sample()
         assert isinstance(result, pd.DataFrame)
         assert result.empty
+
+
+# 測試 AdvGAN 選用依賴
+class TestAdvGANOptionalDependency:
+    # 測試未安裝 Opacus 時選用 AdvGAN 會引發錯誤
+    def test_advgan_without_opacus_raises_missing_dependency(self):
+        with patch.dict(sys.modules, {"opacus": None}):
+            with pytest.raises(MissingDependencyError) as exc_info:
+                Synthesizer(method="AdvGAN")
+        assert "petsard[advgan]" in str(exc_info.value)
+
+    # 測試未安裝 Opacus 時可匯入 PETsARD
+    def test_import_petsard_without_opacus(self):
+        code = "import sys; sys.modules['opacus'] = None; import petsard; print('ok')"
+        result = subprocess.run(
+            [sys.executable, "-c", code], capture_output=True, text=True, timeout=300
+        )
+        assert result.returncode == 0, result.stderr[-2000:]
+        assert result.stdout.strip().endswith("ok")
+
+    # 測試延遲載入 AdvGAN 合成器
+    def test_advgan_lazy_loads_synthesizer_class(self):
+        pytest.importorskip("opacus")
+        from petsard.synthesizer.DP_AdvGAN import AdvGANSynthesizer
+
+        synthesizer = Synthesizer(method="AdvGAN")
+        assert synthesizer.config.method_code == SynthesizerMap.ADVGAN
+        assert (
+            synthesizer._get_synthesizer_class(SynthesizerMap.ADVGAN)
+            is AdvGANSynthesizer
+        )

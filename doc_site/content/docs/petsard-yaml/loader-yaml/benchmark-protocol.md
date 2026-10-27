@@ -3,7 +3,7 @@ title: "benchmark://"
 type: docs
 weight: 621
 prev: docs/petsard-yaml/loader-yaml
-next: docs/petsard-yaml/loader-yaml
+next: docs/petsard-yaml/loader-yaml/json-format
 ---
 
 Loader supports using the `benchmark://` protocol to automatically download and load benchmark datasets.
@@ -12,8 +12,8 @@ Loader supports using the `benchmark://` protocol to automatically download and 
 
 Click the below button to run this example in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/loader-yaml/benchmark-protocol.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/loader-yaml/benchmark-protocol.ipynb)
+> **Note**: If using Colab, please see the [runtime setup guide](/PETsARD/docs/#colab-execution-guide).
 
 ### Loading Benchmark Dataset
 
@@ -68,10 +68,22 @@ This is a simulated dataset created by the InnoServe team in 2024 for challenge 
 | Multi-timestamp | `benchmark://best-practices_multi-table` | Multi-timestamp example data |
 | Categorical & High-cardinality | `benchmark://best-practices_categorical_high-cardinality` | Categorical and high-cardinality example data |
 
+### JSON and Text Sample Datasets
+
+| Dataset Name | Protocol Path | Description |
+|-------------|---------------|-------------|
+| Adult Income (JSON) | `benchmark://adult-income-json` | Adult Income dataset as a JSON array of records (48,842 rows, 15 columns) |
+| Customer Churn | `benchmark://customer-churn` | Customer churn records generated for demonstration, in JSON (1,200 rows, 10 columns) |
+| TW Salary | `benchmark://tw-salary` | Salary records with Traditional Chinese column names and values, in JSON (2,000 rows, 8 columns) |
+| Test JSON Data | `benchmark://test-json-data` | Small JSON sample used by the AdvGAN example (30 rows, 6 columns) |
+| Blood Pressure Text | `benchmark://bloodpressure-text` | Blood pressure records, one Chinese sentence per row, for the LLM text synthesizer (101 rows, one `text` column) |
+
+To use these datasets without downloading them (for example offline), place the file at `./benchmark/<filename>` in the working directory. Loader verifies its SHA-256 against `petsard/loader/benchmark_datasets.yaml` when loading and then uses the local file. The file names are `adult-income.json` (`adult-income-json`), `customer_churn.json` (`customer-churn`), `tw_salary.json` (`tw-salary`), `test_json_data.json` (`test-json-data`) and `real_bloodpressure2.csv` (`bloodpressure-text`).
+
 ## How It Works
 
 1. **Protocol Detection**: Loader detects `benchmark://` protocol
-2. **Automatic Download**: Downloads dataset from AWS S3 bucket
+2. **Automatic Download**: Downloads dataset from the `benchmark-datasets-v1` release of the PETsARD GitHub repository
 3. **Integrity Check**: Verifies data integrity using SHA256
 4. **Local Cache**: Data is stored in `benchmark/` directory
 5. **Data Loading**: Loads data using local path
@@ -92,3 +104,4 @@ Benchmark datasets are suitable for:
 - Large dataset downloads may take considerable time
 - Protocol names are case-insensitive (lowercase recommended)
 - All datasets are verified with SHA256 to ensure integrity
+- A file placed at `./benchmark/<filename>` with the registered SHA256 is used without downloading

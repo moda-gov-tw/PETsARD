@@ -15,7 +15,7 @@ if "COLAB_GPU" in os.environ:
     import urllib.request
 
     demo_utils_url = (
-        "https://raw.githubusercontent.com/nics-tw/petsard/main/demo/demo_utils.py"
+        "https://raw.githubusercontent.com/moda-gov-tw/PETsARD/main/demo/demo_utils.py"
     )
     # Download and save to file instead of exec
     demo_utils_content = urllib.request.urlopen(demo_utils_url).read().decode("utf-8")
@@ -135,6 +135,7 @@ class PETsARDSetup:
                                 headers={
                                     "Authorization": f"token {server.get('token', '')}"
                                 },
+                                timeout=30,
                             )
                             if response.status_code == 200:
                                 sessions = response.json()
@@ -187,6 +188,7 @@ class PETsARDSetup:
                             headers={
                                 "Authorization": f"token {server.get('token', '')}"
                             },
+                            timeout=30,
                         )
                         if response.status_code == 200:
                             sessions = response.json()
@@ -360,13 +362,13 @@ class PETsARDSetup:
                 f"📦 Installing PETsARD from branch '{branch}' with [all] dependencies..."
             )
             try:
-                result = subprocess.run(
+                subprocess.run(
                     [
                         sys.executable,
                         "-m",
                         "pip",
                         "install",
-                        f"git+https://github.com/nics-tw/petsard.git@{branch}#egg=petsard[all]",
+                        f"git+https://github.com/moda-gov-tw/PETsARD.git@{branch}#egg=petsard[all]",
                     ],
                     check=True,
                     capture_output=True,
@@ -420,11 +422,11 @@ class PETsARDSetup:
         # Colab 環境：下載檔案
         local_file = Path(repo_path).name
         file_url = (
-            f"https://raw.githubusercontent.com/nics-tw/petsard/{branch}/{repo_path}"
+            f"https://raw.githubusercontent.com/moda-gov-tw/PETsARD/{branch}/{repo_path}"
         )
 
         try:
-            response = requests.get(file_url)
+            response = requests.get(file_url, timeout=30)
             response.raise_for_status()
             with open(local_file, "w") as f:
                 f.write(response.text)
@@ -469,10 +471,10 @@ class PETsARDSetup:
         import tempfile
 
         yaml_url = (
-            f"https://raw.githubusercontent.com/nics-tw/petsard/{branch}/demo/"
+            f"https://raw.githubusercontent.com/moda-gov-tw/PETsARD/{branch}/demo/"
             f"{subfolder + '/' if subfolder else ''}{yaml_file}"
         )
-        response = requests.get(yaml_url)
+        response = requests.get(yaml_url, timeout=30)
         response.raise_for_status()
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
@@ -564,8 +566,8 @@ class PETsARDSetup:
     @staticmethod
     def _get_privacy_path(path: Path) -> str:
         """取得隱私友善的路徑字串"""
-        path_str = str(path)
-        if "petsard" in path_str:
+        path_str = Path(path).as_posix()
+        if "petsard/" in path_str:
             return "petsard/" + path_str.split("petsard/", 1)[1]
         return path.name
 
@@ -1036,8 +1038,8 @@ if "__file__" not in globals():
     # 只顯示簡單的提示，不做任何全域變數操作
     _current_path = Path.cwd()
     _privacy_path = (
-        str(_current_path).split("petsard/")[-1]
-        if "petsard" in str(_current_path)
+        _current_path.as_posix().split("petsard/")[-1]
+        if "petsard/" in _current_path.as_posix()
         else _current_path.name
     )
     print(f"📂 Current working directory: {_privacy_path}")

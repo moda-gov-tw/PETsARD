@@ -1,4 +1,4 @@
-<p align="center"><img width=75% src="https://raw.githubusercontent.com/nics-dp/petsard/main/.github/assets/PETsARD-logo.png"></p>
+<p align="center"><img width=75% src="https://raw.githubusercontent.com/moda-gov-tw/PETsARD/main/.github/assets/PETsARD-logo.png"></p>
 
 ![Python 3.10](https://img.shields.io/badge/python-v3.10-blue.svg)
 ![Python 3.11](https://img.shields.io/badge/python-v3.11-blue.svg)
@@ -23,48 +23,48 @@
 
 ## **📚 Documentation 文件**
 
-**Website 網站**: https://nics-dp.github.io/petsard/
+**Website 網站**: https://moda-gov-tw.github.io/PETsARD/
 
-### [**📦 Installation 安裝**](https://nics-dp.github.io/petsard/docs/installation/)
+### [**📦 Installation 安裝**](https://moda-gov-tw.github.io/PETsARD/docs/installation/)
 - PyPI installation PyPI 安裝
 - Docker deployment Docker 部署
 - Offline setup 離線設置
 
-### [**🚀 Getting Started 入門指南**](https://nics-dp.github.io/petsard/docs/getting-started/)
+### [**🚀 Getting Started 入門指南**](https://moda-gov-tw.github.io/PETsARD/docs/getting-started/)
 - Default synthesis workflow 預設合成流程
 - Using external synthetic data 使用外部合成資料
 
-### [**🎯 Evaluation Purpose 評估目的**](https://nics-dp.github.io/petsard/docs/evaluation-purpose/)
+### [**🎯 Evaluation Purpose 評估目的**](https://moda-gov-tw.github.io/PETsARD/docs/evaluation-purpose/)
 - Experiment design 實驗設計
 - Fidelity vs. utility 保真度與效用
 - Privacy risk estimation 隱私風險估計
 
-### [**⚙️ Data Property Adjustment 資料屬性調整**](https://nics-dp.github.io/petsard/docs/data-property-adjustment/)
+### [**⚙️ Data Property Adjustment 資料屬性調整**](https://moda-gov-tw.github.io/PETsARD/docs/data-property-adjustment/)
 - Long-tail distribution handling 長尾分佈處理
 - Time anchoring 時間錨定
 - Uniform encoding 統一編碼
 
-### [**📝 YAML Configuration YAML 配置**](https://nics-dp.github.io/petsard/docs/petsard-yaml/)
+### [**📝 YAML Configuration YAML 配置**](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/)
 - Executor, Loader, Splitter 執行器、載入器、分割器
 - Preprocessor, Synthesizer, Postprocessor 前處理器、合成器、後處理器
 - Evaluator, Constrainer, Reporter 評估器、約束器、報告器
 
-### [**📋 Schema YAML 綱要配置**](https://nics-dp.github.io/petsard/docs/schema-yaml/)
+### [**📋 Schema YAML 綱要配置**](https://moda-gov-tw.github.io/PETsARD/docs/schema-yaml/)
 - Data types and logical types 資料型別與邏輯型別
 - Attribute parameters 屬性參數
 - Statistics configuration 統計配置
 
-### [**🐍 Python API**](https://nics-dp.github.io/petsard/docs/python-api/)
+### [**🐍 Python API**](https://moda-gov-tw.github.io/PETsARD/docs/python-api/)
 - Programmatic usage API 參考 API reference
 
-### [**👨‍💻 Developer Guide 開發者指南**](https://nics-dp.github.io/petsard/docs/developer-guide/)
+### [**👨‍💻 Developer Guide 開發者指南**](https://moda-gov-tw.github.io/PETsARD/docs/developer-guide/)
 - Development setup 開發環境設置
 - Test coverage 測試覆蓋率
 
-### [**📚 Glossary 詞彙表**](https://nics-dp.github.io/petsard/docs/glossary/)
+### [**📚 Glossary 詞彙表**](https://moda-gov-tw.github.io/PETsARD/docs/glossary/)
 - Key terminology 關鍵術語
 
-### [**⚠️ Error Handling 錯誤處理**](https://nics-dp.github.io/petsard/docs/error-handling/)
+### [**⚠️ Error Handling 錯誤處理**](https://moda-gov-tw.github.io/PETsARD/docs/error-handling/)
 - Common errors and solutions 常見錯誤與解決方案
 
 ---
@@ -86,6 +86,12 @@ pip install petsard[dev]
 pytest
 ```
 
+### Example Datasets 範例資料集
+
+The examples load their data through the `benchmark://` protocol, for example `benchmark://adult-income` or `benchmark://customer-churn`. The benchmark datasets are published as GitHub Release assets of this repository (tag `benchmark-datasets-v1`, https://github.com/moda-gov-tw/PETsARD/releases/tag/benchmark-datasets-v1). Loader downloads each file automatically into `./benchmark/` of the working directory and verifies it against the SHA-256 value recorded in `petsard/loader/benchmark_datasets.yaml`. To work offline, place the files unchanged at `./benchmark/<filename>`, for example `./benchmark/customer_churn.json`. The datasets, their sources and licenses are listed in [demo/data/README.md](demo/data/README.md).
+
+範例以`benchmark://`協議載入資料，例如`benchmark://adult-income`或`benchmark://customer-churn`。基準資料集以本專案之GitHub Release附件發布(標籤`benchmark-datasets-v1`，https://github.com/moda-gov-tw/PETsARD/releases/tag/benchmark-datasets-v1)，Loader自動將檔案下載至工作目錄之`./benchmark/`，並以`petsard/loader/benchmark_datasets.yaml`登記之SHA-256驗證。離線使用時，將檔案原樣放在`./benchmark/<檔名>`，例如`./benchmark/customer_churn.json`。資料集清單、來源及授權請見[demo/data/README.md](demo/data/README.md)。
+
 ---
 
 ## **📄 License 授權**
@@ -98,10 +104,10 @@ This project is licensed under MIT License. See [LICENSE](LICENSE) for details.
 
 ## **🔗 Links 連結**
 
-- **GitHub**: https://github.com/nics-dp/petsard
-- **Documentation 文件**: https://nics-dp.github.io/petsard/
+- **GitHub**: https://github.com/moda-gov-tw/PETsARD
+- **Documentation 文件**: https://moda-gov-tw.github.io/PETsARD/
 - **PyPI**: https://pypi.org/project/petsard/
-- **Issues 問題追蹤**: https://github.com/nics-dp/petsard/issues
+- **Issues 問題追蹤**: https://github.com/moda-gov-tw/PETsARD/issues
 
 ---
 

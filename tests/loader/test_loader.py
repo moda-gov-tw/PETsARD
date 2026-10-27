@@ -1,5 +1,6 @@
 import os
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
@@ -120,8 +121,7 @@ class TestBenchmarkerConfig:
                 "adult-income": {
                     "filename": "adult.csv",
                     "access": "public",
-                    "region_name": "us-west-2",
-                    "bucket_name": "test-bucket",
+                    "url": "https://example.com/benchmark-data/adult.csv",
                     "sha256": "test-hash",
                 }
             }
@@ -130,8 +130,7 @@ class TestBenchmarkerConfig:
             assert config.benchmark_name == "adult-income"
             assert config.benchmark_filename == "adult.csv"
             assert config.benchmark_access == "public"
-            assert config.benchmark_region_name == "us-west-2"
-            assert config.benchmark_bucket_name == "test-bucket"
+            assert config.benchmark_url == "https://example.com/benchmark-data/adult.csv"
             assert config.benchmark_sha256 == "test-hash"
 
     def test_benchmarker_config_get_benchmarker_config(self):
@@ -145,8 +144,7 @@ class TestBenchmarkerConfig:
                 "adult-income": {
                     "filename": "adult.csv",
                     "access": "public",
-                    "region_name": "us-west-2",
-                    "bucket_name": "test-bucket",
+                    "url": "https://example.com/benchmark-data/adult.csv",
                     "sha256": "test-hash",
                 }
             }
@@ -156,9 +154,16 @@ class TestBenchmarkerConfig:
 
             assert isinstance(benchmarker_config, dict)
             assert benchmarker_config["benchmark_filename"] == "adult.csv"
-            assert benchmarker_config["benchmark_bucket_name"] == "test-bucket"
+            assert (
+                benchmarker_config["benchmark_url"]
+                == "https://example.com/benchmark-data/adult.csv"
+            )
             assert benchmarker_config["benchmark_sha256"] == "test-hash"
-            assert str(benchmarker_config["filepath"]).endswith("benchmark/adult.csv")
+            assert (
+                Path(benchmarker_config["filepath"])
+                .as_posix()
+                .endswith("benchmark/adult.csv")
+            )
 
     def test_benchmarker_config_unsupported_benchmark(self):
         """Test unsupported benchmark raises error
@@ -182,8 +187,7 @@ class TestBenchmarkerConfig:
                 "private-data": {
                     "filename": "private.csv",
                     "access": "private",
-                    "region_name": "us-west-2",
-                    "bucket_name": "private-bucket",
+                    "url": "https://example.com/benchmark-data/private.csv",
                     "sha256": "test-hash",
                 }
             }
@@ -383,6 +387,7 @@ class TestLoader:
         """Test loading Excel file
         測試載入 Excel 檔案
         """
+        pytest.importorskip("openpyxl")
         excel_path = "path/to/file.xlsx"
         loader = Loader(filepath=excel_path)
 

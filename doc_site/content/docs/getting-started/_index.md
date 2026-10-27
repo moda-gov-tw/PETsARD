@@ -47,4 +47,21 @@ The following scenarios guide you in choosing the right YAML configuration:
   - When you have pre-synthesized data
   - For evaluating existing privacy-enhanced solutions
 
+The following scenarios use the extended features of this edition. Prepare the environment with [Extended Features Setup](../installation/extended-features) first:
+
+4. **[Semi-structured Data: JSON Input and Output with AdvGAN Synthesis](json-advgan-synthesis)**
+
+  - When your data is stored as JSON records
+  - Synthesizes data with the AdvGAN synthesizer and outputs the synthetic data and reports as JSON
+
+5. **[Unstructured Data: Local LLM Text Synthesis and Text Evaluation](llm-text-synthesis)**
+
+  - When your data contains free-text (natural language) columns
+  - Generates synthetic text with a locally hosted large language model and evaluates it with the text evaluator
+
+6. **[Missing Data: Missing-Data Compensation with Median, KNN and MICE](missing-compensation)**
+
+  - When numeric feature columns contain missing values
+  - Fits a compensation strategy on public or external data and fills the missing cells of the local data
+
 Simply choose the scenario that matches your needs, prepare the corresponding YAML configuration, and run the code above.

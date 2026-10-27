@@ -1,6 +1,10 @@
 services:
   petsard:
     image: ghcr.io/nics-dp/petsard:main
+    # Always build from this repository's Dockerfile (`docker compose up` or `docker compose build`);
+    # pull_policy: build stops Compose from pulling the prebuilt image named above
+    build: .
+    pull_policy: build
     platform: linux/amd64
     restart: unless-stopped
     # privileged: true
@@ -18,6 +22,9 @@ services:
     ## podman gpu passthrough, tested
     # devices:
     #   - nvidia.com/gpu=all
+    ## Jupyter token: printed by `docker compose logs petsard`, or set your own here
+    # environment:
+    #   - JUPYTER_TOKEN=change-me
     ports:
       - "127.0.0.1:8888:8888"
     volumes:

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from petsard.exceptions import MetadataError
 from petsard.metadater import AttributeMetadater, Metadater, SchemaMetadater
 from petsard.metadater.metadata import Attribute
 from petsard.metadater.stats import DatasetsStats, FieldStats, TableStats
@@ -94,7 +95,7 @@ class TestBasicWorkflow:
 
         assert attr.name == "test_column"
         assert attr.type == "float"  # 因為有 None，pandas 會轉為 float
-        assert attr.type_attr.get("nullable") == True
+        assert attr.type_attr.get("nullable") is True
 
 
 class TestStatistics:
@@ -442,7 +443,7 @@ class TestSchemaOperations:
         assert attr.name == "name"
 
         # 不存在的欄位應該拋出錯誤
-        with pytest.raises(KeyError):
+        with pytest.raises(MetadataError, match="nonexistent"):
             SchemaMetadater.get(schema, "nonexistent")
 
 
@@ -468,7 +469,7 @@ class TestLogicalTypeInference:
 
         # logical_type inference has changed, category is now indicated by category=True
         # not logical_type="category"
-        assert attr.type_attr.get("category") == True
+        assert attr.type_attr.get("category") is True
         # assert attr.logical_type == "category"  # This is no longer set
 
     def test_no_logical_type(self):
@@ -500,8 +501,8 @@ class TestEdgeCases:
 
         schema = SchemaMetadater.from_data(df)
 
-        assert schema.attributes["col1"].type_attr.get("nullable") == True
-        assert schema.attributes["col2"].type_attr.get("nullable") == True
+        assert schema.attributes["col1"].type_attr.get("nullable") is True
+        assert schema.attributes["col2"].type_attr.get("nullable") is True
 
     def test_mixed_type_series(self):
         """測試混合型別的 Series"""

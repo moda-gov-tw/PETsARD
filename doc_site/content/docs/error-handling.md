@@ -308,7 +308,7 @@ except FileNotFoundError as e:
 If encountering errors:
 1. **Check error code**: Review this guide for common causes and resolutions
 2. **Examine logs**: Enable DEBUG logging to inspect execution flow and TIMING records
-3. **Seek help**: If issue persists, open an issue on [GitHub](https://github.com/nics-tw/PETsARD/issues) with:
+3. **Seek help**: If issue persists, open an issue on [GitHub](https://github.com/moda-gov-tw/PETsARD/issues) with:
    - Error code and full error message
    - Relevant configuration files or code snippets
    - Log excerpts (DEBUG level)

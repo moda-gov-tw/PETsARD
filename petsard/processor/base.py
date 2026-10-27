@@ -11,18 +11,40 @@ from petsard.exceptions import ConfigError, UnfittedError
 from petsard.metadater.metadata import Schema
 from petsard.processor.constant import ConstantProcessor
 from petsard.processor.discretizing import DiscretizingKBins
-from petsard.processor.encoder import (EncoderDateDiff, EncoderLabel,
-                                       EncoderOneHot, EncoderUniform)
-from petsard.processor.mediator import (Mediator, MediatorEncoder,
-                                        MediatorMissing, MediatorOutlier,
-                                        MediatorScaler)
-from petsard.processor.missing import (MissingDrop, MissingMean, MissingMedian,
-                                       MissingMode, MissingSimple)
-from petsard.processor.outlier import (OutlierIQR, OutlierIsolationForest,
-                                       OutlierLOF, OutlierZScore)
-from petsard.processor.scaler import (ScalerLog, ScalerLog1p, ScalerMinMax,
-                                      ScalerStandard, ScalerTimeAnchor,
-                                      ScalerZeroCenter)
+from petsard.processor.encoder import (
+    EncoderDateDiff,
+    EncoderLabel,
+    EncoderOneHot,
+    EncoderUniform,
+)
+from petsard.processor.mediator import (
+    Mediator,
+    MediatorEncoder,
+    MediatorMissing,
+    MediatorOutlier,
+    MediatorScaler,
+)
+from petsard.processor.missing import (
+    MissingDrop,
+    MissingMean,
+    MissingMedian,
+    MissingMode,
+    MissingSimple,
+)
+from petsard.processor.outlier import (
+    OutlierIQR,
+    OutlierIsolationForest,
+    OutlierLOF,
+    OutlierZScore,
+)
+from petsard.processor.scaler import (
+    ScalerLog,
+    ScalerLog1p,
+    ScalerMinMax,
+    ScalerStandard,
+    ScalerTimeAnchor,
+    ScalerZeroCenter,
+)
 
 
 class DefaultProcessorMap:
@@ -164,6 +186,7 @@ class Processor:
         self,
         metadata: Schema,
         config: dict = None,
+        freeze_global_outlier: bool = False,
     ) -> None:
         """
         Args:
@@ -217,6 +240,7 @@ class Processor:
         # Processor should not modify the passed-in metadata, but create its own copy
         # This ensures that transformations don't corrupt the original schema
         self._metadata: Schema = deepcopy(metadata)
+        self._freeze_global_outlier = freeze_global_outlier
         self.logger.debug(
             "Schema metadata loaded (deep copy created to preserve original)"
         )
@@ -440,7 +464,9 @@ class Processor:
         for proc_name in self._sequence:
             mediator_info = MediatorMap.get_class_info(proc_name)
             if mediator_info:
-                mediator = mediator_info["class"](self._config)
+                mediator = (MediatorOutlier(self._config, freeze_model=True)
+                            if self._freeze_global_outlier and mediator_info["class"] is MediatorOutlier
+                            else mediator_info["class"](self._config))
                 self._mediator[proc_name] = mediator
                 # MediatorScaler for TimeAnchor should .set_reference_time() before Scaler in transform()
                 if isinstance(mediator, MediatorScaler):
@@ -508,6 +534,11 @@ class Processor:
                     # Special handling for EncoderDateDiff which needs the full DataFrame
                     if isinstance(obj, EncoderDateDiff):
                         obj.fit(data)
+                    elif self._freeze_global_outlier and isinstance(obj, OutlierIQR):
+                        observed = data[col].dropna()
+                        if len(observed) < 2 or not np.isfinite(observed.to_numpy()).all():
+                            raise ConfigError("Composite IQR needs at least two finite observed values.")
+                        obj.fit(observed)
                     else:
                         obj.fit(data[col])
 

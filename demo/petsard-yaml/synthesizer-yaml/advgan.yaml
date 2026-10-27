@@ -1,0 +1,71 @@
+---
+# =============================================================================
+# Minimum pipeline that exercises three things at once:
+#
+#   1. JSON Loader   -- Loader.filepath ends in .json, so LoaderFileExt.get()
+#                       resolves to JSONTYPE and LoaderPandasJson runs
+#                       pd.read_json  (petsard/loader/loader_pandas.py)
+#   2. AdvGAN        -- Synthesizer.method: 'AdvGAN' maps to SynthesizerMap.ADVGAN,
+#                       which lazily loads the torch+opacus AdvGANSynthesizer in
+#                       petsard/synthesizer/DP_AdvGAN.py (NOT AdvGAN.py -- see
+#                       Synthesizer._get_synthesizer_class in synthesizer.py)
+#   3. Reporter JSON -- Reporter.type: 'json' flips BaseReporter._save() from
+#                       to_csv to to_json  (petsard/reporter/reporter_base.py:640)
+#
+# NOTE ON BLOCK ORDER: petsard/config.py:40 does `self.sequence =
+# list(self.yaml.keys())` -- the execution order IS the YAML key order. Do not
+# reorder these blocks.
+#
+# Run from the repo root:
+#   python -c "from petsard import Executor; Executor('demo/petsard-yaml/synthesizer-yaml/advgan.yaml').run()"
+# =============================================================================
+
+Loader:
+  load_json:
+    # The registered file test_json_data.json is downloaded to benchmark/ and
+    # its .json extension is what selects LoaderPandasJson. The file is a
+    # top-level JSON array of objects (records orient), which pd.read_json
+    # accepts with no extra arguments.
+    filepath: benchmark://test-json-data
+
+Preprocessor:
+  demo:
+    # Required, not optional. AdvGAN does torch.tensor(df.values, dtype=float32)
+    # (DP_AdvGAN.py:122) and would raise on the raw 'sex'/'smoker' string columns.
+    # The default preprocessor encodes categoricals and fills the two nulls
+    # planted in the test data.
+    method: 'default'
+
+Synthesizer:
+  demo:
+    method: 'AdvGAN'
+    sigma: 1.0    # -> noise_multiplier for the opacus DP-SGD on the discriminator
+    outlier: 10   # -> LAMBDA_BOUND, weight of the min/max boundary penalty
+    epochs: 5     # kept small so the test finishes in seconds (200 is the default)
+    sample_num_rows: 100
+
+Postprocessor:
+  demo:
+    # Inverts the preprocessor so the reported data is back in original units
+    # and 'sex'/'smoker' are strings again -- which also makes the JSON output
+    # human-readable.
+    method: 'default'
+
+Evaluator:
+  # Only here so `save_report` has something to report. Must sit BEFORE
+  # Reporter -- see the block-order note above.
+  diagnostic:
+    method: sdmetrics-diagnosticreport
+
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Postprocessor
+    output: 'advgan'
+    type: 'json'        # <-- the feature under test
+  evaluation_report:
+    method: save_report
+    granularity: global
+    output: 'advgan'
+    type: 'json'        # <-- same flag on the other _save() caller
+...

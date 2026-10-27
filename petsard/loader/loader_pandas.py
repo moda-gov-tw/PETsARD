@@ -115,3 +115,50 @@ class LoaderPandasExcel(LoaderBase):
                 f"Failed to load Excel file: {filepath}",
                 filepath=filepath
             ) from e
+
+
+class LoaderPandasJson(LoaderBase):
+    """
+    LoaderPandasJson
+        pandas.read_json implementation of Loader
+    """
+
+    def __init__(self, config: dict):
+        """
+        Args:
+            config (dict): The configuration for the loader modules.
+
+        Attr:
+            config (dict): The configuration for the loader modules.
+        """
+        super().__init__(config)
+
+    def load(self) -> pd.DataFrame:
+        """
+        Load and return the data
+
+        Return:
+            (pd.DataFrame)
+                Data from JSON in pd.DataFrame format.
+        """
+        # 1. Set the filepath from the configuration
+        filepath = self.config["filepath"]
+
+        pandas_config = {}
+
+        # 2. Assign JSON-specific settings (e.g., orient, lines, dtype, convert_dates)
+        # 'orient' defines the expected JSON string format (e.g., 'records', 'columns')
+        # 'lines' is set to True to read the file as a JSON object per line
+        list_setting = ["orient", "lines", "dtype", "convert_dates"]
+        pandas_config.update(
+            {k: self.config[k] for k in list_setting if k in self.config}
+        )
+
+        try:
+            # 3. Load the JSON file into a DataFrame
+            return pd.read_json(filepath, **pandas_config)
+        except Exception as e:
+            raise UnableToLoadError(
+                f"Failed to load JSON file: {filepath}",
+                filepath=filepath
+            ) from e

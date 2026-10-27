@@ -48,6 +48,15 @@ Based on your environment conditions, please select the appropriate installation
   - Verify PyTorch and CUDA support
   - Confirm system computing mode (CPU/GPU)
 
+### Extended Features
+
+- **[Extended Features Setup](extended-features)** - Environments using the features added in this edition
+  - Editable installation from the source code
+  - JSON input and output with the AdvGAN synthesizer (opacus)
+  - Local-LLM text synthesizer and text evaluator (LM Studio)
+  - Missing-data compensation with Median, KNN and MICE
+  - Hardware recommendations and verification commands
+
 ### Next Steps
 
 After verifying installation:

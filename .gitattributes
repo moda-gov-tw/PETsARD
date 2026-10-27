@@ -1,0 +1,9 @@
+# Store text files with LF in the repository; shell scripts with CRLF fail in Linux containers
+# 文字檔一律以 LF 存入 repo；CRLF 換行的 shell 腳本無法在 Linux 容器中執行
+* text=auto
+*.sh text eol=lf
+Dockerfile text eol=lf
+
+# Keep data files byte-for-byte
+# 資料檔保持原樣，不轉換換行
+*.csv -text

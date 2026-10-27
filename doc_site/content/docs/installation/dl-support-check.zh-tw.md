@@ -3,7 +3,7 @@ title: 深度學習支援檢測
 type: docs
 weight: 250
 prev: docs/installation/package-predownload
-next: docs/installation
+next: docs/installation/extended-features
 ---
 
 適用於需要使用**深度學習合成器**的環境。

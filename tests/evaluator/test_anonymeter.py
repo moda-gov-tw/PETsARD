@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pandas as pd
 
 from petsard.evaluator.anonymeter import Anonymeter
+from petsard.exceptions import UnsupportedMethodError
 
 
 class TestAnonymeter(unittest.TestCase):
@@ -111,7 +112,7 @@ class TestAnonymeter(unittest.TestCase):
 
     def test_invalid_method(self):
         """Test with invalid evaluation method."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(UnsupportedMethodError):
             Anonymeter(config={"eval_method": "anonymeter-invalid"})
 
 
