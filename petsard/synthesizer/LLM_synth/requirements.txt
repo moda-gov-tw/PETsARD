@@ -1,0 +1,55 @@
+# --- Synthetic Data Research / Aug-PE workspace ---
+# Python 3.10+ recommended (matches existing gretel_env).
+# Install:  python -m venv gretel_env
+#           gretel_env\Scripts\activate
+#           pip install -U pip
+#           pip install -r requirements.txt
+#
+# PyTorch: install the CUDA wheel matching your driver from https://pytorch.org/get-started/locally/
+# Use an index that provides torch>=2.13.0 (e.g. cu126 or cu130):
+# e.g. CUDA 12.6 → pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu126
+# e.g. CUDA 13.0 → pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu130
+
+# --- Core numerics & data ---
+numpy>=1.24,<3
+pandas>=2.3.3
+
+# --- PyTorch stack (Aug-PE, embeddings, DP histogram) ---
+# CUDA build: install via the official index for your CUDA version, e.g. CUDA 12.6:
+#   pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu126
+torch>=2.13.0
+transformers>=5.10.0
+sentence-transformers>=5.6.0
+tiktoken>=0.5.0
+tqdm>=4.66.3
+
+# --- Vector search (aug-pe/dpsda/dp_counter.py) ---
+# faiss-gpu is available via conda; on pip use faiss-gpu-cu12 for CUDA 12.x:
+#   pip install faiss-gpu-cu12
+# Falling back to faiss-cpu for pure-pip installs:
+faiss-cpu>=1.7.4
+
+# --- Hugging Face datasets (aug-pe/dpsda/data_loader.py for built-in sets) ---
+datasets>=5.0.1
+
+# --- Metrics (aug-pe/dpsda/metrics.py — FID / k-NN precision-recall) ---
+scipy>=1.10.0
+scikit-learn>=1.7.1
+
+# --- LLM SDKs (aug-pe/apis + aug-pe/external_api) ---
+openai>=1.30.0
+anthropic>=0.25.0
+google-genai>=1.0.0
+
+# --- Optional: Gradio launcher UI (see aug-pe-frontend/requirements.txt) ---
+# gradio>=4.44.0
+
+# --- Optional: utility_eval / MAUVE / plotting (aug-pe/utility_eval, metric.py) ---
+# evaluate>=0.4.0
+# matplotlib>=3.7.0
+# seaborn>=0.13.0
+
+# other
+anonymeter>=1.0.0,<2
+xgboost>=3.0.5
+sdmetrics>=0.23.0,<1

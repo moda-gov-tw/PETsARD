@@ -18,6 +18,15 @@ keywords = [
     "machine learning",
 ]
 readme = "README.md" # README file displayed on PyPI project page / PyPI 專案頁面顯示的 README 文件
+license = "MIT AND Apache-2.0"  # SPDX license expression (PEP 639); Apache-2.0 covers the Aug-PE files in LLM_synth / SPDX 授權表示式（PEP 639）；Apache-2.0 適用於 LLM_synth 中改寫自 Aug-PE 之檔案
+# License files included in the distribution (LLM_synth: adapted Aug-PE code, Apache-2.0)
+# 隨發行檔附帶的授權檔（LLM_synth：改寫自 Aug-PE 之程式，Apache-2.0）
+license-files = [
+    "LICENSE",
+    "petsard/synthesizer/LLM_synth/LICENSE-APACHE-2.0.txt",
+    "petsard/synthesizer/LLM_synth/NOTICE",
+    "THIRD_PARTY_NOTICES.md",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Natural Language :: English",
@@ -37,9 +46,9 @@ requires-python = ">=3.10,<3.12" # Python 3.12 is currently limited due to anony
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/nics-dp/petsard"
-Documentation = "https://nics-dp.github.io/petsard/"
-"Bug Tracker" = "https://github.com/nics-dp/petsard/issues"
+Repository = "https://github.com/moda-gov-tw/PETsARD"
+Documentation = "https://moda-gov-tw.github.io/PETsARD/"
+"Bug Tracker" = "https://github.com/moda-gov-tw/PETsARD/issues"
 
 # Dependency Groups Configuration
 # 依賴群組設定
@@ -95,17 +104,17 @@ exec = [
 # Benchmark dataset support
 # 基準資料集支援
 load-benchmark = [
-    "requests>=2.32.5,<3",   # HTTP requests for downloading datasets / HTTP 請求下載資料集
+    "requests>=2.33.0,<3",   # HTTP requests for downloading datasets / HTTP 請求下載資料集
 ]
 
 # Privacy risk evaluation functionality
 # 隱私風險評估功能
 eval = [
     {include-group = "base-common"},
-    "anonymeter>=1.0.0,<2",   # Privacy risk evaluation / 隱私風險評估
+    "anonymeter>=1.0.0,<1.1",   # Privacy risk evaluation; 1.1 fails on missing values / 隱私風險評估；1.1 版遇缺值會出錯
     "sdmetrics>=0.23.0,<1",   # Synthetic data quality metrics / 合成資料品質指標
     "xgboost>=3.0.5",         # Utility evaluation / 實用性評估
-    "imblearn>=0.0",          # Imbalanced data handling / 不平衡資料處理
+    "imbalanced-learn>=0.14.0", # Imbalanced data handling / 不平衡資料處理
     # Shared evaluation dependencies
     "scikit-learn>=1.7.1,<2",
     "joblib>=1.5.2,<2",
@@ -119,7 +128,8 @@ eval = [
 # 合成資料生成功能
 syn = [
     {include-group = "base-common"},
-    "torch>=2.8.0,<3",   # PyTorch deep learning models / PyTorch 深度學習模型
+    "torch>=2.13.0,<3",   # PyTorch deep learning models / PyTorch 深度學習模型
+    "opacus>=1.5.4,<2",   # DP-SGD for the AdvGAN synthesizer, imported only when AdvGAN is used / AdvGAN 合成器的 DP-SGD，僅於使用 AdvGAN 時載入
     # Shared synthesis dependencies
     "scipy>=1.15.3,<2 ; python_full_version < '3.11'",
     "scipy>=1.16.0,<2 ; python_full_version >= '3.11'",
@@ -127,26 +137,14 @@ syn = [
     "numba>=0.61.2,<1",
     "plotly>=6.3.0,<7",
     # PyTorch specific dependencies
-    "fsspec>=2025.9.0",
+    "fsspec>=2026.6.0",
+    "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",   # Latest release for Python 3.10 without known advisories / 支援 Python 3.10 且無已知弱點之最新版本
     "jinja2>=3.1.6,<4",
     "networkx>=3.4.2,<3.5 ; python_full_version < '3.11'",
     "networkx>=3.5,<4 ; python_full_version >= '3.11'",
     "sympy>=1.14.0,<2",
-    # NVIDIA CUDA dependencies (Linux x86_64 only)
-    "nvidia-cublas-cu12>=12.6.4.1,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cuda-cupti-cu12>=12.6.80,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cuda-nvrtc-cu12>=12.6.77,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cuda-runtime-cu12>=12.6.77,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cudnn-cu12>=9.5.1.17,<10 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cufft-cu12>=11.3.0.4,<12 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cufile-cu12>=1.11.1.6,<2 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-curand-cu12>=10.3.7.77,<11 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cusolver-cu12>=11.7.1.2,<12 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cusparse-cu12>=12.5.4.2,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-cusparselt-cu12>=0.6.3,<1 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-nccl-cu12>=2.26.2,<3 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-nvjitlink-cu12>=12.6.85,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
-    "nvidia-nvtx-cu12>=12.6.77,<13 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
+    # NVIDIA CUDA libraries are installed by torch
+    # NVIDIA CUDA 函式庫由 torch 安裝
     "triton>=3.4.0,<4 ; platform_machine == 'x86_64' and sys_platform == 'linux'",
 ]
 
@@ -154,10 +152,10 @@ syn = [
 # Jupyter 筆記本支援
 jupyter = [
     "ipykernel>=7.1.0,<8",                                  # Jupyter kernel support / Jupyter 核心支援
-    "ipython>=8.3.0,<9 ; python_full_version < '3.11'",     # IPython (Python 3.10) / IPython（Python 3.10 版本）
+    "ipython>=8.10.0,<9 ; python_full_version < '3.11'",    # IPython (Python 3.10) / IPython（Python 3.10 版本）
     "ipython>=9.4.0,<10 ; python_full_version >= '3.11'",   # IPython (Python 3.11+) / IPython（Python 3.11+ 版本）
-    "jupyterlab>=4.4.7,<5",                                 # JupyterLab support / JupyterLab 支援
-    "notebook>=7.4.5,<8",                                   # Jupyter Notebook support / Jupyter Notebook 支援
+    "jupyterlab>=4.6.4,<5",                                 # JupyterLab support / JupyterLab 支援
+    "notebook>=7.6.3,<8",                                   # Jupyter Notebook support / Jupyter Notebook 支援
     "pyzmq>=27.0.2,<28",                                    # Jupyter messaging / Jupyter 訊息傳遞
     # Jupyter dependencies
     "debugpy>=1.8.16,<2",
@@ -177,7 +175,7 @@ load-xlsx = [
 # 開發工具
 dev-tools = [
     "pip-audit>=2.7.3",                  # Security audit tool / 安全稽核工具
-    "pytest>=8.4.2",                     # Testing framework / 測試框架
+    "pytest>=9.0.3",                     # Testing framework / 測試框架
     "pytest-cov>=6.3.0",                 # Test coverage reporting / 測試覆蓋率報告
     "python-semantic-release>=10.3.2",   # Release automation / 發布自動化
     "ruff>=0.12.12",                     # Code linting and formatting / 程式碼檢查與格式化
@@ -193,10 +191,10 @@ dev-tools = [
 # Jupyter 支援（最小向後相容）
 jupyter = [
     "ipykernel>=7.1.0,<8",
-    "ipython>=8.3.0,<9 ; python_full_version < '3.11'",
+    "ipython>=8.10.0,<9 ; python_full_version < '3.11'",
     "ipython>=9.4.0,<10 ; python_full_version >= '3.11'",
-    "jupyterlab>=4.4.7,<5",
-    "notebook>=7.4.5,<8",
+    "jupyterlab>=4.6.4,<5",
+    "notebook>=7.6.3,<8",
 ]
 # Excel file support
 # Excel 檔案支援
@@ -207,10 +205,10 @@ excel = [
 # 資料科學功能（jupyter 的別名）
 ds = [
     "ipykernel>=7.1.0,<8",
-    "ipython>=8.3.0,<9 ; python_full_version < '3.11'",
+    "ipython>=8.10.0,<9 ; python_full_version < '3.11'",
     "ipython>=9.4.0,<10 ; python_full_version >= '3.11'",
-    "jupyterlab>=4.4.7,<5",
-    "notebook>=7.4.5,<8",
+    "jupyterlab>=4.6.4,<5",
+    "notebook>=7.6.3,<8",
 ]
 # Full functionality (all core dependencies + Jupyter + Excel)
 # 完整功能（所有核心依賴 + Jupyter + Excel）
@@ -225,12 +223,12 @@ all = [
     "pyyaml>=6.0.2,<7",
     "python-dateutil>=2.9.0.post0,<3",
     # load-benchmark
-    "requests>=2.32.5,<3",
+    "requests>=2.33.0,<3",
     # eval
-    "anonymeter>=1.0.0,<2",
+    "anonymeter>=1.0.0,<1.1",
     "sdmetrics>=0.23.0,<1",
     "xgboost>=3.0.5",
-    "imblearn>=0.0",
+    "imbalanced-learn>=0.14.0",
     "scikit-learn>=1.7.1,<2",
     "joblib>=1.5.2,<2",
     "numba>=0.61.2,<1",
@@ -238,18 +236,20 @@ all = [
     "scipy>=1.15.3,<2 ; python_full_version < '3.11'",
     "scipy>=1.16.0,<2 ; python_full_version >= '3.11'",
     # syn (PyTorch and dependencies)
-    "torch>=2.8.0,<3",
-    "fsspec>=2025.9.0",
+    "torch>=2.13.0,<3",
+    "opacus>=1.5.4,<2",
+    "fsspec>=2026.6.0",
+    "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",
     "jinja2>=3.1.6,<4",
     "networkx>=3.4.2,<3.5 ; python_full_version < '3.11'",
     "networkx>=3.5,<4 ; python_full_version >= '3.11'",
     "sympy>=1.14.0,<2",
     # Jupyter
     "ipykernel>=7.1.0,<8",
-    "ipython>=8.3.0,<9 ; python_full_version < '3.11'",
+    "ipython>=8.10.0,<9 ; python_full_version < '3.11'",
     "ipython>=9.4.0,<10 ; python_full_version >= '3.11'",
-    "jupyterlab>=4.4.7,<5",
-    "notebook>=7.4.5,<8",
+    "jupyterlab>=4.6.4,<5",
+    "notebook>=7.6.3,<8",
     "pyzmq>=27.0.2,<28",
     "debugpy>=1.8.16,<2",
     "decorator>=5.2.1,<6",
@@ -262,15 +262,35 @@ all = [
 # Development tools (minimal list, use dependency-groups dev for full set)
 # 開發工具（最小列表，完整開發環境請使用 dependency-groups dev）
 dev = [
-    "pytest>=8.4.2",
+    "pytest>=9.0.3",
     "pytest-cov>=6.3.0",
     "ruff>=0.12.12",
+]
+
+# AdvGAN synthesizer
+# AdvGAN 合成器
+advgan = [
+    "torch>=2.13.0,<3",
+    "opacus>=1.5.4,<2",
+]
+# LLM text synthesizer
+# LLM 文字合成器
+llm = [
+    "torch>=2.13.0,<3",
+    "sentence-transformers>=5.6.0,<7",
+    "transformers>=5.10.0,<6",   # Installed through sentence-transformers / 經 sentence-transformers 安裝
+    "faiss-cpu>=1.7.4,<2",
+    "tiktoken>=0.5.0,<1",
+    "tqdm>=4.66.3,<5",
+    "openai>=1.30.0,<4",
+    "anthropic>=0.25.0,<2",
+    "google-genai>=1.0.0,<3",
 ]
 
 # Build system configuration
 # 建置系統設定
 [build-system]
-requires = ["uv_build>=0.9.10,<0.11.0"]
+requires = ["uv_build>=0.9.10,<0.12.0"]
 build-backend = "uv_build"
 
 # uv build backend configuration

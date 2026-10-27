@@ -19,6 +19,7 @@ Supported Methods 支援的方法:
     - SDV_TVAE: VAE-based method 基於 VAE 的方法
 """
 
+import importlib.util
 import logging
 import time
 import warnings
@@ -36,11 +37,7 @@ def check_sdv_installed():
     Raises:
         ImportError: If SDV is not installed 如果 SDV 未安裝
     """
-    try:
-        import sdv
-
-        return True
-    except ImportError:
+    if importlib.util.find_spec("sdv") is None:
         error_msg = """
         SDV package is not installed! SDV 套件未安裝！
 
@@ -53,6 +50,7 @@ def check_sdv_installed():
         For more information: 更多資訊請參考：https://sdv.dev/
         """
         raise ImportError(error_msg)
+    return True
 
 
 def schema_to_sdv(schema: Schema, data: pd.DataFrame = None) -> dict[str, Any]:

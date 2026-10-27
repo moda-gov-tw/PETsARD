@@ -53,7 +53,7 @@ class TestBenchmarker:
         """
         return {
             "filepath": "benchmark/test.csv",
-            "benchmark_bucket_name": "petsard-benchmark",
+            "benchmark_url": "https://example.com/benchmark-data/test.csv",
             "benchmark_filename": "test.csv",
             "benchmark_sha256": "fake_sha256",
         }

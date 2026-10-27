@@ -308,7 +308,7 @@ except FileNotFoundError as e:
 若遇到錯誤：
 1. **查看錯誤代碼**：對照本指南確認錯誤代碼的常見原因和解決方法
 2. **檢查日誌**：參考配置指南啟用 DEBUG 日誌，檢查執行流程和 TIMING 記錄
-3. **尋求協助**：若問題持續，在 [GitHub](https://github.com/nics-tw/PETsARD/issues) 開立 issue 並附上：
+3. **尋求協助**：若問題持續，在 [GitHub](https://github.com/moda-gov-tw/PETsARD/issues) 開立 issue 並附上：
    - 錯誤代碼和完整錯誤訊息
    - 相關的配置檔案或程式碼片段
    - 日誌摘錄（DEBUG 層級）

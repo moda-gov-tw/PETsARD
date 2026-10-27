@@ -231,7 +231,6 @@ class Test_ScalerTimeAnchor(BaseScalerTest):
     def test_invalid_reference_type(self):
         """Test error with non-datetime reference"""
         invalid_reference = pd.Series([1, 2, 3])
-        dates = pd.Series(pd.date_range(start="2024-01-01", periods=3, freq="D"))
 
         scaler = self.scaler_class(reference="dummy", unit="D")
 

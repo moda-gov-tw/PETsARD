@@ -13,7 +13,7 @@ def download() -> None
 
 ## Description
 
-The `download()` method downloads the specified benchmark dataset from AWS S3 bucket and saves it to the local `benchmark/` directory. The download process includes integrity verification.
+The `download()` method downloads the specified benchmark dataset from the `benchmark-datasets-v1` release of the PETsARD GitHub repository and saves it to the local `benchmark/` directory. The download process includes integrity verification.
 
 ## Returns
 
@@ -39,7 +39,7 @@ downloader.download()
 
 1. **Check local cache**: Check if the dataset already exists in `benchmark/` directory
 2. **Create directory**: Create `benchmark/` directory if it doesn't exist
-3. **Download data**: Download dataset from AWS S3
+3. **Download data**: Download dataset from the GitHub release `benchmark-datasets-v1`
 4. **Verify integrity**: Verify downloaded data using SHA256
 5. **Save file**: Save data to local storage
 

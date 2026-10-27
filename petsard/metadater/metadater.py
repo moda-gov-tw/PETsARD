@@ -894,7 +894,7 @@ class SchemaMetadater:
 
         with open(filepath) as f:
             try:
-                config = yaml.load(f, Loader=DuplicateKeysLoader)
+                config = yaml.load(f, Loader=DuplicateKeysLoader)  # nosec B506
             except MetadataError:
                 # Re-raise MetadataError, keep original error message
                 raise

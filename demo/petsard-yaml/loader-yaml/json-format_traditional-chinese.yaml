@@ -1,0 +1,55 @@
+---
+# =============================================================================
+# JSON demo 4 -- Traditional Chinese data.
+#
+# Checks that Chinese survives the whole round trip: reading the JSON file,
+# through preprocessing and synthesis, and back out into the JSON report.
+# Both the column names and the values are Chinese.
+#
+# This file is deliberately ASCII-only. PETsARD reads YAML using the platform
+# default encoding, so a Chinese config would fail on a non-UTF-8 locale such
+# as Windows cp950. The data file carries the Chinese; the config does not
+# need to name any column, so it stays portable.
+#
+# Run from the repo root:
+#   python -c "from petsard import Executor; Executor('demo/petsard-yaml/loader-yaml/json-format_traditional-chinese.yaml').run()"
+# =============================================================================
+
+Loader:
+  load_json:
+    filepath: benchmark://tw-salary
+
+Preprocessor:
+  demo:
+    method: 'default'
+
+Synthesizer:
+  demo:
+    method: 'default'
+
+Postprocessor:
+  demo:
+    method: 'default'
+
+Evaluator:
+  # Neither evaluator needs a column named in this file, which is what keeps
+  # the config ASCII.
+  diagnostic:
+    method: sdmetrics-diagnosticreport   # are the Chinese categories still valid?
+  quality:
+    method: sdmetrics-qualityreport      # are the distributions preserved?
+
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Postprocessor
+    output: 'tw_salary'
+    type: 'json'
+  evaluation_report:
+    method: save_report
+    granularity:
+      - global
+      - columnwise      # per-column scores, keyed by the Chinese column names
+    output: 'tw_salary'
+    type: 'json'
+...

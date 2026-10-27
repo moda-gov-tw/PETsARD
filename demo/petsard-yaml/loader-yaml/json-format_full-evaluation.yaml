@@ -1,0 +1,87 @@
+---
+# =============================================================================
+# JSON demo 3 -- full evaluation suite.
+#
+# Where 1 and 2 each exercise ONE thing (AdvGAN / scale), this one exercises
+# the EVALUATION side: a Splitter to produce the holdout set, and five
+# evaluators covering all three assessment families at once.
+#
+# Why the Splitter is mandatory here (it is optional in demos 1 and 2):
+#   anonymeter-* declares REQUIRED_INPUT_KEYS = ["ori", "syn", "control"]
+#   (petsard/evaluator/anonymeter.py:386) and mlutility does the same. Without
+#   a Splitter there is no `control` set, and those two evaluators cannot run.
+#   sdmetrics-* and mpuccs only need ori + syn, so they work either way.
+#
+# Data: benchmark://customer-churn (customer_churn.json) -- 1,200 rows x 10 columns, built
+# with a genuine signal linking contract_type / tenure / charges to `churn`,
+# so MLUtility has something learnable to predict rather than noise.
+#
+# Run from the repo root:
+#   python -c "from petsard import Executor; Executor('demo/petsard-yaml/loader-yaml/json-format_full-evaluation.yaml').run()"
+# =============================================================================
+
+Loader:
+  load_json:
+    filepath: benchmark://customer-churn
+
+Splitter:
+  holdout:
+    num_samples: 1          # experiment name becomes holdout_[1-1] downstream
+    train_split_ratio: 0.8  # 960 train (ori) / 240 holdout (control)
+
+Preprocessor:
+  demo:
+    method: 'default'
+
+Synthesizer:
+  demo:
+    method: 'default'       # Gaussian Copula
+
+Postprocessor:
+  demo:
+    method: 'default'
+
+Evaluator:
+  # --- Fidelity: does the synthetic data look like the original? ------------
+  diagnostic:
+    method: sdmetrics-diagnosticreport   # structure + validity, ori/syn only
+
+  quality:
+    method: sdmetrics-qualityreport      # column shapes + pair trends
+
+  # --- Privacy -------------------------------------------------------------
+  privacy_mpuccs:
+    method: mpuccs                       # unique-combination re-identification
+    max_baseline_cols: 2
+    min_entropy_delta: 0.01
+
+  singling_out:
+    method: anonymeter-singlingout       # NEEDS control -> needs the Splitter
+    n_attacks: 100                       # kept modest; control set is 240 rows
+    n_cols: 3
+
+  # --- Utility: can a model trained on synthetic data predict real data? ----
+  classification_utility:
+    method: mlutility                    # NEEDS control -> needs the Splitter
+    task_type: classification
+    target: churn                        # the planted, learnable target
+    metrics:
+      - accuracy
+      - f1_score
+      - roc_auc
+    random_state: 42
+
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Postprocessor
+    output: 'churn'
+    type: 'json'
+  evaluation_report:
+    method: save_report
+    granularity:
+      - global              # one row per experiment, all five evaluators
+      - columnwise          # per-column detail from the sdmetrics reports
+    output: 'churn'
+    type: 'json'
+...

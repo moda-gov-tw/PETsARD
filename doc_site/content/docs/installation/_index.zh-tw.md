@@ -48,6 +48,15 @@ next: docs/data-preparation
   - 驗證 PyTorch 與 CUDA 支援
   - 確認系統運算模式（CPU/GPU）
 
+### 擴充功能
+
+- **[擴充功能安裝](extended-features)** - 使用本版新增功能的環境
+  - 自原始碼以可編輯模式安裝
+  - JSON讀取與輸出及AdvGAN合成器(opacus)
+  - 本機LLM文字合成器與文字評測模組(LM Studio)
+  - 缺失資料補償(Median、KNN、MICE)
+  - 建議硬體規格與安裝驗證指令
+
 ### 下一步
 
 完成安裝驗證後，您可以：

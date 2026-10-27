@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 
 from petsard.evaluator.customer_evaluator import CustomEvaluator
+from petsard.exceptions import ConfigError
 
 
 class TestCustomEvaluator(unittest.TestCase):
@@ -104,7 +105,7 @@ class TestCustomEvaluator(unittest.TestCase):
             "class_name": "MyCustomEvaluator",
         }
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ConfigError):
             CustomEvaluator(config=invalid_config)
 
 

@@ -12,8 +12,8 @@ Loader 模組的 YAML 設定檔案格式。
 
 請點擊下方按鈕在 Colab 中執行範例：
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/loader-yaml/loader-yaml.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/loader-yaml/loader-yaml.ipynb)
+> **注意**：使用 Colab 請參考[執行環境設定](/PETsARD/zh-tw/docs/#colab-執行說明)。
 
 ### 基本載入
 
@@ -70,6 +70,7 @@ Loader:
 | **CSV** | `.csv`, `.tsv` | 逗號/製表符分隔檔案 | - |
 | **Excel** | `.xlsx`, `.xls` | Excel 試算表 | 需安裝 `openpyxl` |
 | **OpenDocument** | `.ods`, `.odf`, `.odt` | OpenDocument 格式 | 需安裝 `openpyxl` |
+| **JSON** | `.json` | JSON紀錄陣列，請參見[JSON格式](json-format) | - |
 | **Benchmark** | `benchmark://` | 基準資料集協議 | 需網路連線（首次下載） |
 
 \* 使用 Excel 和 OpenDocument 格式需要安裝 `openpyxl` 套件，請參閱安裝說明。

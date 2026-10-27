@@ -3,7 +3,7 @@ title: "SDV Methods"
 type: docs
 weight: 655
 prev: docs/petsard-yaml/synthesizer-yaml/sdv-custom-methods
-next: docs/petsard-yaml/synthesizer-yaml
+next: docs/petsard-yaml/synthesizer-yaml/advgan
 ---
 
 PETsARD integrates the [SDV (Synthetic Data Vault)](https://sdv.dev/) package, providing various advanced synthetic data generation algorithms.

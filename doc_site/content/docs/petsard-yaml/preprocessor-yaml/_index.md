@@ -10,11 +10,6 @@ YAML configuration file format for the Preprocessor module, used for data prepro
 
 ## Usage Examples
 
-Click the button below to run the example in Colab:
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/preprocessor-yaml/preprocessor-yaml.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
-
 ### Using Default Preprocessing
 
 ```yaml
@@ -57,11 +52,34 @@ Preprocessor:
         income: 'scaler_standard'
 ```
 
+### Missing-Data Compensation
+
+Fill missing numeric feature values with a Median, KNN or MICE strategy fitted on public or external reference data. See [Missing-Data Compensation]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}}) for all parameters, Splitter support and chaining with `method: composite`.
+
+```yaml
+Preprocessor:
+  compensation:
+    method: custom_method
+    module_path: petsard/processor/missing_compensation.py
+    class_name: MissingCompensation
+    missing_compensation:
+      method: median   # or knn, mice
+    feature_columns: [age, income]
+    key_columns: [member_id]
+    fit_data:
+      filepath: reference.csv
+    fit_source:
+      id: reference-2026
+      role: public
+    transform_source: local-2026
+```
+
 ## Main Parameters
 
 - **method** (`string`, required)
   - Preprocessing method
   - Available values: `'default'` (default processing sequence)
+  - Extended values: `'custom_method'` (external preprocessing module, such as [missing-data compensation]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}})) and `'composite'` (ordered chain of built-in outlier and missing stages with one `custom_method` stage)
 
 - **sequence** (`list`, optional)
   - Custom processing sequence
@@ -101,6 +119,7 @@ For detailed processor descriptions, please refer to each feature page:
 - [Encoding]({{< ref "encoding" >}})
 - [Scaling]({{< ref "scaling" >}})
 - [Discretizing]({{< ref "discretizing" >}})
+- [Missing-Data Compensation]({{< ref "/docs/petsard-yaml/preprocessor-yaml/missing-compensation" >}})
 
 ## Precision Preservation
 

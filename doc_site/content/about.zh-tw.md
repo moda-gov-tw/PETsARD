@@ -12,7 +12,7 @@ next: index
 
 ## 專案歷程
 
-![PETsARD 初代 Logo 設計草圖](/images/2023-12-13 11.41.43.jpg)
+![PETsARD 初代 Logo 設計草圖](</images/2023-12-13 11.41.43.jpg>)
 
 這是 PETsARD-0.0 的初代 logo 設計草圖，攝於 2023 年 12 月 13 日。
 

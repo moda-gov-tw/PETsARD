@@ -14,10 +14,9 @@ Docker 容器的進入點腳本，用於啟動 Jupyter Lab 服務。
 
 **Features 功能:**
 
-- Start Jupyter Lab on 0.0.0.0:8888 啟動 Jupyter Lab 在 0.0.0.0:8888
-- Allow root user execution 允許 root 使用者執行
-- No authentication token required (for development) 無需認證令牌（開發環境用）
-- Allow cross-origin access 允許跨域存取
+- Start Jupyter Lab on 0.0.0.0:8888 as the non-root user `petsard` 以非 root 使用者 `petsard` 啟動 Jupyter Lab 在 0.0.0.0:8888
+- Token authentication required: a random token is printed in the log (`docker compose logs petsard`), or set `JUPYTER_TOKEN` 須以 token 登入：隨機 token 印在 log（`docker compose logs petsard`），或以 `JUPYTER_TOKEN` 自訂
+- Same-origin requests only 只接受同源請求
 
 **Usage 使用方式:**
 
@@ -43,3 +42,4 @@ This file is automatically executed when the Docker container starts, no manual 
 - Docker image needs to be rebuilt after modifying `entrypoint.sh` 修改 `entrypoint.sh` 後需要重新建置 Docker 映像檔
 - Ensure the script has execution permission (chmod +x) 確保腳本具有執行權限（chmod +x）
 - Consider security settings when using in production environment 生產環境使用時請考慮安全性設定
+- Do not re-add `--allow-root`, an empty token or `allow_origin=*`: anyone who can reach the port, or any web page the user visits, could run code in the container 請勿加回 `--allow-root`、空 token 或 `allow_origin=*`：任何連得到此埠的人或使用者瀏覽的網頁都可能在容器內執行程式

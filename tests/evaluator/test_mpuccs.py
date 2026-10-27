@@ -129,7 +129,7 @@ class TestMPUCCsPrecisionHandling:
 
         mpuccs = MPUCCs(config)
         data = {"ori": ori_data, "syn": syn_data}
-        results = mpuccs.eval(data)
+        mpuccs.eval(data)
 
         # 應該檢測到最高精度（3位小數）
         assert mpuccs.config.get("numeric_precision") == 3
@@ -156,7 +156,7 @@ class TestMPUCCsPrecisionHandling:
 
         mpuccs = MPUCCs(config)
         data = {"ori": ori_data, "syn": syn_data}
-        results = mpuccs.eval(data)
+        mpuccs.eval(data)
 
         # 應該使用手動設定的精度
         assert mpuccs.config.get("numeric_precision") == 2
@@ -199,7 +199,7 @@ class TestMPUCCsPrecisionHandling:
 
         mpuccs = MPUCCs(config)
         data = {"ori": ori_data, "syn": syn_data}
-        results = mpuccs.eval(data)
+        mpuccs.eval(data)
 
         # 應該檢測到微秒精度
         detected_precision = mpuccs.config.get("datetime_precision")
@@ -393,7 +393,7 @@ class TestMPUCCsPruningLogic:
         tree_df = results["tree"]
 
         # 檢查是否有組合被剪枝
-        pruned_combos = tree_df[tree_df["is_pruned"] == True]
+        pruned_combos = tree_df[tree_df["is_pruned"].eq(True)]
         assert len(pruned_combos) >= 0  # 可能有組合被剪枝
 
     def test_base_combo_pruning_propagation(self):
@@ -557,7 +557,6 @@ class TestMPUCCsIntegration:
 
         # 檢查只有 1 和 3 欄位組合被處理
         combo_sizes = set(tree_df["combo_size"].unique())
-        expected_sizes = {1, 3}
 
         # 應該包含目標大小，但可能不包含 2（因為跳過了）
         assert 1 in combo_sizes

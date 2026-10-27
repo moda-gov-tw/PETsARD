@@ -100,6 +100,16 @@ scripts/
 tests/
 module_functional_designs/
 
+# Data and run outputs (root-anchored; none of them is a COPY source) 資料與執行輸出(以建置內容根目錄為基準；皆非 COPY 來源)
+/data/
+/output*/
+/benchmark/
+/*/data/
+/*/output/
+/tutorial/test_cases/_output/
+/LOG_FILES/
+/llm_synth_output/
+
 # Important files included 包含的重要檔案:
 # - petsard/ (main package 主要套件)
 # - demo/ (examples 範例)

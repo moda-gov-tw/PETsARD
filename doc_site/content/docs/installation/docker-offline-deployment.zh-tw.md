@@ -32,8 +32,8 @@ docker save ghcr.io/nics-dp/petsard:latest -o petsard-latest.tar
 
 ```bash
 # 複製儲存庫
-git clone https://github.com/nics-dp/petsard.git
-cd petsard
+git clone https://github.com/moda-gov-tw/PETsARD.git
+cd PETsARD
 
 # 建置標準版本（預設 - 不含 Jupyter）
 docker build -t petsard:latest .

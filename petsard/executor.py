@@ -339,6 +339,10 @@ class Executor:
         """
         return self.result
 
+    def get_preprocessor_artifacts(self, expt: str = None) -> dict:
+        """Return custom/composite Preprocessor artifacts by experiment."""
+        return self.status.get_preprocessor_artifacts(expt)
+
     def get_timing(self):
         """
         Get execution timing records.

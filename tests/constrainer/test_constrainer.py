@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from petsard.constrainer import Constrainer
+from petsard.exceptions import ConfigError
 
 
 class MockSynthesizer:
@@ -166,7 +167,7 @@ def test_error_handling(sample_df):
     # Test missing columns
     invalid_config = {"field_constraints": ["invalid_column > 0"]}
     constrainer = Constrainer(invalid_config)
-    with pytest.raises(Exception):
+    with pytest.raises(ConfigError):
         constrainer.apply(sample_df)
 
 
@@ -327,7 +328,6 @@ def test_field_proportions_integration(sample_df):
     result3 = constrainer3.apply(data, target_rows=60)
 
     # Check that field combinations are maintained
-    original_combos = data.groupby(["category", "age_group"]).size()
     result_combos = result3.groupby(["category", "age_group"]).size()
 
     # Should have similar distribution patterns
@@ -446,7 +446,6 @@ def test_field_proportions_multiple_modes():
     # 檢查各種模式都有效果
     if len(result) > 0:
         # Category proportions
-        original_cat_props = data["category"].value_counts(normalize=True)
         result_cat_props = result["category"].value_counts(normalize=True)
         assert len(result_cat_props) > 0
 

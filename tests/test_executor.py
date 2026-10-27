@@ -131,8 +131,8 @@ class TestExecutor:
 
         try:
             with (
-                patch("petsard.executor.Config") as mock_config_class,
-                patch("petsard.status.Status") as mock_status_class,
+                patch("petsard.executor.Config"),
+                patch("petsard.status.Status"),
             ):
                 executor = Executor(config_file)
 
@@ -438,7 +438,7 @@ class TestExecutorIntegration:
             temp_file_path = temp_file.name
 
         try:
-            with pytest.raises(Exception):  # YAML 解析錯誤
+            with pytest.raises(ConfigError):  # YAML 解析錯誤
                 Executor(temp_file_path)
         finally:
             os.unlink(temp_file_path)

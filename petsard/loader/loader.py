@@ -23,6 +23,7 @@ class LoaderFileExt:
 
     CSVTYPE: int = 1
     EXCELTYPE: int = 2
+    JSONTYPE: int = 3
 
     CSV: int = 10
     XLS: int = 20
@@ -32,6 +33,7 @@ class LoaderFileExt:
     ODF: int = 24
     ODS: int = 25
     ODT: int = 26
+    JSON: int = 30
 
     @classmethod
     def get(cls, file_ext: str) -> int:
@@ -409,7 +411,11 @@ class Loader:
         Returns:
             pd.DataFrame: Loaded dataframe
         """
-        from petsard.loader.loader_pandas import LoaderPandasCsv, LoaderPandasExcel
+        from petsard.loader.loader_pandas import (
+            LoaderPandasCsv,
+            LoaderPandasExcel,
+            LoaderPandasJson,
+        )
 
         self._logger.debug("Reading data using pandas loader classes")
 
@@ -417,6 +423,7 @@ class Loader:
         loaders_map = {
             LoaderFileExt.CSVTYPE: LoaderPandasCsv,
             LoaderFileExt.EXCELTYPE: LoaderPandasExcel,
+            LoaderFileExt.JSONTYPE: LoaderPandasJson,
         }
 
         if self.config.file_ext_code not in loaders_map:
@@ -490,6 +497,7 @@ class Loader:
             # Create loader instance and load data
             loader = loader_class(config)
             data = loader.load().fillna(pd.NA)
+            self._logger.debug(f"Loaded {len(data)} rows")
             self._logger.debug(f"Successfully loaded data with shape: {data.shape}")
             return data
 

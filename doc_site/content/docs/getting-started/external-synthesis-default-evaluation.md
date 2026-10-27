@@ -3,7 +3,7 @@ title: Evaluation of External Synthetic Data with Default Parameters
 type: docs
 weight: 130
 prev: docs/getting-started/default-synthesis-default-evaluation
-next: docs/getting-started
+next: docs/getting-started/json-advgan-synthesis
 ---
 
 External synthesis with default evaluation.
@@ -11,8 +11,8 @@ Enabling users to evaluate synthetic data from external solutions.
 
 Click the below button to run this example in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-dp/petsard/blob/main/demo/getting-started/external-synthesis-default-evaluation.ipynb)
-> **Note**: If using Colab, please see the [runtime setup guide](/petsard/docs/#colab-execution-guide).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/getting-started/external-synthesis-default-evaluation.ipynb)
+> **Note**: If using Colab, please see the [runtime setup guide](/PETsARD/docs/#colab-execution-guide).
 
 ```yaml
 Splitter:

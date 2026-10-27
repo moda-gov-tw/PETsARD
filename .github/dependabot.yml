@@ -1,6 +1,5 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -10,9 +9,8 @@ updates:
       interval: "weekly"
       time: "07:00"
       timezone: Asia/Taipei
-    assignees:
-      - "CharlesChiuGit"
-    target-branch: "dev"
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "chore(ci.deps)"
     groups:
@@ -22,9 +20,6 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    labels:
-      - "ci"
-      - "dependencies"
 
   - package-ecosystem: "gomod"
     directory: "/doc_site"
@@ -32,9 +27,8 @@ updates:
       interval: "weekly"
       time: "07:00"
       timezone: Asia/Taipei
-    assignees:
-      - "CharlesChiuGit"
-    target-branch: "dev"
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "chore(doc.deps)"
     groups:
@@ -44,9 +38,6 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    labels:
-      - "golang"
-      - "dependencies"
 
   - package-ecosystem: "pip"
     directory: "/"
@@ -57,9 +48,8 @@ updates:
       interval: "weekly"
       time: "07:00"
       timezone: Asia/Taipei
-    assignees:
-      - "matheme-justyn"
-    target-branch: "dev"
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "chore(pip.deps)"
       prefix-development: "chore(pip-dev.deps)"
@@ -70,7 +60,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    labels:
-      - "pip"
-      - "python"
-      - "dependencies"

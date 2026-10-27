@@ -13,6 +13,8 @@ from petsard.loader import Loader, Splitter
 from petsard.metadater.metadata import Schema
 from petsard.metadater.metadater import SchemaMetadater
 from petsard.processor import Processor
+from petsard.processor.composite_preprocessor import CompositePreprocessor
+from petsard.processor.custom_preprocessor import CustomPreprocessor
 from petsard.reporter import Reporter
 from petsard.synthesizer import Synthesizer
 
@@ -154,10 +156,8 @@ class BaseAdapter:
         if not is_benchmark:
             return False, protocol_value, None
 
-        from petsard.exceptions import (BenchmarkDatasetsError,
-                                        UnsupportedMethodError)
-        from petsard.loader.benchmarker import (BenchmarkerConfig,
-                                                BenchmarkerRequests)
+        from petsard.exceptions import BenchmarkDatasetsError, UnsupportedMethodError
+        from petsard.loader.benchmarker import BenchmarkerConfig, BenchmarkerRequests
 
         benchmark_name = re.sub(
             r"^benchmark://", "", protocol_value, flags=re.IGNORECASE
@@ -814,9 +814,20 @@ class PreprocessorAdapter(BaseAdapter):
         super().__init__(config)
         self.processor = None
         method = config["method"].lower() if "method" in config else "custom"
+        self._is_custom_method = method == "custom_method"
+        self._is_composite_method = method == "composite"
         self._sequence = None
         if "sequence" in config:
             self._sequence = config["sequence"]
+
+        # Explicit extensions do not alter the legacy Processor path.
+        if self._is_custom_method or self._is_composite_method:
+            if self._sequence is not None:
+                raise ConfigError("Extension Preprocessor stages cannot define a top-level sequence.")
+            self._config = {k: v for k, v in config.items() if k not in {"method", "sequence"}}
+            if self._is_composite_method:
+                CompositePreprocessor.validate_config(self._config)
+            return
 
         # Extract the processor configuration properly
         if method == "default":
@@ -929,6 +940,9 @@ class PreprocessorAdapter(BaseAdapter):
                 An instance of the Processor class initialized with the provided configuration.
         """
 
+        if self._is_custom_method or self._is_composite_method:
+            return self._run_extension(input)
+
         self._logger.debug("Initializing processor")
 
         # Expand simplified global outlier config before passing to Processor
@@ -970,6 +984,29 @@ class PreprocessorAdapter(BaseAdapter):
                 self.processor._metadata, self.data_preproc, "Preprocessor"
             )
 
+    def _run_extension(self, input: dict):
+        """Run one explicit custom stage or a chain, fitted once on train."""
+        data = input["data"]
+        splits = data if isinstance(data, dict) else None
+        if splits is not None and "train" not in splits:
+            raise ConfigError("Splitter-aware preprocessing requires a train DataFrame.")
+        train = splits["train"] if splits is not None else data
+        cls = CompositePreprocessor if self._is_composite_method else CustomPreprocessor
+        self.processor = cls(config=self._config, metadata=input["metadata"])
+        if self._is_composite_method:
+            self.data_preproc = (self.processor.fit_transform_splits(splits)
+                                 if splits is not None else self.processor.fit_transform(train))
+        else:
+            self.processor.fit(data=train)
+            self.data_preproc = (self.processor.transform_splits(splits)
+                                 if splits is not None else self.processor.transform(data=train))
+        # The extension owns schema/observed-cell preservation; do not apply
+        # the legacy adapter's extra precision rounding to its checked output.
+        stats = self.data_preproc["train"] if splits is not None else self.data_preproc
+        if input.get("metadata") and input["metadata"].enable_stats and self.processor._metadata:
+            self.processor._metadata = self._update_schema_stats(
+                self.processor._metadata, stats, "Preprocessor extension (train)")
+
     @BaseAdapter.log_and_raise_config_error
     def set_input(self, status) -> dict:
         """
@@ -985,7 +1022,9 @@ class PreprocessorAdapter(BaseAdapter):
         """
         pre_module = status.get_pre_module("Preprocessor")
         if pre_module == "Splitter":
-            self.input["data"] = status.get_result(pre_module)["train"]
+            split_result = status.get_result(pre_module)
+            self.input["data"] = (split_result if self._is_custom_method or self._is_composite_method
+                                  else split_result["train"])
         else:  # Loader only
             self.input["data"] = status.get_result(pre_module)
         self.input["metadata"] = status.get_metadata(pre_module)
@@ -998,6 +1037,12 @@ class PreprocessorAdapter(BaseAdapter):
         """
         result: pd.DataFrame = deepcopy(self.data_preproc)
         return result
+
+    def get_artifacts(self) -> dict:
+        """Detached reports and frozen-strategy state for extension stages."""
+        if self._is_custom_method or self._is_composite_method:
+            return self.processor.get_artifacts()
+        return {}
 
     def get_metadata(self) -> Schema:
         """
@@ -1163,7 +1208,8 @@ class SynthesizerAdapter(BaseAdapter):
             if pre_module == "Splitter":
                 self.input["data"] = status.get_result(pre_module)["train"]
             else:  # Loader or Preprocessor
-                self.input["data"] = status.get_result(pre_module)
+                result = status.get_result(pre_module)
+                self.input["data"] = (result["train"] if isinstance(result, dict) and "train" in result else result)
 
         return self.input
 

@@ -13,7 +13,7 @@ def download() -> None
 
 ## 說明
 
-`download()` 方法負責從 AWS S3 儲存區下載指定的基準資料集，並儲存到本地 `benchmark/` 目錄。下載過程包含完整性驗證。
+`download()` 方法負責從 PETsARD GitHub repository 之 `benchmark-datasets-v1` Release 下載指定的基準資料集，並儲存到本地 `benchmark/` 目錄。下載過程包含完整性驗證。
 
 ## 返回值
 
@@ -39,7 +39,7 @@ downloader.download()
 
 1. **檢查本地快取**：檢查 `benchmark/` 目錄是否已存在該資料集
 2. **建立目錄**：若不存在，建立 `benchmark/` 目錄
-3. **下載資料**：從 AWS S3 下載資料集
+3. **下載資料**：從 GitHub Release `benchmark-datasets-v1` 下載資料集
 4. **驗證完整性**：使用 SHA256 驗證下載的資料
 5. **儲存檔案**：將資料儲存到本地
 

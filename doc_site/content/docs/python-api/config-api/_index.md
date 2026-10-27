@@ -12,7 +12,7 @@ Config is PETsARD's internal configuration management class, responsible for par
 
 ## Class Architecture
 
-{{< mermaid-file="config-class-diagram.mmd" >}}
+{{< mermaid-file file="content/docs/python-api/config-api/config-class-diagram.mmd" >}}
 
 ## Basic Usage
 

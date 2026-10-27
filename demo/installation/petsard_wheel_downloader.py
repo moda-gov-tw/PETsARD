@@ -34,11 +34,27 @@ def run_command(cmd, cwd=None):
     """Execute a system command and return the result."""
     try:
         result = subprocess.run(
-            cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=True
+            cmd, cwd=cwd, capture_output=True, text=True, check=True
         )
         return result.stdout.strip(), result.stderr.strip(), 0
     except subprocess.CalledProcessError as e:
         return e.stdout, e.stderr, e.returncode
+    except OSError as e:
+        # Command not found (a shell would return exit code 127)
+        return "", str(e), 127
+
+
+def read_pyproject_version(repo_dir):
+    """Return the value of the first line starting with 'version = ' in pyproject.toml."""
+    try:
+        with open(os.path.join(repo_dir, "pyproject.toml"), encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("version = "):
+                    parts = line.rstrip("\r\n").split('"')
+                    return parts[1] if len(parts) > 1 else parts[0]
+    except OSError:
+        pass
+    return ""
 
 
 def get_platform_info(os_type):
@@ -76,7 +92,16 @@ def get_git_info(branch):
         repo_dir = os.path.join(temp_dir, "petsard")
 
         # Clone repository
-        clone_cmd = f"git clone --depth 1 --branch {branch} https://github.com/nics-tw/petsard.git {repo_dir}"
+        clone_cmd = [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "--branch",
+            branch,
+            "https://github.com/moda-gov-tw/PETsARD.git",
+            repo_dir,
+        ]
         stdout, stderr, code = run_command(clone_cmd)
 
         if code != 0:
@@ -84,16 +109,15 @@ def get_git_info(branch):
             raise RuntimeError(f"Git clone failed: {stderr}")
 
         # Get commit hash
-        hash_cmd = "git rev-parse HEAD"
+        hash_cmd = ["git", "rev-parse", "HEAD"]
         commit_hash, _, _ = run_command(hash_cmd, cwd=repo_dir)
 
         # Get commit date
-        date_cmd = "git log -1 --format=%ci"
+        date_cmd = ["git", "log", "-1", "--format=%ci"]
         commit_date, _, _ = run_command(date_cmd, cwd=repo_dir)
 
         # Get PETsARD version from pyproject.toml
-        version_cmd = "grep '^version = ' pyproject.toml | cut -d'\"' -f2"
-        version, _, _ = run_command(version_cmd, cwd=repo_dir)
+        version = read_pyproject_version(repo_dir)
 
         return {
             "commit_hash": commit_hash,
@@ -304,7 +328,7 @@ def write_log(
             f.write("No packages were downloaded.\n")
 
         f.write("\n=== Git Information ===\n")
-        f.write("Repository: https://github.com/nics-tw/petsard.git\n")
+        f.write("Repository: https://github.com/moda-gov-tw/PETsARD.git\n")
         f.write(f"Branch: {branch}\n")
         f.write(f"Latest Commit: {git_info['commit_hash']}\n")
         f.write(f"Commit Date: {git_info['commit_date']}\n")

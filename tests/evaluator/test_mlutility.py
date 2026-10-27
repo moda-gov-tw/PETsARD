@@ -12,6 +12,7 @@ from petsard.evaluator.mlutility import (
     MLUtilityConfig,
     TaskType,
 )
+from petsard.exceptions import ConfigError
 
 
 class TestTaskType(unittest.TestCase):
@@ -548,33 +549,6 @@ class TestMLUtilityV2(unittest.TestCase):
 
     def test_resampling_smote_enn(self):
         """測試 SMOTE-ENN 不平衡處理 - 只測試配置，不實際執行."""
-        # 建立不平衡資料
-        n_majority = 90
-        n_minority = 10
-        imbalanced_data = {
-            "ori": pd.DataFrame(
-                {
-                    "feature1": np.random.randn(n_majority + n_minority),
-                    "feature2": np.random.randn(n_majority + n_minority),
-                    "label": [0] * n_majority + [1] * n_minority,
-                }
-            ),
-            "syn": pd.DataFrame(
-                {
-                    "feature1": np.random.randn(n_majority + n_minority),
-                    "feature2": np.random.randn(n_majority + n_minority),
-                    "label": [0] * n_majority + [1] * n_minority,
-                }
-            ),
-            "control": pd.DataFrame(
-                {
-                    "feature1": np.random.randn(50),
-                    "feature2": np.random.randn(50),
-                    "label": np.random.choice([0, 1], 50),
-                }
-            ),
-        }
-
         config = {
             "eval_method": "mlutility-classification",
             "target": "label",
@@ -604,7 +578,7 @@ class TestMLUtilityV2(unittest.TestCase):
 
         evaluator = MLUtility(config=config)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ConfigError):
             evaluator.eval(empty_data)
 
     def test_missing_target_column(self):

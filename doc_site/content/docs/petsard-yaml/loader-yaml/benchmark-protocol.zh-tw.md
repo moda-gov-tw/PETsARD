@@ -3,7 +3,7 @@ title: "benchmark://"
 type: docs
 weight: 621
 prev: docs/petsard-yaml/loader-yaml
-next: docs/petsard-yaml/loader-yaml
+next: docs/petsard-yaml/loader-yaml/json-format
 ---
 
 Loader 支援使用 `benchmark://` 協議自動下載並載入基準資料集。
@@ -12,8 +12,8 @@ Loader 支援使用 `benchmark://` 協議自動下載並載入基準資料集。
 
 請點擊下方按鈕在 Colab 中執行範例：
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nics-tw/petsard/blob/main/demo/petsard-yaml/loader-yaml/benchmark-protocol.ipynb)
-> **注意**：使用 Colab 請參考[執行環境設定](/petsard/docs/#colab-執行說明)。
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/moda-gov-tw/PETsARD/blob/main/demo/petsard-yaml/loader-yaml/benchmark-protocol.ipynb)
+> **注意**：使用 Colab 請參考[執行環境設定](/PETsARD/zh-tw/docs/#colab-執行說明)。
 
 ### 載入基準資料集
 
@@ -68,10 +68,22 @@ Loader:
 | Multi-timestamp | `benchmark://best-practices_multi-table` | 多時間戳範例資料 |
 | Categorical & High-cardinality | `benchmark://best-practices_categorical_high-cardinality` | 類別型與高基數範例資料 |
 
+### JSON與文字範例資料集
+
+| 資料集名稱 | 協議路徑 | 說明 |
+|-----------|---------|------|
+| Adult Income (JSON) | `benchmark://adult-income-json` | Adult Income資料集轉為JSON紀錄陣列(48,842筆，15欄位) |
+| Customer Churn | `benchmark://customer-churn` | 示範用途產生之客戶流失資料，JSON格式(1,200筆，10欄位) |
+| TW Salary | `benchmark://tw-salary` | 欄位名稱與內容皆為繁體中文之薪資資料，JSON格式(2,000筆，8欄位) |
+| Test JSON Data | `benchmark://test-json-data` | AdvGAN範例使用之小型JSON資料(30筆，6欄位) |
+| Blood Pressure Text | `benchmark://bloodpressure-text` | 血壓問診文字，每列1句中文，供LLM文字合成器使用(101筆，單一`text`欄位) |
+
+不經下載使用上述資料集時(例如離線環境)，將檔案放在工作目錄之`./benchmark/<檔名>`，Loader載入時以`petsard/loader/benchmark_datasets.yaml`記錄之SHA-256驗證後即使用本地檔案。檔名為`adult-income.json`(`adult-income-json`)、`customer_churn.json`(`customer-churn`)、`tw_salary.json`(`tw-salary`)、`test_json_data.json`(`test-json-data`)及`real_bloodpressure2.csv`(`bloodpressure-text`)。
+
 ## 工作原理
 
 1. **協議偵測**：Loader 偵測到 `benchmark://` 協議
-2. **自動下載**：從 AWS S3 儲存區下載資料集
+2. **自動下載**：從 PETsARD GitHub repository 之 `benchmark-datasets-v1` Release 下載資料集
 3. **驗證檢查**：使用 SHA256 驗證資料完整性
 4. **本地快取**：資料儲存在 `benchmark/` 目錄
 5. **載入資料**：使用本地路徑載入資料
@@ -92,3 +104,4 @@ Loader:
 - 大型資料集下載可能需要較長時間
 - 協議名稱不區分大小寫（但建議使用小寫）
 - 所有資料集都經過 SHA256 驗證確保完整性
+- 放在`./benchmark/<檔名>`且SHA256與登記值相符之檔案，直接使用而不重新下載

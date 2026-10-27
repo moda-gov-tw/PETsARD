@@ -8,7 +8,7 @@ Executor is PETsARD's core orchestration module, responsible for parsing configu
 
 ## Class Architecture
 
-{{< mermaid-file="executor-class-diagram.mmd" >}}
+{{< mermaid-file file="content/docs/python-api/executor-api/executor-class-diagram.mmd" >}}
 
 ## Basic Usage
 

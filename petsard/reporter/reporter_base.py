@@ -210,7 +210,8 @@ class ExperimentConfig:
             "parameters": self.parameters,
         }
         content_str = json.dumps(content, sort_keys=True)
-        return hashlib.md5(content_str.encode()).hexdigest()[:8]
+        # Short naming identifier: first 8 hex characters of the SHA-256 digest
+        return hashlib.sha256(content_str.encode()).hexdigest()[:8]
 
     def with_granularity(self, granularity: str) -> "ExperimentConfig":
         """Create new configuration with specified granularity"""
@@ -407,6 +408,10 @@ class BaseReporter(ABC):
             raise ConfigError
         if not isinstance(self.config.get("output"), str) or not self.config["output"]:
             self.config["output"] = ConfigDefaults.DEFAULT_OUTPUT_PREFIX
+        if "type" in self.config and self.config.get("type").lower() == "json":
+            self.type = "json"
+        else:
+            self.type = "csv"
 
     @abstractmethod
     def create(self, data: dict) -> Any:
@@ -633,4 +638,7 @@ class BaseReporter(ABC):
 
         logger = logging.getLogger("PETsARD.reporter_base")
         logger.info(f"Saving report to {full_output}.csv")
-        data.to_csv(path_or_buf=f"{full_output}.csv", index=False, encoding="utf-8")
+        if self.type == "json":
+            data.to_json(path_or_buf=f"{full_output}.json", orient="records", force_ascii=False, indent=4)
+        else:
+            data.to_csv(path_or_buf=f"{full_output}.csv", index=False, encoding="utf-8")

@@ -10,7 +10,7 @@ For detailed API documentation, tutorials, and best practices, please refer to:
 
 如需詳細的 API 文件、教學指南和最佳實務，請參考：
 
-- **📖 [PETsARD Documentation / 文件網站](https://nics-tw.github.io/petsard/)**
+- **📖 [PETsARD Documentation / 文件網站](https://moda-gov-tw.github.io/PETsARD/)**
 
 ## 🗂️ Demo Categories / Demo 分類
 
@@ -46,7 +46,7 @@ from pathlib import Path
 # Load demo_utils and import quick_setup / 載入 demo_utils 並導入 quick_setup
 if "COLAB_GPU" in os.environ:
     import urllib.request
-    demo_utils_url = "https://raw.githubusercontent.com/nics-tw/petsard/main/demo/demo_utils.py"
+    demo_utils_url = "https://raw.githubusercontent.com/moda-gov-tw/PETsARD/main/demo/demo_utils.py"
     exec(urllib.request.urlopen(demo_utils_url).read().decode('utf-8'))
 else:
     # Local: search upward for demo_utils.py / 本地：向上搜尋 demo_utils.py
@@ -83,10 +83,10 @@ is_colab, branch, yaml_path = quick_setup(
 
 ## 🔗 Related Links / 相關連結
 
-- **Documentation / 文件網站**: [https://nics-tw.github.io/petsard/](https://nics-tw.github.io/petsard/)
-- **GitHub Repository**: [https://github.com/nics-tw/petsard](https://github.com/nics-tw/petsard)
-- **API Reference / API 文件**: [API Documentation](https://nics-tw.github.io/petsard/docs/api/)
-- **Tutorials / 教學文件**: [Tutorial Documentation](https://nics-tw.github.io/petsard/docs/tutorial/)
+- **Documentation / 文件網站**: [https://moda-gov-tw.github.io/PETsARD/](https://moda-gov-tw.github.io/PETsARD/)
+- **GitHub Repository**: [https://github.com/moda-gov-tw/PETsARD](https://github.com/moda-gov-tw/PETsARD)
+- **API Reference / API 文件**: [API Documentation](https://moda-gov-tw.github.io/PETsARD/docs/api/)
+- **Tutorials / 教學文件**: [Tutorial Documentation](https://moda-gov-tw.github.io/PETsARD/docs/tutorial/)
 
 ## 📝 Contributing / 貢獻
 

@@ -62,7 +62,6 @@ secrets.yaml
 .roo/cache/
 
 # Docker 相關 Docker related
-.dockerignore
 docker-compose.override.yml
 
 # 文件生成 Documentation generation
@@ -89,3 +88,62 @@ $RECYCLE.BIN/
 # VSCode
 **/.vscode
 **/*.code-workspace
+
+###### 授權資料、執行輸出與敏感檔 Licensed data, outputs and secrets ######
+
+# 本地資料、授權資料集與交接資料夾 Local data, licensed datasets and hand-off folders
+**/*授權資料*/
+**/*IRB*/
+
+# 執行輸出 Run outputs
+demo_*/output/*
+!demo_*/output/.gitkeep
+/petsard_*.csv
+# Reporter 以 type: json 寫出之結果(檔名以 ] 結尾，例如 advgan_Reporter[global].json) Reporter JSON outputs (names end with "]")
+**/*].json
+# 測試時 Executor 寫出之紀錄 Executor logs written by the tests
+/test_logs/
+
+# LLM文字合成器之中間產物與呼叫紀錄 LLM synthesizer intermediates and call logs
+**/LOG_FILES/
+**/llm_synth_output/
+**/prompt_generation.jsonl
+**/*.jsonl
+**/checkpoint*.csv
+**/checkpoint*.json
+**/checkpoints/
+**/*.ckpt
+
+# 模型與序列化檔 Models and serialized objects
+**/*.pkl
+**/*.pickle
+**/*.joblib
+**/*.cbm
+**/*.pt
+**/*.pth
+**/*.safetensors
+**/*.h5
+**/*.parquet
+**/*.feather
+**/*.nbi
+**/*.nbc
+
+# 本機敏感檔 Local secret files
+**/.env
+**/.env.*
+!**/.env.example
+**/*secret*
+**/*Secret*
+**/*SECRET*
+!.secrets.baseline
+**/*credential*
+**/*.p12
+**/*.pfx
+**/id_rsa*
+**/id_ed25519*
+
+# 暫存與壓縮檔 Scratch files and archives
+**/Untitled*
+*.zip
+*.7z
+*.rar

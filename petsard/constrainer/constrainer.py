@@ -4,11 +4,13 @@ import warnings
 import pandas as pd
 
 from petsard.constrainer.constrainer_base import BaseConstrainer
-from petsard.constrainer.field_combination_constrainer import \
-    FieldCombinationConstrainer
+from petsard.constrainer.field_combination_constrainer import (
+    FieldCombinationConstrainer,
+)
 from petsard.constrainer.field_constrainer import FieldConstrainer
-from petsard.constrainer.field_proportions_constrainer import \
-    FieldProportionsConstrainer
+from petsard.constrainer.field_proportions_constrainer import (
+    FieldProportionsConstrainer,
+)
 from petsard.constrainer.nan_group_constrainer import NaNGroupConstrainer
 
 

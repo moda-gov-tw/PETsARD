@@ -22,6 +22,11 @@ from petsard.synthesizer.synthesizer_base import BaseSynthesizer
 # This allows PETsARD to function without SDV installed
 _SDVSingleTableSynthesizer = None
 
+# Lazy import for AdvGAN, which needs Opacus (extra "advgan")
+# This allows PETsARD to function without Opacus installed
+_AdvGANSynthesizer = None
+ADVGAN_INSTALL_COMMAND = "pip install 'petsard[advgan]'"
+
 
 class SynthesizerMap:
     """
@@ -32,6 +37,7 @@ class SynthesizerMap:
     SDV: int = 10
     CUSTOM_METHOD: int = 3
     PETSARD: int = 4
+    ADVGAN: int = 5
 
     @classmethod
     def map(cls, method: str) -> int:
@@ -93,6 +99,10 @@ class SynthesizerConfig(BaseConfig):
         if self.method_code == SynthesizerMap.SDV:
             self._check_sdv_availability()
 
+        # Check if Opacus is required and available
+        if self.method_code == SynthesizerMap.ADVGAN:
+            self._check_advgan_availability()
+
         # Set the default
         self.syn_method: str = (
             self.DEFAULT_SYNTHESIS_METHOD
@@ -127,6 +137,30 @@ class SynthesizerConfig(BaseConfig):
                 method=self.method,
             ) from None
 
+    def _check_advgan_availability(self) -> None:
+        """
+        Check if Opacus is available when the AdvGAN synthesizer is selected.
+
+        Raises:
+            MissingDependencyError: If Opacus is not installed but required by AdvGAN.
+        """
+        try:
+            import opacus  # noqa: F401
+
+            self._logger.debug("Opacus package is available")
+        except ImportError:
+            error_msg = (
+                f"The Opacus package is required for method '{self.method}' but is not installed. "
+                "Opacus is an optional dependency installed with the 'advgan' extra."
+            )
+            self._logger.error(error_msg)
+            raise MissingDependencyError(
+                message=error_msg,
+                package_name="opacus",
+                install_command=ADVGAN_INSTALL_COMMAND,
+                method=self.method,
+            ) from None
+
 
 class Synthesizer:
     """
@@ -134,13 +168,14 @@ class Synthesizer:
     as well as generating synthetic data based on the fitted model.
     """
 
-    # Note: SDV synthesizer is loaded lazily in create() method
-    # to avoid ImportError when sdv is not installed
+    # Note: SDV and AdvGAN synthesizers are loaded lazily in create() method
+    # to avoid ImportError when sdv or opacus is not installed
     SYNTHESIZER_MAP: dict[int, BaseSynthesizer] = {
         SynthesizerMap.DEFAULT: PetsardGaussianCopulaSynthesizer,  # Default to built-in synthesizer
         SynthesizerMap.SDV: None,  # Lazy-loaded SDVSingleTableSynthesizer
         SynthesizerMap.CUSTOM_METHOD: CustomSynthesizer,
         SynthesizerMap.PETSARD: PetsardGaussianCopulaSynthesizer,
+        SynthesizerMap.ADVGAN: None,  # Lazy-loaded AdvGANSynthesizer
     }
 
     def __init__(self, method: str, sample_num_rows: int = None, **kwargs) -> None:
@@ -395,7 +430,7 @@ class Synthesizer:
     def _get_synthesizer_class(self, method_code: int) -> BaseSynthesizer:
         """
         Get the synthesizer class for the given method code.
-        Lazy loads SDV synthesizer if needed.
+        Lazy loads the SDV and AdvGAN synthesizers if needed.
 
         Args:
             method_code (int): The synthesizer method code.
@@ -403,9 +438,28 @@ class Synthesizer:
         Returns:
             BaseSynthesizer: The synthesizer class.
         """
-        global _SDVSingleTableSynthesizer
+        global _SDVSingleTableSynthesizer, _AdvGANSynthesizer
 
         synthesizer_class = self.SYNTHESIZER_MAP.get(method_code)
+
+        if synthesizer_class is None and method_code == SynthesizerMap.ADVGAN:
+            if _AdvGANSynthesizer is None:
+                self._logger.debug("Lazy loading AdvGAN synthesizer")
+                try:
+                    from petsard.synthesizer.DP_AdvGAN import AdvGANSynthesizer
+
+                    _AdvGANSynthesizer = AdvGANSynthesizer
+                    self._logger.debug("AdvGAN synthesizer loaded successfully")
+                except ImportError as e:
+                    # This should not happen as we check in __post_init__
+                    error_msg = f"Failed to import AdvGAN synthesizer: {e}"
+                    self._logger.error(error_msg)
+                    raise MissingDependencyError(
+                        message=error_msg,
+                        package_name="opacus",
+                        install_command=ADVGAN_INSTALL_COMMAND,
+                    ) from e
+            return _AdvGANSynthesizer
 
         # If it's None, it's SDV which needs lazy loading
         if synthesizer_class is None and method_code == SynthesizerMap.SDV:

@@ -1,0 +1,31 @@
+---
+Loader:
+  load_csv:
+    filepath: benchmark://adult-income-json
+Preprocessor:
+  demo:
+    method: 'default'
+Synthesizer:
+  demo:
+    #method: custom_method
+    #module_path: AdvGAN.py
+    #class_name: AdvGANSynthesizer
+    #method: 'sdv-single_table-ctgan' # sdv-single_table-gaussiancopula
+    #method: 'default'
+    method: 'AdvGAN'
+    sigma: 1.0
+    outlier: 10
+    # 48,842 rows are trained in batches of 2 (about 24k batches per epoch), so one
+    # epoch takes several minutes on a CPU. Raise epochs toward the default 200 for
+    # full training, which takes many hours on this file.
+    epochs: 1
+    sample_num_rows: 1000   # number of synthetic records to generate
+Postprocessor:
+  demo:
+    method: 'default'
+Reporter:
+  save_data:
+    method: 'save_data'
+    source: 'Postprocessor'
+    type: 'json'
+...

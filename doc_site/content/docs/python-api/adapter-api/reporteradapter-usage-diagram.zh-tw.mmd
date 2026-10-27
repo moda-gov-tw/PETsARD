@@ -4,7 +4,7 @@ graph TB
         Config[ReporterConfig<br/>配置類別]
     end
 
-    subgraph Reporter["Reporter 模組"]
+    subgraph ReporterModule["Reporter 模組"]
         Reporter[Reporter<br/>工廠類別]
         SaveData[ReporterSaveData]
         SaveReport[ReporterSaveReport]
@@ -13,7 +13,7 @@ graph TB
     end
 
     RA --> Config
-    RA ..> Reporter
+    RA -.-> Reporter
     Reporter --> SaveData
     Reporter --> SaveReport
     Reporter --> SaveTiming

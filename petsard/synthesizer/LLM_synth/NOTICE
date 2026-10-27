@@ -1,0 +1,57 @@
+PETsARD LLM synthesizer (petsard/synthesizer/LLM_synth)
+=======================================================
+
+This directory contains software adapted from Aug-PE.
+
+  Project   Aug-PE: "Differentially Private Synthetic Data via Foundation
+            Model APIs 2: Text" (Chulin Xie et al., ICML 2024)
+  Source    https://github.com/AI-secure/aug-pe
+  Revision  commit a3f292f6fec7427b6a6e6d982b83b68c1f0a86d5 (main branch,
+            last commit 2025-01-11), the revision against which the files
+            below were compared on 2026-10-21
+  License   Apache License, Version 2.0 (full text in
+            LICENSE-APACHE-2.0.txt in this directory)
+
+Aug-PE builds on the Private Evolution implementation of microsoft/DPSDA
+(https://github.com/microsoft/DPSDA, MIT License, Copyright (c) Microsoft
+Corporation), as acknowledged in the Aug-PE repository.
+
+Files adapted from Aug-PE and modified by NTUST (National Taiwan University
+of Science and Technology) in 2026
+-------------------------------------------------------------------------
+
+  synthetic_data/dpsda/dp_counter.py    from dpsda/dp_counter.py
+      CPU faiss index for Windows compatibility, float32 inputs to faiss,
+      comments describing the direction of the nearest-neighbour vote.
+
+  synthetic_data/dpsda/logging.py       from dpsda/logging.py
+      UTF-8 console and file logging, sample ids in the prompt log, CSV
+      sample logging with header handling and a quoting fallback, the
+      Checkpoint class for resumable runs; optional wandb logging removed.
+
+  synthetic_data/feature_extractor.py   from dpsda/feature_extractor.py
+      reuse of an already loaded SentenceTransformer model, checks for
+      empty input and empty batches, the model returned to the caller.
+
+  synthetic_data/main.py                Private Evolution steps (main.py)
+      rewritten and extended as the SyntheticDataGenerator class used by
+      the PETsARD synthesizer interface (LLM API adapters, agents,
+      checkpoints and multithreaded generation).
+
+Each of these files carries a header that names its Aug-PE origin and the
+NTUST modification.
+
+Reimplemented file
+------------------
+
+  synthetic_data/dpsda/metrics.py
+      Original implementation written by NTUST in 2026 from the published
+      definitions of the Frechet distance (FID; Heusel et al., NeurIPS 2017)
+      and of k-NN precision and recall (Kynkaanniemi et al., NeurIPS 2019).
+      It keeps the function names and signatures of Aug-PE dpsda/metrics.py
+      (calculate_fid, knn_precision_recall_features) so that the calling
+      code is unchanged, and is distributed under the MIT License of
+      PETsARD (LICENSE at the repository root).
+
+The rest of PETsARD is distributed under the MIT License; see LICENSE and
+THIRD_PARTY_NOTICES.md at the repository root.
