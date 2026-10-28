@@ -111,7 +111,7 @@ load-benchmark = [
 # 隱私風險評估功能
 eval = [
     {include-group = "base-common"},
-    "anonymeter>=1.0.0,<1.1",   # Privacy risk evaluation; 1.1 fails on missing values / 隱私風險評估；1.1 版遇缺值會出錯
+    "anonymeter>=1.0.0,<1.2",   # Privacy risk evaluation; 1.1 fails on missing values / 隱私風險評估；1.1 版遇缺值會出錯
     "sdmetrics>=0.23.0,<1",   # Synthetic data quality metrics / 合成資料品質指標
     "xgboost>=3.0.5",         # Utility evaluation / 實用性評估
     "imbalanced-learn>=0.14.0", # Imbalanced data handling / 不平衡資料處理
@@ -225,7 +225,7 @@ all = [
     # load-benchmark
     "requests>=2.33.0,<3",
     # eval
-    "anonymeter>=1.0.0,<1.1",
+    "anonymeter>=1.0.0,<1.2",
     "sdmetrics>=0.23.0,<1",
     "xgboost>=3.0.5",
     "imbalanced-learn>=0.14.0",
