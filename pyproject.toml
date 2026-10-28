@@ -87,7 +87,7 @@ dev = [
 # Common base dependencies shared across multiple groups
 # 多個群組共用的基礎依賴
 base-common = [
-    "numpy>=1.26.4,<2",
+    "numpy>=1.26.4,<3",
     "pytz>=2025.2",
     "tzdata>=2025.2",
 ]
@@ -215,7 +215,7 @@ ds = [
 all = [
     # Core dependencies from dependency-groups / 來自 dependency-groups 的核心依賴
     # base-common
-    "numpy>=1.26.4,<2",
+    "numpy>=1.26.4,<3",
     "pytz>=2025.2",
     "tzdata>=2025.2",
     # exec
