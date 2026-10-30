@@ -20,10 +20,10 @@ next: docs/installation/package-predownload
 
 ```bash
 # 拉取最新版本（如已完成可跳過）
-docker pull ghcr.io/nics-dp/petsard:latest
+docker pull ghcr.io/moda-gov-tw/petsard:latest
 
 # 匯出映像為檔案
-docker save ghcr.io/nics-dp/petsard:latest -o petsard-latest.tar
+docker save ghcr.io/moda-gov-tw/petsard:latest -o petsard-latest.tar
 ```
 
 ### 方式 B：建置並匯出映像

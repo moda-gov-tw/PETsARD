@@ -16,12 +16,12 @@ PETsARD provides pre-built Docker containers, allowing you to use it without loc
 
 ```bash
 # Pull the latest version
-docker pull ghcr.io/nics-dp/petsard:latest
+docker pull ghcr.io/moda-gov-tw/petsard:latest
 
 # Run interactive container
-docker run -it --rm ghcr.io/nics-dp/petsard:latest
+docker run -it --rm ghcr.io/moda-gov-tw/petsard:latest
 ```
 
 **Available Tags:**
-- `latest` - Latest stable version (from main branch)
-- `dev` - Development version (from dev branch)
+- `latest`, `main` - Latest version (from main branch)
+- Version tags (e.g. `v1.10.1`, `v1.10`, `v1`) - Released versions, published when a version tag is pushed

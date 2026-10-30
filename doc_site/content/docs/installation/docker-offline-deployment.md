@@ -20,10 +20,10 @@ First pull the pre-built image (see [Docker Prebuilt](../docker-prebuilt) for de
 
 ```bash
 # Pull the latest version (skip if already done)
-docker pull ghcr.io/nics-dp/petsard:latest
+docker pull ghcr.io/moda-gov-tw/petsard:latest
 
 # Export image to file
-docker save ghcr.io/nics-dp/petsard:latest -o petsard-latest.tar
+docker save ghcr.io/moda-gov-tw/petsard:latest -o petsard-latest.tar
 ```
 
 ### Method B: Build and Export Image

@@ -16,12 +16,12 @@ PETsARD 提供預先建置的 Docker 容器，無需本地 Python 環境設定�
 
 ```bash
 # 拉取最新版本
-docker pull ghcr.io/nics-dp/petsard:latest
+docker pull ghcr.io/moda-gov-tw/petsard:latest
 
 # 運行互動式容器
-docker run -it --rm ghcr.io/nics-dp/petsard:latest
+docker run -it --rm ghcr.io/moda-gov-tw/petsard:latest
 ```
 
 **可用標籤：**
-- `latest` - 最新穩定版本（來自 main 分支）
-- `dev` - 開發版本（來自 dev 分支）
+- `latest`、`main` - 最新版本（來自 main 分支）
+- 版本標籤（例如 `v1.10.1`、`v1.10`、`v1`）- 正式發布版本，於推送版本標籤時產生

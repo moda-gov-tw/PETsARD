@@ -183,13 +183,13 @@ Synthesizer:
 
 ```bash
 # macOS/Linux(bash、zsh)
-docker run -it --rm -v "$(pwd)":/workspace -w /workspace ghcr.io/nics-dp/petsard:latest bash
+docker run -it --rm -v "$(pwd)":/workspace -w /workspace ghcr.io/moda-gov-tw/petsard:latest bash
 
 # Windows PowerShell
-docker run -it --rm -v "${PWD}:/workspace" -w /workspace ghcr.io/nics-dp/petsard:latest bash
+docker run -it --rm -v "${PWD}:/workspace" -w /workspace ghcr.io/moda-gov-tw/petsard:latest bash
 ```
 
-進入容器後，於`/workspace`執行步驟4的安裝指令。容器內`localhost`指向容器本身，連線主機的LM Studio時依下列方式設定：
+映像檔已安裝步驟4的`all`、`advgan`、`llm`套件群組，進入容器後不需再執行安裝指令；`/workspace`為掛載的原始碼根目錄，PETsARD即自該目錄載入。容器內`localhost`指向容器本身，連線主機的LM Studio時依下列方式設定：
 
 1. 於LM Studio的**Developer**頁面開啟**Serve on Local Network**。
 2. 於YAML的Synthesizer區塊設定`api_url: "http://host.docker.internal:1234/v1"`。

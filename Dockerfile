@@ -25,14 +25,14 @@ COPY .release/docker/entrypoint.sh ./
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 # RUN pip install --no-cache-dir -e .
-# Install the versions locked in uv.lock, then reinstall the CUDA 13 NCCL used by torch
-# 依 uv.lock 鎖定的版本安裝，再重新安裝 torch 使用的 CUDA 13 版 NCCL
+# Install the versions locked in uv.lock (group all plus the advgan and llm extras), then reinstall the CUDA 13 NCCL used by torch
+# 依 uv.lock 鎖定的版本安裝(all 群組及 advgan、llm 擴充套件)，再重新安裝 torch 使用的 CUDA 13 版 NCCL
 RUN pip install --no-cache-dir uv==0.13.5 \
-	&& uv export --frozen --only-group ds --no-hashes --no-emit-project -o /tmp/constraints.txt \
-	&& pip install --no-cache-dir -c /tmp/constraints.txt --group ds \
-	&& pip install --no-cache-dir --no-deps --force-reinstall -c /tmp/constraints.txt nvidia-nccl-cu13 \
+	&& uv export --frozen --no-dev --group all --extra advgan --extra llm --no-hashes --no-emit-project -o /tmp/requirements.txt \
+	&& pip install --no-cache-dir -r /tmp/requirements.txt \
+	&& pip install --no-cache-dir --no-deps --force-reinstall -c /tmp/requirements.txt nvidia-nccl-cu13 \
 	&& pip uninstall -y uv \
-	&& rm /tmp/constraints.txt # petsard default + jupyter
+	&& rm /tmp/requirements.txt # petsard default + jupyter + Excel + AdvGAN + LLM
 
 # Create necessary directories for Jupyter
 # 為 Jupyter 創建必要的目錄

@@ -1,0 +1,104 @@
+# 建置並發布Docker映像檔至GitHub Container Registry(ghcr.io/moda-gov-tw/petsard)
+# Build and publish the Docker image to GitHub Container Registry (ghcr.io/moda-gov-tw/petsard)
+# 推送至main時更新main及latest標籤；推送版本標籤(例如v1.10.1)時另產生v1.10.1、v1.10、v1標籤
+# Pushes to main update the main and latest tags; pushing a version tag (e.g. v1.10.1) also produces v1.10.1, v1.10 and v1
+# 僅修改文件網站(doc_site)時不重新建置；路徑過濾不適用於版本標籤
+# Changes to the documentation site (doc_site) alone do not trigger a build; path filters do not apply to version tags
+# 首次發布後，須由組織管理員於套件設定(Package settings)將可見度改為Public，使用者方可匿名docker pull
+# After the first publish, an organization admin must set the package visibility to Public in Package settings
+# so that users can docker pull without logging in
+# 所有actions均以完整commit SHA鎖定，版本標示於行尾註解；更新由Dependabot提出
+# All actions are pinned by full commit SHA, with the version in the trailing comment; Dependabot proposes updates
+name: Publish Docker Image
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*.*.*"]
+    paths-ignore:
+      - "doc_site/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  # ghcr.io的映像檔名稱須為小寫 Image names on ghcr.io must be lowercase
+  IMAGE_NAME: moda-gov-tw/petsard
+
+jobs:
+  build:
+    name: Build and publish image
+    runs-on: ubuntu-latest
+    if: github.repository == 'moda-gov-tw/PETsARD'
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      # 含CUDA的torch套件需額外磁碟空間 torch with CUDA needs extra disk space
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@3f13feab2962a87273d379ebc36ea159527e6cc9 # v1.3.2
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags)
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{raw}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
+          flavor: |
+            latest=false
+
+      - name: Build and push image
+        id: build-and-push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          # 映像檔標籤(label)以Dockerfile為準，僅帶入建置時間與commit
+          # Image labels come from the Dockerfile; only the build time and commit are passed in
+          build-args: |
+            BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VCS_REF=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate build provenance attestation
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          push-to-registry: true

@@ -183,13 +183,13 @@ The extended features can also run inside the official PETsARD image, with the s
 
 ```bash
 # macOS / Linux (bash, zsh)
-docker run -it --rm -v "$(pwd)":/workspace -w /workspace ghcr.io/nics-dp/petsard:latest bash
+docker run -it --rm -v "$(pwd)":/workspace -w /workspace ghcr.io/moda-gov-tw/petsard:latest bash
 
 # Windows PowerShell
-docker run -it --rm -v "${PWD}:/workspace" -w /workspace ghcr.io/nics-dp/petsard:latest bash
+docker run -it --rm -v "${PWD}:/workspace" -w /workspace ghcr.io/moda-gov-tw/petsard:latest bash
 ```
 
-Inside the container, run the commands of Step 4 in `/workspace`. Within a container, `localhost` refers to the container itself; to reach LM Studio on the host:
+The image already includes the `all`, `advgan` and `llm` packages of Step 4, so no installation is needed inside the container; PETsARD is loaded from the mounted source root `/workspace`. Within a container, `localhost` refers to the container itself; to reach LM Studio on the host:
 
 1. Turn on **Serve on Local Network** on the **Developer** page of LM Studio.
 2. Set `api_url: "http://host.docker.internal:1234/v1"` in the Synthesizer block.

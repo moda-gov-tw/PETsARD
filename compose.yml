@@ -1,6 +1,6 @@
 services:
   petsard:
-    image: ghcr.io/nics-dp/petsard:main
+    image: ghcr.io/moda-gov-tw/petsard:main
     # Always build from this repository's Dockerfile (`docker compose up` or `docker compose build`);
     # pull_policy: build stops Compose from pulling the prebuilt image named above
     build: .
