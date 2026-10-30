@@ -283,7 +283,7 @@ llm = [
     "tiktoken>=0.5.0,<1",
     "tqdm>=4.66.3,<5",
     "openai>=1.30.0,<4",
-    "anthropic>=0.25.0,<2",
+    "anthropic>=0.25.0,<3",
     "google-genai>=1.0.0,<3",
 ]
 
