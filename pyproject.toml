@@ -163,6 +163,7 @@ jupyter = [
     "ipython-pygments-lexers>=1.1.1,<2 ; python_version >= '3.11'",
     "prompt-toolkit>=3.0.52,<4",
     "psutil>=7.0.0,<8",
+    "tornado>=6.6,<7 ; python_full_version >= '3.11'",       # Jupyter server; 6.6 fixes CVE-2026-115927/116577/116578 / Jupyter 伺服器元件，6.6 修正上述弱點
 ]
 
 # Excel file support

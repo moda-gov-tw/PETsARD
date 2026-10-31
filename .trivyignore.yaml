@@ -1,3 +1,30 @@
 # Vulnerabilities assessed as not affecting PETsARD, each with a statement and an expiry date
 # 經評估不影響 PETsARD 之弱點，每筆載明評估說明與到期日
-vulnerabilities: []
+vulnerabilities:
+  # filelock 3.20.3 is pinned for Python 3.10 (torch, huggingface-hub); fixed in 4.2.1, which requires Python 3.11; Python 3.11 resolves 4.2.4
+  - id: CVE-2026-112909
+    purls:
+      - "pkg:pypi/filelock@3.20.3"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
+  - id: CVE-2026-112910
+    purls:
+      - "pkg:pypi/filelock@3.20.3"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
+  # tornado 6.5.10 is the Jupyter server for Python 3.10; fixed in 6.6, which requires Python 3.11; Python 3.11 resolves 6.6
+  - id: CVE-2026-115927
+    purls:
+      - "pkg:pypi/tornado@6.5.10"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
+  - id: CVE-2026-116577
+    purls:
+      - "pkg:pypi/tornado@6.5.10"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
+  - id: CVE-2026-116578
+    purls:
+      - "pkg:pypi/tornado@6.5.10"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
