@@ -98,7 +98,7 @@ exec = [
     "pandas>=2.3.2,<3",   # Data manipulation and analysis / 資料操作與分析
     "pyyaml>=6.0.2,<7",   # YAML configuration file support / YAML 配置檔支援
     # pandas additional dependencies
-    "python-dateutil>=2.9.0.post0,<3",
+    "python-dateutil>=2.9.0.post0,<4",
 ]
 
 # Benchmark dataset support
@@ -222,7 +222,7 @@ all = [
     # exec
     "pandas>=2.3.2,<3",
     "pyyaml>=6.0.2,<7",
-    "python-dateutil>=2.9.0.post0,<3",
+    "python-dateutil>=2.9.0.post0,<4",
     # load-benchmark
     "requests>=2.33.0,<3",
     # eval
