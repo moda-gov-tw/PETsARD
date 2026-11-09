@@ -21,7 +21,7 @@ def dp_nn_histogram(public_features, private_features, noise_multiplier,
     assert public_features.shape[0] % num_packing == 0
 
     num_true_public_features = public_features.shape[0] // num_packing
-    if public_features.shape[0] == 0:  # TODO debug, why this case exists
+    if public_features.shape[0] == 0:  # no candidates: empty counts
         return np.zeros(shape=num_true_public_features), np.zeros(shape=num_true_public_features)
 
     # Use CPU instead of GPU for Windows compatibility
@@ -68,8 +68,8 @@ def dp_nn_histogram(public_features, private_features, noise_multiplier,
     # logging.info(f'Largest clean counters: {sorted(count)[::-1][:50]}')
     count = np.asarray(count)
     clean_count = count.copy()
-    # DP noise comes from OS entropy (dp_rng), never from the seeded global RNG: with a
-    # seeded RNG anyone holding the YAML could regenerate the noise and recover the votes.
+    # DP noise comes from OS entropy (dp_rng), independent of the seeded global RNG,
+    # so every run draws fresh noise.
     count += (dp_rng().normal(size=len(count)) * np.sqrt(num_nearest_neighbor)
               * noise_multiplier)
     # logging.info(f'Noisy count sum: {np.sum(count)}')

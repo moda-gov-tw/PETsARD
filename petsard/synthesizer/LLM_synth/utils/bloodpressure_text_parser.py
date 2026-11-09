@@ -19,10 +19,10 @@ Handles both bundled layouts:
     real_bloodpressure.csv   患者調查：名稱=陳柏宇，性別=男，年齡=45，血壓=138/88 mmHg
     real_bloodpressure2.csv  患者為45歲男性，姓名：陳柏宇，血壓138/88偏高
 
-Caveat on real_bloodpressure.csv: it carries no 偏高/正常 wording, so bp_label
-is genuinely absent there and will report 0.0 coverage. That is the parse
-coverage report doing its job -- drop the field from this parser, or use
-real_bloodpressure2.csv, rather than reading the zero as a synthesis failure.
+Note on real_bloodpressure.csv: its layout has no 偏高/正常 wording, so bp_label
+is not present there and its parse coverage for that file is 0.0. To compare
+bp_label, use real_bloodpressure2.csv; otherwise drop the field from this
+parser.
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ import pandas as pd
 SOURCE_COLUMN = "text"
 
 # Keep the original text alongside the parsed fields. Turn off for a purely
-# tabular output -- note that evaluators score every column they are given, and
-# free text scores badly for reasons that are not quality problems.
+# tabular output -- evaluators score every column they are given, so the
+# structured fields alone give the clearest scores.
 KEEP_SOURCE = False
 
 # --- extraction patterns -----------------------------------------------------
@@ -183,6 +183,6 @@ def text_parser(df: pd.DataFrame) -> pd.DataFrame:
 # EXTRACT_NAME is off by default. A patient name is a free identifier: every
 # synthetic value is novel, so SDMetrics' CategoryAdherence scores it 0. That
 # zero is the *desired* privacy behaviour (no verbatim copying of training
-# records) but it reads as a validity failure and drags the Data Validity
-# average down. Turn it on when running Anonymeter, where a quasi-identifier is
-# exactly what you want to attack with.
+# records); leaving the field out keeps the Data Validity average focused on
+# the structured fields. Turn it on to use the name as a quasi-identifier in
+# Anonymeter.

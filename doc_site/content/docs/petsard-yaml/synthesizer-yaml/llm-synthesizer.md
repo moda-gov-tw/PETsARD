@@ -103,8 +103,8 @@ Set `api_type` to `openai`, `anthropic` or `gemini` and choose a model. Set the 
     model: gpt-4o
 ```
 
-{{< callout type="warning" >}}
-**Data protection**: with `api_type` set to `openai`, `anthropic` or `gemini`, every prompt, including the training records used as few-shot examples, is sent to that external service. Use these API types for non-sensitive data, and use `lmstudio` to keep sensitive data on your own machine. The files `prompt_generation.jsonl` and the logs in `log_folder` also contain training text; store them with the same care as the training data. With `log_prompts: false`, the log records only the length of each text and `prompt_generation.jsonl` is not written.
+{{< callout type="info" >}}
+**Local processing**: `api_type: lmstudio` keeps every prompt on your own machine and is the recommended setting for sensitive data; the cloud API types `openai`, `anthropic` and `gemini` suit non-sensitive data. Store `prompt_generation.jsonl` and the logs in `log_folder` the same way as the training data. With `log_prompts: false`, the log records only the length of each text and `prompt_generation.jsonl` is not written.
 {{< /callout >}}
 
 ## How It Works

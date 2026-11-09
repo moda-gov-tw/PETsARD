@@ -33,8 +33,8 @@ the server started. Default endpoint is http://localhost:1234/v1 but can be
 customized via the api_url parameter. If api_url is not set, the api_key
 parameter is used as the base_url (backward compatible). The api_key value is
 always sent to the server as the API key. A plain-http URL whose host is not
-this machine (localhost / 127.0.0.1 / ::1) triggers a warning, since prompts
-would travel unencrypted.
+this machine (localhost / 127.0.0.1 / ::1) triggers a reminder to use a local
+server or an https URL.
 
 Note on Local Operation:
 This implementation connects to a locally running LM Studio instance.
@@ -64,7 +64,7 @@ from .base import (
 
 
 def _warn_if_remote_plain_http(base_url: str) -> None:
-    """Warn when requests would go unencrypted (http) to a host other than this machine."""
+    """Recommend a local server or an https URL when a plain-http URL points to another host."""
     parts = urlsplit(base_url)
     if parts.scheme.lower() != "http":
         return
@@ -77,9 +77,8 @@ def _warn_if_remote_plain_http(base_url: str) -> None:
     except ValueError:
         pass
     warnings.warn(
-        f"LM Studio server '{host}' is reached over plain http: prompts, which can contain "
-        "training records, leave this machine unencrypted. Use a local server "
-        "(localhost / 127.0.0.1 / ::1) or an https URL.",
+        f"LM Studio server '{host}' is reached over plain http. A local server "
+        "(localhost / 127.0.0.1 / ::1) or an https URL is recommended.",
         stacklevel=3,
     )
 

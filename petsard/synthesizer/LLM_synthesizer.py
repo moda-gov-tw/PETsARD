@@ -133,7 +133,7 @@ class LLM_synthesizer:
                              from the PETSARD_LLM_API_KEY environment variable (every
                              stage whose api_key is empty uses it)
       api_url          str   lmstudio server URL; None = api_key is the URL (default None).
-                             Plain http to a host other than this machine warns.
+                             A local server or an https URL is recommended.
       model             str   Provider default
 
     API — variation stage (defaults to init values)

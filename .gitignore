@@ -89,9 +89,9 @@ $RECYCLE.BIN/
 **/.vscode
 **/*.code-workspace
 
-###### 授權資料、執行輸出與敏感檔 Licensed data, outputs and secrets ######
+###### 本地資料與執行輸出 Local data and outputs ######
 
-# 本地資料、授權資料集與交接資料夾 Local data, licensed datasets and hand-off folders
+# 本地資料資料夾 Local data folders
 **/*授權資料*/
 **/*IRB*/
 

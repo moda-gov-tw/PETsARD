@@ -75,9 +75,8 @@ def solve_noise_multiplier(account, eps: float, lo: float, hi: float, xtol: floa
 
     `account(s)` returns the epsilon of the whole flow for noise multiplier s; it decreases as s grows. brentq stops
     within xtol of the root, so its answer can lie on either side of it. If that answer already gives
-    account(s) <= eps it is used unchanged, so a run with the same seed gives the same result as before this check
-    was added. Otherwise the noise is raised just enough: in steps of xtol until the target is met, then by bisection
-    to 1e-9, always keeping the side that meets the target.
+    account(s) <= eps it is used unchanged. Otherwise the noise is raised just enough: in steps of xtol until the
+    target is met, then by bisection to 1e-9, always keeping the side that meets the target.
     """
     sigma = brentq(lambda s: account(s) - eps, lo, hi, xtol=xtol)
     if account(sigma) <= eps:
@@ -315,15 +314,15 @@ class DPflowBase(BaseSynthesizer):
     """Common behaviour: parameter handling, input checks, seeding, privacy report and output types.
 
     Subclasses implement _release(raw, spec) and _generate(n).
-    Set the YAML without Preprocessor: the default PETsARD preprocessing computes statistics from the real data,
-    which this privacy accounting does not cover.
+    Set the YAML without Preprocessor: column types come from column_spec, and the synthesizer handles the data
+    within this privacy accounting.
     """
 
     NEEDS_TORCH = False
 
     def __init__(self, config: dict, metadata=None):
         super().__init__(config, metadata)
-        # Schema statistics and precision are inferred from the real data, so they are not used here.
+        # Column information comes from column_spec only.
         self.metadata = None
         if "epsilon" not in config:
             raise ConfigError(f"{config['syn_method']} requires 'epsilon'.")

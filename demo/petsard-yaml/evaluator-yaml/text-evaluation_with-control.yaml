@@ -35,10 +35,8 @@ Synthesizer:
     module_path: petsard/synthesizer/LLM_synthesizer.py
     class_name: LLM_synthesizer
 
-    # Sized to roughly the training set. Below ~50 rows these scores are noise:
-    # Anonymeter attacks a synthetic set too small to hold a pattern, and
-    # MLUtility trains XGBoost on a handful of rows. With epochs: 0 this is one
-    # LLM call per row -- lower it for a smoke test, but do not read the numbers.
+    # Number of synthetic rows for this example. A value close to the training
+    # set size (80 rows) gives more stable Anonymeter and MLUtility scores.
     sample_num_rows: 10
     epochs: 1
 
@@ -81,8 +79,8 @@ Evaluator:
     text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
     # text_parser_entry: text_parser
 
-    # Written for inspection -- check these when a score looks wrong; a column
-    # that is empty in every row means the parser missed, not that synthesis did.
+    # The parsed frames are written here for inspection; each column holds the
+    # values that the text parser extracted from the ori, syn and control text.
     output_dir: ./llm_synth_output/parsed
 
     Evaluator:
@@ -90,10 +88,7 @@ Evaluator:
         method: anonymeter-singlingout
         n_attacks: 400
         max_attempts: 4000
-        # Leave mode at its default (multivariate). mode: univariate raises
-        # TypeError inside PETsARD: AnonymeterConfig sets n_cols to None for
-        # univariate (anonymeter.py:156) then compares it against the column
-        # count (anonymeter.py:247).
+        # mode uses its default (multivariate).
 
       linkability_risk:
         method: anonymeter-linkability

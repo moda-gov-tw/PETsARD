@@ -30,9 +30,8 @@ Loader:
 
 Preprocessor:
   demo:
-    # Required, not optional. AdvGAN does torch.tensor(df.values, dtype=float32)
-    # (DP_AdvGAN.py:122) and would raise on the raw 'sex'/'smoker' string columns.
-    # The default preprocessor encodes categoricals and fills the two nulls
+    # Required. AdvGAN trains on numeric tensors; the default preprocessor
+    # encodes the 'sex'/'smoker' categorical columns and fills the two nulls
     # planted in the test data.
     method: 'default'
 

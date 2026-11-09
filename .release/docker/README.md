@@ -39,9 +39,9 @@ This file is automatically executed when the Docker container starts, no manual 
 
 ## Docker Compose on Windows or without an NVIDIA GPU Docker Compose：Windows 或無 NVIDIA GPU 環境
 
-`compose.yml` targets Linux hosts with an NVIDIA GPU: it reserves the GPU and mounts the host files `/usr/bin/nvidia-smi` and `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`. Docker Desktop on Windows does not have these two files, and a machine without an NVIDIA GPU cannot satisfy the GPU reservation, so `docker compose up -d` stops with a container start error. Keep `compose.yml` as it is, create `compose.override.yml` next to it (Docker Compose 2.24 or later reads it automatically) and run `docker compose up -d` as usual.
+`compose.yml` targets Linux hosts with an NVIDIA GPU: it reserves the GPU and mounts the host files `/usr/bin/nvidia-smi` and `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`. On Docker Desktop for Windows, or on a machine without an NVIDIA GPU, keep `compose.yml` as it is, create `compose.override.yml` next to it (Docker Compose 2.24 or later reads it automatically) and run `docker compose up -d` as usual.
 
-`compose.yml` 預設適用於具 NVIDIA GPU 之 Linux 主機：會保留 GPU，並掛載主機之 `/usr/bin/nvidia-smi` 與 `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`。Windows 之 Docker Desktop 沒有這兩個檔案，無 NVIDIA GPU 之電腦也無法滿足 GPU 保留設定，`docker compose up -d` 會因容器無法啟動而停止。`compose.yml` 不需修改，於同一資料夾新增 `compose.override.yml`（Docker Compose 2.24 以上版本會自動合併），再照常執行 `docker compose up -d` 即可。
+`compose.yml` 預設適用於具 NVIDIA GPU 之 Linux 主機：會保留 GPU，並掛載主機之 `/usr/bin/nvidia-smi` 與 `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`。於Windows之Docker Desktop或無NVIDIA GPU之電腦使用時，`compose.yml`不需修改，於同一資料夾新增`compose.override.yml`(Docker Compose 2.24以上版本會自動合併)，再照常執行`docker compose up -d`即可。
 
 - Windows with an NVIDIA GPU (GPU still available in the container) Windows 且有 NVIDIA GPU（容器仍可使用 GPU）：
 
@@ -67,4 +67,4 @@ services:
 - Docker image needs to be rebuilt after modifying `entrypoint.sh` 修改 `entrypoint.sh` 後需要重新建置 Docker 映像檔
 - Ensure the script has execution permission (chmod +x) 確保腳本具有執行權限（chmod +x）
 - Consider security settings when using in production environment 生產環境使用時請考慮安全性設定
-- Do not re-add `--allow-root`, an empty token or `allow_origin=*`: anyone who can reach the port, or any web page the user visits, could run code in the container 請勿加回 `--allow-root`、空 token 或 `allow_origin=*`：任何連得到此埠的人或使用者瀏覽的網頁都可能在容器內執行程式
+- Keep token authentication and same-origin checks enabled (no `--allow-root`, empty token or `allow_origin=*`) 請保留token認證與同源限制，不使用`--allow-root`、空token或`allow_origin=*`

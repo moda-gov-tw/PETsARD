@@ -646,5 +646,5 @@ class VariationAgent:
 
 
 if __name__ == "__main__":
-    # Example usage demonstrating ...(to be filled)
+    # The agents in this module are run by the synthesizer pipeline.
     pass

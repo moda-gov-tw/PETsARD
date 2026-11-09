@@ -274,6 +274,6 @@ Set `sample_num_rows` close to the size of the training split (80 records here).
 
 All parameters are listed in [LLM Text Synthesizer]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}}).
 
-{{< callout type="warning" >}}
-**Data protection**: this tutorial keeps all prompts on the local LM Studio server. With `api_type` set to `openai`, `anthropic` or `gemini`, the prompts, including the training records used as examples, are sent to that external service, so use these API types for non-sensitive data only. The files in `llm_synth_output/` and `LOG_FILES/` contain training text; store them with the same care as the training data.
+{{< callout type="info" >}}
+**Local processing**: this tutorial keeps all prompts on the local LM Studio server, the recommended setting for sensitive data; the cloud API types `openai`, `anthropic` and `gemini` suit non-sensitive data. Store the files in `llm_synth_output/` and `LOG_FILES/` the same way as the training data.
 {{< /callout >}}

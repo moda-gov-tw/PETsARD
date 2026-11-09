@@ -123,7 +123,7 @@ def plan_budget(
     initial texts (one query; 0 = no label vote), `wording_fraction` to the value-wording
     counts when that query has a budget of its own (0 = it shares the profile's), the rest
     to the `epochs` vote rounds
-    (equal shares). epsilon = inf turns all noise off (a no-privacy reference run).
+    (equal shares). epsilon = inf turns all noise off (a reference run for comparison).
     """
     if not epsilon > 0:
         raise ValueError("epsilon must be > 0 (use .inf for a no-noise reference run)")

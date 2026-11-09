@@ -3,9 +3,9 @@
 
 """Randomness for the differential-privacy noise.
 
-DP noise must not be reproducible from anything in the config: the global RNGs are reset
-to `seed` on every start, so anyone holding the YAML could regenerate seeded noise and
-subtract it. Each call draws a fresh 128-bit seed from the operating system instead.
+DP noise is independent of every value in the config, including `seed` (to which the
+global RNGs are reset on every start): each call draws a fresh 128-bit seed from the
+operating system.
 """
 
 import random

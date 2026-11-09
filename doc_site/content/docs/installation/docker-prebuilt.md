@@ -28,7 +28,7 @@ docker run -it --rm ghcr.io/moda-gov-tw/petsard:latest
 
 ## Docker Compose on Windows or without an NVIDIA GPU
 
-When you build and start the container with the `compose.yml` in the project root, note that it targets Linux hosts with an NVIDIA GPU: it reserves the GPU and mounts the host files `/usr/bin/nvidia-smi` and `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`. Docker Desktop on Windows does not have these two files, and a machine without an NVIDIA GPU cannot satisfy the GPU reservation, so `docker compose up -d` stops with a container start error. Keep `compose.yml` as it is, create `compose.override.yml` next to it (Docker Compose 2.24 or later reads it automatically) and run `docker compose up -d` as usual.
+When you build and start the container with the `compose.yml` in the project root, note that it targets Linux hosts with an NVIDIA GPU: it reserves the GPU and mounts the host files `/usr/bin/nvidia-smi` and `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`. For Docker Desktop on Windows or a machine without an NVIDIA GPU, keep `compose.yml` as it is, create `compose.override.yml` next to it (Docker Compose 2.24 or later reads it automatically) and run `docker compose up -d` as usual.
 
 Windows with an NVIDIA GPU (GPU still available in the container):
 

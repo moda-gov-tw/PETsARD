@@ -3,12 +3,11 @@ Text evaluator -- parse natural-language data, then run native PETsARD evaluator
 
 PETsARD's evaluators are column-addressed: `secret`, `target`, `aux_cols` and
 `n_cols` all name columns, and every free-text column is treated as a categorical
-label (`create_metadata()` maps object -> categorical). Data generated as prose
-therefore either errors out or scores meaninglessly -- CategoryAdherence and
-mpuccs both reach their "good" value only when synthetic rows are verbatim copies
-of training rows, which is backwards for a generator.
+label (`create_metadata()` maps object -> categorical). This evaluator first
+parses natural-language data into typed columns, so the native evaluators score
+the information the text carries.
 
-This evaluator closes that gap with two inputs:
+It takes two inputs:
 
   text_parser   path to a .py file exposing  def text_parser(df) -> pd.DataFrame
   Evaluator     a nested block mirroring PETsARD's own Evaluator config, holding

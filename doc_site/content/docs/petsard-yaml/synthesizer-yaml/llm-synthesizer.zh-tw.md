@@ -103,8 +103,8 @@ Reporter:
     model: gpt-4o
 ```
 
-{{< callout type="warning" >}}
-**資料保護**：`api_type`設為`openai`、`anthropic`或`gemini`時，每次提示內容(含作為少樣本範例的訓練紀錄)皆傳送至該外部服務，適用於非機敏資料；機敏資料以`lmstudio`於本機推論。`prompt_generation.jsonl`及`log_folder`中的紀錄檔亦含訓練資料文字，以與訓練資料相同方式妥善保管；設定`log_prompts: false`時，紀錄檔僅記錄各段文字之長度，且不寫入`prompt_generation.jsonl`。
+{{< callout type="info" >}}
+**資料處理位置**：機敏資料以`api_type: lmstudio`於本機推論，提示全程於本機處理；`openai`、`anthropic`或`gemini`由該雲端服務處理提示，適用於可交由外部服務處理的資料。`prompt_generation.jsonl`及`log_folder`中的紀錄檔與訓練資料以相同方式保管；設定`log_prompts: false`時，紀錄檔僅記錄各段文字之長度，且不寫入`prompt_generation.jsonl`。
 {{< /callout >}}
 
 ## 運作方式

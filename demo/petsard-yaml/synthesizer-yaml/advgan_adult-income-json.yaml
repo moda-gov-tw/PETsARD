@@ -15,9 +15,8 @@ Synthesizer:
     method: 'AdvGAN'
     sigma: 1.0
     outlier: 10
-    # 48,842 rows are trained in batches of 2 (about 24k batches per epoch), so one
-    # epoch takes several minutes on a CPU. Raise epochs toward the default 200 for
-    # full training, which takes many hours on this file.
+    # epochs: 1 keeps this example short; raise epochs toward the default 200 for
+    # full training.
     epochs: 1
     sample_num_rows: 1000   # number of synthetic records to generate
 Postprocessor:

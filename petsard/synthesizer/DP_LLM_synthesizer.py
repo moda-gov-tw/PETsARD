@@ -15,7 +15,7 @@ Loaded dynamically by PETsARD's CustomSynthesizer via YAML:
         model: openai/gpt-oss-20b
         ...
 
-Real rows reach the output only through two Gaussian mechanisms: the DP data profile
+Real rows influence the output only through Gaussian mechanisms: the DP data profile
 (step 0) and the nearest-neighbour vote of every epoch. The LLM never sees a real row:
 the first round is generated zero-shot from the profile, later rounds take their few-shot
 examples from synthetic rows already selected by the DP vote. The output is
@@ -64,10 +64,9 @@ _LOGGER = logging.getLogger("PETsARD.DP_LLM_synthesizer")
 _BLANK_SYMBOL = "<MASK>"  # same as DP_LLM_synth.synthetic_data.agents.variation_agent.BLANK_SYMBOL
 _FENCE_RE = re.compile(r"^```[A-Za-z]*[ \t]*\n(.*?)\n?```$", re.S)
 
-# keys of the non-DP synthesizer that would break the privacy guarantee
+# keys of the non-DP synthesizer that the DP synthesizer does not accept
 _REJECTED_KEYS = {
-    "main_column_name": "it copies the other columns from the source real row; "
-                        "the DP version always synthesizes whole rows",
+    "main_column_name": "the DP version always synthesizes whole rows",
     "noise_multiplier": "the vote noise is derived from epsilon, delta and epochs",
 }
 
@@ -84,7 +83,7 @@ def _create_api(api_type: str, api_key: str | None, model: str | None, api_url: 
     }
 
     if not api_type:
-        # no default: a missing api_type must not send prompts to a cloud service by accident
+        # no default: the LLM service is always chosen explicitly through api_type
         raise ValueError(
             "api_type is required. Choose from: 'openai', 'anthropic', 'gemini', 'lmstudio' "
             "('lmstudio' for a local server)."
@@ -195,7 +194,7 @@ class DP_LLM_synthesizer:
       sample_num_rows int   Final output size (default 16)
 
     Differential privacy (*)
-      epsilon *               float  Total privacy budget; .inf = no noise (reference run, NOT private)
+      epsilon *               float  Total privacy budget; .inf = no noise (reference run for comparison)
       delta *                 float  Total delta, e.g. 1.0e-5 (should be well below 1 / rows)
       profile_budget_fraction float  Share of the budget (in mu^2) for the profile (default 0.2)
       profile_delta_s         float  Part of delta for the profile's release threshold (default 1e-6)
@@ -222,7 +221,7 @@ class DP_LLM_synthesizer:
       hide_values             bool   The model writes only the long columns; the short values drawn
                                      for the row are filled in afterwards and never shown to it
                                      (default False)
-      Not accepted: main_column_name (copies real columns), noise_multiplier (derived).
+      Not accepted: main_column_name (whole rows are always synthesized), noise_multiplier (derived).
       The unit of privacy is one row: give one row per person for person-level privacy.
 
     API — init generation (*)
@@ -317,8 +316,7 @@ class DP_LLM_synthesizer:
             raise ValueError("combine_divide_L must be >= 2: with 1 the vote only reorders "
                              "the pool and the real data never shapes the output.")
         if "compute_fid" in cfg:
-            _LOGGER.warning("compute_fid is ignored: FID would use the real data outside the "
-                            "DP mechanisms and has been removed.")
+            _LOGGER.warning("compute_fid is ignored: the DP synthesizer does not compute FID.")
         # validates epsilon / delta / fractions early
         from DP_LLM_synth.synthetic_data.dpsda.accountant import plan_budget
         plan_budget(

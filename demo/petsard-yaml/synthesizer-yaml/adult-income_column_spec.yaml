@@ -3,10 +3,8 @@
 #
 # Everything here comes from the published description of the dataset (UCI Machine Learning Repository,
 # adult.names), not from statistics of the data file. A differentially private synthesizer treats this
-# declaration as public: if column types or category lists were read from the private data, that step
-# would fall outside the privacy guarantee.
-# 本檔內容取自資料集公開說明(UCI adult.names)，不是由資料檔統計而來。差分隱私合成器將此宣告視為公開資訊；
-# 若欄位型別或類別清單是從私有資料讀出，該步驟就不在隱私保證範圍內。
+# declaration as public information, so the column types and category lists use no privacy budget.
+# 本檔內容取自資料集公開說明(UCI adult.names)，不是由資料檔統計而來。差分隱私合成器將此宣告視為公開資訊，欄位型別與類別清單不需耗用隱私預算。
 #
 # Format / 格式:
 #   name     column name / 欄位名稱

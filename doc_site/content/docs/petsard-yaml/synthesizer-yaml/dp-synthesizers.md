@@ -21,10 +21,10 @@ PETsARD provides three differentially private synthesizers. The whole flow, from
 
 ## Before You Start
 
-1. **The unit of protection is one row.** The guarantee covers adding or removing any one row. If one person can have several rows (several visits, several transactions), first reduce the data to one row per person with a public rule, for example keeping one random row per person; the guarantee is then per person. Otherwise a person with $k$ rows is protected less as $k$ grows.
-2. **Public information.** Column names, types, the possible values of categorical columns and the row count are treated as public. They must come from the public definition of the data (a data dictionary or a format agreed with the data owner), not from statistics of the private data; otherwise that step is outside the guarantee.
-3. **No Preprocessor.** PETsARD's default preprocessing computes statistics from the data (minimum, maximum, category lists), which the privacy accounting does not cover. The DP synthesizers handle types and scales themselves.
-4. **Missing values.** The tabular synthesizers do not accept missing values. Handle them first with a fixed rule, for example treat a missing value as one more category, or fill numeric columns with a fixed value.
+1. **The unit of protection is one row.** The guarantee covers adding or removing any one row. If one person can have several rows (several visits, several transactions), first reduce the data to one row per person with a public rule, for example keeping one random row per person; the guarantee is then per person.
+2. **Public information.** Column names, types, the possible values of categorical columns and the row count are treated as public. Take them from the public definition of the data (a data dictionary or a format agreed with the data owner) rather than from statistics of the private data, so that the guarantee covers every step.
+3. **No Preprocessor.** The DP synthesizers handle types and scales themselves, so every step, from reading the data to writing the output, stays within the privacy accounting.
+4. **Missing values.** The tabular synthesizers work on complete data. Handle missing values first with a fixed rule, for example treat a missing value as one more category, or fill numeric columns with a fixed value.
 5. **Seed.** `seed` is optional. Set it to reproduce a run; leave it out for a real release, so the noise comes from the operating system and cannot be recomputed from the code and configuration.
 6. **Budgets add up.** Every synthesis run on the same data spends the budget again; for all results that are used or published, the $\varepsilon$ values add up.
 
@@ -86,7 +86,7 @@ Full example: `demo/petsard-yaml/synthesizer-yaml/DPflow_Copula_adult-income.yam
 | Parameter | Meaning |
 |---|---|
 | `column_spec` (required) | Column declaration, see above |
-| `epsilon` (required) | $\varepsilon$ of the whole flow; `.inf` adds no noise at all (reference only, not differentially private) |
+| `epsilon` (required) | $\varepsilon$ of the whole flow; `.inf` runs without noise as a reference for comparison |
 | `delta` | Default `1.0e-5`; keep it well below 1 / number of rows |
 | `sample_num_rows` | Rows to generate; default: as many as the training data |
 | `seed` | Optional, see "Before You Start" |
@@ -99,7 +99,7 @@ Full example: `demo/petsard-yaml/synthesizer-yaml/DPflow_Copula_adult-income.yam
 
 The output is a DP seed plus a perturbation from the generator. The seeds come from noisy histograms and a noisy copula; the real data reaches the generator only through a discriminator trained with DP-SGD, and sampling never reads a real row. The budget is split in $\mu^2$ terms between histograms, copula and DP-SGD. The DP-SGD noise multiplier is solved so that the accounted $\varepsilon$ does not exceed the target; the privacy report gives the value reached.
 
-Unlike `method: AdvGAN` (the AdvGAN synthesizer whose discriminator is trained with DP-SGD), this method keeps the whole flow in the privacy accounting, handles types through `column_spec`, and is used without Preprocessor and Postprocessor.
+This method keeps the whole flow in the privacy accounting, handles types through `column_spec`, and is used without Preprocessor and Postprocessor.
 
 ```yaml
 Synthesizer:
@@ -161,10 +161,10 @@ Full example: `demo/petsard-yaml/synthesizer-yaml/dp-llm-synthesizer_bloodpressu
 | `epsilon`, `delta` (required) | Budget of the whole flow; the profile's release threshold uses `profile_delta_s` (default 1e-6), which is part of `delta` |
 | `api_type` (required) | `lmstudio`, `openai`, `anthropic` or `gemini`, with no default; `lmstudio` keeps prompts on the local server |
 | `api_url`, `model`, `api_key` | Server URL and model ID; the key can come from the environment variable `PETSARD_LLM_API_KEY` instead of the configuration |
-| `epochs` | Vote rounds; `0` means no vote, generation from the profile only |
+| `epochs` | Vote rounds, default `1`; `0` means no vote, generation from the profile only. The examples use `0` |
 | `sample_num_rows`, `num_samples_schedule` | Rows to generate and candidates per round |
 | `output_dir` | Folder for the profile (`profile.json`), the privacy report (`privacy_report.json`) and the results of each round |
-| `require_released_profile` | With `true`, `output_dir` must already hold a released `profile.json`, otherwise the run stops. Use it to generate again from the same profile without spending more budget |
+| `require_released_profile` | With `true` and `continue: true`, the run uses the released `profile.json` in `output_dir` and stops if it is missing. With `epochs: 0`, this generates again from the same profile without spending more budget |
 | `profile_joint_fields`, `profile_value_wording`, `hide_values`, `words_per_row` | Options for data with short columns such as labels: release the combinations of short values and the typical wording of each value, and let the model write only the long text columns |
 
 Every release of a profile spends the budget once. If a profile is released again and both are used or published, the $\varepsilon$ values add up.

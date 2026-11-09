@@ -60,7 +60,7 @@ Evaluator:
     n_attacks: 100                       # kept modest; control set is 240 rows
     n_cols: 3
 
-  # --- Utility: can a model trained on synthetic data predict real data? ----
+  # --- Utility: can a model trained on synthetic data predict holdout data? -
   classification_utility:
     method: mlutility                    # NEEDS control -> needs the Splitter
     task_type: classification

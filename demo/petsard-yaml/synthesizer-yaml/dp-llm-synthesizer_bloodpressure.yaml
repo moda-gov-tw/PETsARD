@@ -18,9 +18,9 @@
 # - api_type is required. lmstudio keeps every prompt on this computer. The prompts hold only the released profile,
 #   never a data row.
 #   api_type 必填；lmstudio 使提示只送到本機；提示只含已釋出的輪廓，不含任何資料列。
-# - This file has about 100 rows, so few profile items pass the release threshold; the example shows the flow, not
-#   the utility reached on larger data.
-#   本資料約 100 筆，能通過釋出門檻的輪廓項目很少；範例用來示範流程，不代表較大資料的效用。
+# - The example data has about 100 rows and demonstrates the complete flow; with larger data, more profile items
+#   pass the release threshold.
+#   範例資料約100筆，用於示範完整流程；資料量較大時，可通過釋出門檻之輪廓項目較多。
 ---
 Loader:
   load_text:

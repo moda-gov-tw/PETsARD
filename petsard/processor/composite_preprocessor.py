@@ -17,7 +17,7 @@ from petsard.processor.custom_preprocessor import CustomPreprocessor
 class CompositePreprocessor:
     """Fit and execute an explicit chain of Preprocessor implementations.
 
-    This MVP supports exactly one stage-level ``custom_method`` with optional
+    This class supports exactly one stage-level ``custom_method`` with optional
     built-in outlier before it and optional built-in missing fallback after it.
     Every stage is fitted on the train output produced by the preceding stage.
     The fitted chain is then reused, without refit, for validation/control.
@@ -53,7 +53,7 @@ class CompositePreprocessor:
 
     @classmethod
     def validate_config(cls, config: Any) -> list[dict[str, Any]]:
-        """Validate the complete MVP shape without requiring data or metadata."""
+        """Validate the complete stage layout without requiring data or metadata."""
         if not isinstance(config, dict):
             raise ConfigError("Composite Preprocessor configuration must be a mapping.")
         return cls._validate_stages(config.get("stages"))

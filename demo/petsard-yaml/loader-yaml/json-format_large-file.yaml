@@ -1,9 +1,8 @@
 ---
 # Usability check for adult-income.json (benchmark://adult-income-json; 21 MB, 48,842 x 15).
 #
-# Uses method: 'default' (PETsARD Gaussian Copula) rather than the AdvGAN in
-# synthesizer-yaml/advgan_adult-income-json.yaml, because AdvGAN trains with batch_size=2 over every
-# row -- on 48,842 rows that is ~24k batches per epoch.
+# Uses method: 'default' (PETsARD Gaussian Copula); the same file is synthesized
+# with AdvGAN in synthesizer-yaml/advgan_adult-income-json.yaml.
 #
 # Run from the repo root:
 #   python -c "from petsard import Executor; Executor('demo/petsard-yaml/loader-yaml/json-format_large-file.yaml').run()"

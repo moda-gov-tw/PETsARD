@@ -5,9 +5,9 @@ Output = seed + G(seed, z). Compared with the AdvGAN method (method: AdvGAN), wh
 1. Column types: read from `column_spec` (a YAML/JSON list, or a Markdown type document converted by
    DPflow_column_spec.py). Categorical columns get a softmax head and are decoded to their listed values; integer
    columns are rounded.
-2. Seeds: built from noisy histograms (Gaussian mechanism) instead of the real empirical quantiles, so sampling never
+2. Seeds: built from noisy histograms (Gaussian mechanism), so sampling never
    reads a real record and every use of the real data is accounted.
-3. Normal scores for the copula come from the released histograms instead of real ranks.
+3. Normal scores for the copula come from the released histograms.
 4. Inputs to the networks are normal scores and one-hot codes, so lab values and 0/1 flags are on the same scale.
 5. Budget: `eps` and `delta` set the whole budget. mu^2 is split 10% histograms, 60% copula, the rest (30%) DP-SGD, and the
    DP-SGD noise multiplier is solved so that the RDP total reaches eps without exceeding it. A privacy report is kept
@@ -21,7 +21,7 @@ PETsARD YAML:
     advgan:
       method: DPflow_AdvGAN
       column_spec: demo/petsard-yaml/synthesizer-yaml/adult-income_column_spec.yaml   # or a type document (.md)
-      epsilon: 8          # `eps` also works; .inf means no noise at all (reference only, not DP)
+      epsilon: 8          # `eps` also works; .inf gives a noise-free baseline for comparison
       epochs: 5
       batch_size: 256     # `batch` also works
       sample_num_rows: 48842
@@ -29,7 +29,7 @@ PETsARD YAML:
       keep_from_seed: [income]   # columns copied from the seeds unchanged, e.g. the label columns
       share_histograms: 0.1   # budget split in mu^2 terms; DP-SGD gets 1 - share_histograms - share_copula
       share_copula: 0.6       # defaults 0.1 / 0.6 (DP-SGD 0.3) since v6; v5 and earlier used 0.2 / 0.3
-Do not add a Preprocessor: PETsARD's default preprocessing computes statistics from the real data.
+Use it without a Preprocessor: column types come from column_spec, and the synthesizer handles the data within its own privacy accounting.
 Needs opacus and dp-accounting.
 """
 from __future__ import annotations
@@ -118,7 +118,7 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
 
     def __init__(self, config: dict, metadata=None):
         super().__init__(config, metadata)
-        self.metadata = None  # PETsARD's schema statistics come from the real data, so they are not used
+        self.metadata = None  # column information comes from column_spec
         c = self.config
         if "column_spec" not in c:
             raise ConfigError("DPflow_AdvGAN needs 'column_spec': the column types you declare as public.")
@@ -178,7 +178,7 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         torch.manual_seed(self._torch_seed)
 
-        # 1. 預算：mu^2 依 share_histograms(預設20%)給直方圖、share_copula(預設30%)給 copula，其餘給 DP-SGD
+        # 1. 預算：mu^2依share_histograms(預設10%)給直方圖、share_copula(預設60%)給copula，其餘(預設30%)給DP-SGD
         q, steps = dp_sgd_plan(n, self.batch_size, self.EPOCHS)
         mu = mu_for(self.eps, self.delta)
         mu_m, mu_c = mu * math.sqrt(self.share_hist), mu * math.sqrt(self.share_copula)
@@ -245,7 +245,7 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
         self.privacy = {
             "method": "DPflow_AdvGAN", "target_epsilon": self.eps,
             "achieved_epsilon": math.inf if no_noise else float(account(sigma)),
-            "delta": self.delta, "accounting": "none (no noise, not DP)" if no_noise else "RDP", "mu_histograms": mu_m, "mu_copula": mu_c,
+            "delta": self.delta, "accounting": "none (no noise, reference run)" if no_noise else "RDP", "mu_histograms": mu_m, "mu_copula": mu_c,
             "share_histograms": self.share_hist, "share_copula": self.share_copula, "share_dp_sgd": 1 - self.share_hist - self.share_copula,
             "noise_multiplier": sigma, "q": q, "steps": steps, "n": n, **seed_report(self.seed),
             "privacy_unit": "one record", "column_types": "from the column type document (column_spec)",

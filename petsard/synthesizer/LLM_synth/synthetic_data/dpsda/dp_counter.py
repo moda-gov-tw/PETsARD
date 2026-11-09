@@ -18,7 +18,7 @@ def dp_nn_histogram(public_features, private_features, noise_multiplier,
     assert public_features.shape[0] % num_packing == 0
 
     num_true_public_features = public_features.shape[0] // num_packing
-    if public_features.shape[0] == 0:  # TODO debug, why this case exists
+    if public_features.shape[0] == 0:  # no candidates: empty counts
         return np.zeros(shape=num_true_public_features), np.zeros(shape=num_true_public_features)
 
     # Use CPU instead of GPU for Windows compatibility

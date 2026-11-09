@@ -1,4 +1,4 @@
-"""Student A v3.1 A5 policy and domain checks for the optional MICE path.
+"""Domain checks and post-processing rules for the optional MICE path.
 
 Only a candidate table reaches this module. The caller restores observed values
 from its masked transform input and checks the original DataFrame contract.

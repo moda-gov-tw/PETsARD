@@ -274,6 +274,6 @@ Evaluator:
 
 完整參數請參見[LLM文字合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}})。
 
-{{< callout type="warning" >}}
-**資料保護**：本文件的提示全程送至本機LM Studio伺服器處理。`api_type`設為`openai`、`anthropic`或`gemini`時，提示內容(含作為範例的訓練紀錄)傳送至該外部服務，適用於非機敏資料。`llm_synth_output/`與`LOG_FILES/`中的檔案含訓練資料文字，以與訓練資料相同的方式妥善保管。
+{{< callout type="info" >}}
+**資料處理位置**：本文件的提示全程於本機LM Studio伺服器處理。`api_type`設為`openai`、`anthropic`或`gemini`時，提示由該雲端服務處理，適用於可交由外部服務處理的資料。`llm_synth_output/`與`LOG_FILES/`中的檔案與訓練資料以相同方式保管。
 {{< /callout >}}

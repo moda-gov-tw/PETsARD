@@ -1,4 +1,4 @@
-"""Artificial, truth-free contract tests for the opt-in Student A v3.1 MICE path."""
+"""Artificial, truth-free contract tests for the opt-in MICE path."""
 
 import hashlib
 from pathlib import Path

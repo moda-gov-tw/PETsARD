@@ -6,10 +6,9 @@
 # through preprocessing and synthesis, and back out into the JSON report.
 # Both the column names and the values are Chinese.
 #
-# This file is deliberately ASCII-only. PETsARD reads YAML using the platform
-# default encoding, so a Chinese config would fail on a non-UTF-8 locale such
-# as Windows cp950. The data file carries the Chinese; the config does not
-# need to name any column, so it stays portable.
+# This file is ASCII-only, so it reads the same under any system locale
+# (for example Windows cp950). The data file carries the Chinese; the config
+# does not need to name any column, so it stays portable.
 #
 # Run from the repo root:
 #   python -c "from petsard import Executor; Executor('demo/petsard-yaml/loader-yaml/json-format_traditional-chinese.yaml').run()"

@@ -73,8 +73,8 @@ Evaluator:
     text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
     # text_parser_entry: text_parser
 
-    # Written for inspection -- check these when a score looks wrong, a column
-    # that is empty in every row means the parser missed, not that synthesis did.
+    # The parsed frames are written here for inspection; each column holds the
+    # values that the text parser extracted from the original and synthetic text.
     output_dir: ./llm_synth_output/parsed
 
     # Native evaluators run on the parsed frames. Add as many as you like;

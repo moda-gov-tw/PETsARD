@@ -114,7 +114,7 @@ load-benchmark = [
 # 隱私風險評估功能
 eval = [
     {include-group = "base-common"},
-    "anonymeter>=1.0.0,<1.1",   # Privacy risk evaluation; 1.1 fails on missing values / 隱私風險評估；1.1 版遇缺值會出錯
+    "anonymeter>=1.0.0,<1.1",   # Privacy risk evaluation (1.0 series) / 隱私風險評估(1.0系列)
     "sdmetrics>=0.23.0,<1",   # Synthetic data quality metrics / 合成資料品質指標
     "xgboost>=3.0.5",         # Utility evaluation / 實用性評估
     "imbalanced-learn>=0.14.0", # Imbalanced data handling / 不平衡資料處理
@@ -142,7 +142,7 @@ syn = [
     "plotly>=6.3.0,<7",
     # PyTorch specific dependencies
     "fsspec>=2026.6.0",
-    "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",   # Latest release for Python 3.10 without known advisories / 支援 Python 3.10 且無已知弱點之最新版本
+    "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",   # Pinned release for Python 3.10 / Python 3.10使用之指定版本
     "jinja2>=3.1.6,<4",
     "networkx>=3.4.2,<3.5 ; python_full_version < '3.11'",
     "networkx>=3.5,<4 ; python_full_version >= '3.11'",
@@ -176,7 +176,7 @@ jupyter = [
 experiment = [
     {include-group = "syn"},
     "polars>=1.30,<3 ; python_full_version >= '3.11'",         # Text evaluation scripts / 文字評估腳本
-    "pyarrow>=23.0.1,<27 ; python_full_version >= '3.11'",     # Reading parquet files / 讀取 parquet
+    "pyarrow>=23.0.1,<26 ; python_full_version >= '3.11'",     # Reading parquet files; <26 because 26 needs NumPy 2 / 讀取 parquet；26 版需 NumPy 2，故限 <26
     "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",      # Utility evaluation of tabular results / 表格結果之效用評估
 ]
 
@@ -295,7 +295,7 @@ advgan = [
 experiment = [
     "dp-accounting>=0.6,<0.7",
     "polars>=1.30,<3 ; python_full_version >= '3.11'",
-    "pyarrow>=23.0.1,<27 ; python_full_version >= '3.11'",
+    "pyarrow>=23.0.1,<26 ; python_full_version >= '3.11'",
     "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",
 ]
 # LLM text synthesizer
