@@ -8,7 +8,7 @@ next: docs/installation
 
 適用於使用本版新增**擴充功能**的環境。
 
-本版為PETsARD新增三項功能：半結構化JSON資料讀取與輸出及AdvGAN合成器、本機LLM非結構化文字合成器及文字評測模組，以及提供Median、KNN、MICE三種方法的缺失資料補償模組。本文件說明以可編輯模式自原始碼安裝PETsARD、安裝各項功能所需套件、設定LM Studio以於本機執行大型語言模型(LLM)推論、選擇合適的硬體規格，以及驗證安裝結果的方式。
+本版為PETsARD新增四項功能：半結構化JSON資料讀取與輸出及AdvGAN合成器、本機LLM非結構化文字合成器及文字評測模組、提供Median、KNN、MICE三種方法的缺失資料補償模組，以及整個流程滿足差分隱私之合成器(DP Copula、更新版DP AdvGAN及DP LLM文字合成器)。本文件說明以可編輯模式自原始碼安裝PETsARD、安裝各項功能所需套件、設定LM Studio以於本機執行大型語言模型(LLM)推論、選擇合適的硬體規格，以及驗證安裝結果的方式。
 
 ## 各功能的需求
 
@@ -19,6 +19,9 @@ next: docs/installation
 | LLM文字合成器 | Synthesizer | sentence-transformers、faiss-cpu、tiktoken及LLM服務之SDK(套件群組`llm`) | [LM Studio](https://lmstudio.ai) |
 | 文字評測模組 | Evaluator | 無(使用PETsARD內建評測器) | 無 |
 | 缺失資料補償 | Preprocessor | 無(使用scikit-learn) | 無 |
+| DP Copula | Synthesizer | 無(使用scipy) | 無 |
+| 更新版DP AdvGAN | Synthesizer | `opacus`、`dp-accounting`(套件群組`advgan`) | 無；偵測到CUDA GPU時自動使用 |
+| DP LLM文字合成器 | Synthesizer | 同LLM文字合成器(套件群組`llm`) | [LM Studio](https://lmstudio.ai) |
 
 {{< callout type="info" >}}
 `opacus`隨套件群組`all`安裝。PETsARD僅於使用`method: AdvGAN`時載入；未安裝的環境中，其他合成器照常執行，選用AdvGAN時則提示缺少的套件及安裝指令。

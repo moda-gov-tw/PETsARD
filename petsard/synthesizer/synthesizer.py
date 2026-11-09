@@ -38,6 +38,8 @@ class SynthesizerMap:
     CUSTOM_METHOD: int = 3
     PETSARD: int = 4
     ADVGAN: int = 5
+    DPFLOW_COPULA: int = 6  # DPflow_Copula: differentially private Gaussian copula (DPflow_Copula.py)
+    DPFLOW_ADVGAN: int = 7  # DPflow_AdvGAN: differentially private AdvGAN (DPflow_AdvGAN.py)
 
     @classmethod
     def map(cls, method: str) -> int:
@@ -100,7 +102,7 @@ class SynthesizerConfig(BaseConfig):
             self._check_sdv_availability()
 
         # Check if Opacus is required and available
-        if self.method_code == SynthesizerMap.ADVGAN:
+        if self.method_code in (SynthesizerMap.ADVGAN, SynthesizerMap.DPFLOW_ADVGAN):
             self._check_advgan_availability()
 
         # Set the default
@@ -176,6 +178,8 @@ class Synthesizer:
         SynthesizerMap.CUSTOM_METHOD: CustomSynthesizer,
         SynthesizerMap.PETSARD: PetsardGaussianCopulaSynthesizer,
         SynthesizerMap.ADVGAN: None,  # Lazy-loaded AdvGANSynthesizer
+        SynthesizerMap.DPFLOW_COPULA: None,  # Lazy-loaded DPflowCopulaSynthesizer
+        SynthesizerMap.DPFLOW_ADVGAN: None,  # Lazy-loaded DPflowAdvGANSynthesizer (needs opacus, dp-accounting)
     }
 
     def __init__(self, method: str, sample_num_rows: int = None, **kwargs) -> None:
@@ -430,7 +434,7 @@ class Synthesizer:
     def _get_synthesizer_class(self, method_code: int) -> BaseSynthesizer:
         """
         Get the synthesizer class for the given method code.
-        Lazy loads the SDV and AdvGAN synthesizers if needed.
+        Lazy loads the SDV, AdvGAN, DPflow_Copula and DPflow_AdvGAN synthesizers if needed.
 
         Args:
             method_code (int): The synthesizer method code.
@@ -460,6 +464,26 @@ class Synthesizer:
                         install_command=ADVGAN_INSTALL_COMMAND,
                     ) from e
             return _AdvGANSynthesizer
+
+        if synthesizer_class is None and method_code == SynthesizerMap.DPFLOW_COPULA:
+            from petsard.synthesizer.DPflow_Copula import DPflowCopulaSynthesizer
+
+            return DPflowCopulaSynthesizer
+
+        if synthesizer_class is None and method_code == SynthesizerMap.DPFLOW_ADVGAN:
+            try:
+                import dp_accounting  # noqa: F401
+
+                from petsard.synthesizer.DPflow_AdvGAN import DPflowAdvGANSynthesizer
+            except ImportError as e:
+                error_msg = f"Failed to import the DPflow_AdvGAN synthesizer: {e}"
+                self._logger.error(error_msg)
+                raise MissingDependencyError(
+                    message=error_msg,
+                    package_name="opacus, dp-accounting",
+                    install_command=ADVGAN_INSTALL_COMMAND,
+                ) from e
+            return DPflowAdvGANSynthesizer
 
         # If it's None, it's SDV which needs lazy loading
         if synthesizer_class is None and method_code == SynthesizerMap.SDV:

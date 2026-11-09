@@ -25,3 +25,26 @@ docker run -it --rm ghcr.io/moda-gov-tw/petsard:latest
 **可用標籤：**
 - `latest`、`main` - 最新版本（來自 main 分支）
 - 版本標籤（例如 `v1.10.1`、`v1.10`、`v1`）- 正式發布版本，於推送版本標籤時產生
+
+## Docker Compose：Windows 或無 NVIDIA GPU 環境
+
+以專案根目錄之 `compose.yml` 自行建置與啟動時，`compose.yml` 預設適用於具 NVIDIA GPU 之 Linux 主機：會保留 GPU，並掛載主機之 `/usr/bin/nvidia-smi` 與 `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`。Windows 之 Docker Desktop 沒有這兩個檔案，無 NVIDIA GPU 之電腦也無法滿足 GPU 保留設定，`docker compose up -d` 會因容器無法啟動而停止。`compose.yml` 不需修改，於同一資料夾新增 `compose.override.yml`（Docker Compose 2.24 以上版本會自動合併），再照常執行 `docker compose up -d` 即可。
+
+Windows 且有 NVIDIA GPU（容器仍可使用 GPU）：
+
+```yaml
+services:
+  petsard:
+    volumes: !override
+      - ./data:/app/data
+```
+
+無 NVIDIA GPU（只用 CPU）：
+
+```yaml
+services:
+  petsard:
+    volumes: !override
+      - ./data:/app/data
+    deploy: !reset {}
+```

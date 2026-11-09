@@ -3,7 +3,7 @@ title: "LLM Text Synthesizer"
 type: docs
 weight: 657
 prev: docs/petsard-yaml/synthesizer-yaml/advgan
-next: docs/petsard-yaml/synthesizer-yaml
+next: docs/petsard-yaml/synthesizer-yaml/dp-synthesizers
 ---
 
 The LLM text synthesizer generates synthetic free-text records with a large language model (LLM). It is designed for datasets in which each row is one self-contained piece of text, such as customer feedback, survey answers, support tickets, or system and network logs. The synthesizer prompts the model with examples drawn from the training data, refines the candidates over several rounds, and selects them with a differentially private nearest-neighbor vote, so no model fine-tuning is required.

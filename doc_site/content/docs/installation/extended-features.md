@@ -8,7 +8,7 @@ next: docs/installation
 
 For environments that use the **extended features** added in this edition.
 
-This edition adds three features to PETsARD: semi-structured JSON input and output with the AdvGAN synthesizer, a local-LLM text synthesizer with a text evaluator, and a missing-data compensation module offering Median, KNN and MICE. This page explains how to install PETsARD from the source code in editable mode, add the packages these features use, set up LM Studio for local large language model (LLM) inference, choose suitable hardware, and verify the installation.
+This edition adds four features to PETsARD: semi-structured JSON input and output with the AdvGAN synthesizer, a local-LLM text synthesizer with a text evaluator, a missing-data compensation module offering Median, KNN and MICE, and synthesizers that are differentially private over the whole flow (DP Copula, the updated DP AdvGAN and the DP LLM text synthesizer). This page explains how to install PETsARD from the source code in editable mode, add the packages these features use, set up LM Studio for local large language model (LLM) inference, choose suitable hardware, and verify the installation.
 
 ## Feature Requirements
 
@@ -19,6 +19,9 @@ This edition adds three features to PETsARD: semi-structured JSON input and outp
 | LLM text synthesizer | Synthesizer | sentence-transformers, faiss-cpu, tiktoken and the LLM SDKs (extra `llm`) | [LM Studio](https://lmstudio.ai) |
 | Text evaluator | Evaluator | None (uses the built-in PETsARD evaluators) | None |
 | Missing-data compensation | Preprocessor | None (uses scikit-learn) | None |
+| DP Copula | Synthesizer | None (uses scipy) | None |
+| Updated DP AdvGAN | Synthesizer | `opacus`, `dp-accounting` (extra `advgan`) | None; a CUDA GPU is used automatically when available |
+| DP LLM text synthesizer | Synthesizer | Same as the LLM text synthesizer (extra `llm`) | [LM Studio](https://lmstudio.ai) |
 
 {{< callout type="info" >}}
 `opacus` is installed with the `all` extra. PETsARD loads it only when `method: AdvGAN` is used; in an environment without it, the other synthesizers run as usual and selecting AdvGAN reports the missing package together with the install command.

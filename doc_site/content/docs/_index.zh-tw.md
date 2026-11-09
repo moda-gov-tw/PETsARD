@@ -26,12 +26,13 @@ PETsARD 採用模組化設計，透過 YAML 描述資料處理流程。系統整
 
 ## 本版新增功能
 
-本版將PETsARD適用範圍由結構化表格延伸至半結構化與非結構化資料，並於前處理新增缺失資料補償。既有設定檔可直接沿用，各項新功能於YAML中明確指定即可啟用。
+本版將PETsARD適用範圍由結構化表格延伸至半結構化與非結構化資料，於前處理新增缺失資料補償，並新增整個流程滿足差分隱私之合成器。既有設定檔可直接沿用，各項新功能於YAML中明確指定即可啟用。
 
 {{< cards >}}
 {{< card link="getting-started/json-advgan-synthesis" title="JSON資料與AdvGAN合成" icon="code" subtitle="以Loader與Reporter讀取及輸出JSON紀錄，並以AdvGAN合成器合成半結構化資料。" >}}
 {{< card link="getting-started/llm-text-synthesis" title="本機LLM文字合成" icon="chat-alt-2" subtitle="以本機大型語言模型生成合成文字，並以文字評測模組評估合成結果。" >}}
 {{< card link="getting-started/missing-compensation" title="缺失資料補償" icon="puzzle" subtitle="以公開或外部資料擬合Median、KNN或MICE補值策略，補償特徵欄位的缺失值。" >}}
+{{< card link="petsard-yaml/synthesizer-yaml/dp-synthesizers" title="差分隱私合成器" icon="shield-check" subtitle="以DP Copula、更新版DP AdvGAN或DP LLM文字合成器產生合成資料，整個流程滿足差分隱私並輸出隱私報告。" >}}
 {{< /cards >}}
 
 | 功能 | 模組 | 啟用方式 |
@@ -39,6 +40,7 @@ PETsARD 採用模組化設計，透過 YAML 描述資料處理流程。系統整
 | JSON讀取與輸出 | Loader、Reporter | `filepath`副檔名為`.json`；Reporter設定`type: 'json'` |
 | AdvGAN合成器 | Synthesizer | `method: 'AdvGAN'` |
 | LLM文字合成器 | Synthesizer | `method: custom_method`，並設定`class_name: LLM_synthesizer` |
+| 差分隱私合成器 | Synthesizer | `method: DPflow_Copula`、`method: DPflow_AdvGAN`；DP LLM文字合成器為`method: custom_method`，並設定`class_name: DP_LLM_synthesizer` |
 | 文字評測模組 | Evaluator | `method: custom_method`，並設定`class_name: TextEvaluator`或`TextEvaluatorWithControl` |
 | 缺失資料補償 | Preprocessor | `method: custom_method`，並設定`class_name: MissingCompensation`，以`missing_compensation.method`指定`median`、`knn`或`mice` |
 

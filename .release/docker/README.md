@@ -37,6 +37,31 @@ This file is automatically executed when the Docker container starts, no manual 
 - [`../../Dockerfile`](../../Dockerfile) - Main Docker build file 主要的 Docker 建置檔案
 - [`../../compose.yml`](../../compose.yml) - Docker Compose configuration file Docker Compose 配置檔案
 
+## Docker Compose on Windows or without an NVIDIA GPU Docker Compose：Windows 或無 NVIDIA GPU 環境
+
+`compose.yml` targets Linux hosts with an NVIDIA GPU: it reserves the GPU and mounts the host files `/usr/bin/nvidia-smi` and `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`. Docker Desktop on Windows does not have these two files, and a machine without an NVIDIA GPU cannot satisfy the GPU reservation, so `docker compose up -d` stops with a container start error. Keep `compose.yml` as it is, create `compose.override.yml` next to it (Docker Compose 2.24 or later reads it automatically) and run `docker compose up -d` as usual.
+
+`compose.yml` 預設適用於具 NVIDIA GPU 之 Linux 主機：會保留 GPU，並掛載主機之 `/usr/bin/nvidia-smi` 與 `/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1`。Windows 之 Docker Desktop 沒有這兩個檔案，無 NVIDIA GPU 之電腦也無法滿足 GPU 保留設定，`docker compose up -d` 會因容器無法啟動而停止。`compose.yml` 不需修改，於同一資料夾新增 `compose.override.yml`（Docker Compose 2.24 以上版本會自動合併），再照常執行 `docker compose up -d` 即可。
+
+- Windows with an NVIDIA GPU (GPU still available in the container) Windows 且有 NVIDIA GPU（容器仍可使用 GPU）：
+
+```yaml
+services:
+  petsard:
+    volumes: !override
+      - ./data:/app/data
+```
+
+- No NVIDIA GPU (CPU only) 無 NVIDIA GPU（只用 CPU）：
+
+```yaml
+services:
+  petsard:
+    volumes: !override
+      - ./data:/app/data
+    deploy: !reset {}
+```
+
 ## Maintenance Notes 維護注意事項
 
 - Docker image needs to be rebuilt after modifying `entrypoint.sh` 修改 `entrypoint.sh` 後需要重新建置 Docker 映像檔

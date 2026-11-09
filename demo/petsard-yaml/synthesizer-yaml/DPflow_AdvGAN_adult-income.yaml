@@ -1,0 +1,42 @@
+# Differentially private AdvGAN with declared column types (DPflow_AdvGAN) on the public Adult Income data.
+# 公開 Adult Income 資料的差分隱私 AdvGAN(依宣告型別，DPflow_AdvGAN)範例。
+#
+# Run from the repository root / 請在專案根目錄執行:
+#   python -c "from petsard import Executor; Executor(config='demo/petsard-yaml/synthesizer-yaml/DPflow_AdvGAN_adult-income.yaml').run()"
+#
+# Needs the advgan extra (opacus, dp-accounting): pip install -e ".[advgan]"
+# 需要 advgan 擴充套件(opacus、dp-accounting)。
+#
+# - The budget (epsilon, delta) covers the whole flow: noisy histograms, a noisy copula and the DP-SGD
+#   discriminator. The DP-SGD noise multiplier is solved so that the accounted epsilon does not exceed the target;
+#   the privacy report gives the value reached.
+#   預算(ε, δ)涵蓋整個流程：加噪直方圖、加噪 copula 與以 DP-SGD 訓練的鑑別器；DP-SGD 噪音倍數依目標求解，
+#   帳目上的 ε 不會超過設定值，實際值寫在隱私報告。
+# - epochs: 1 keeps the example short. Raise it (and keep batch_size well below the row count) for real use.
+#   範例以 epochs: 1 快速完成；實際使用時調高。
+# - Do not add a Preprocessor; seed is optional (see DPflow_Copula_adult-income.yaml).
+#   不要加 Preprocessor；seed 可省略(說明同 DPflow_Copula_adult-income.yaml)。
+---
+Loader:
+  load_adult:
+    filepath: benchmark://adult-income
+Synthesizer:
+  dp_advgan:
+    method: DPflow_AdvGAN
+    column_spec: demo/petsard-yaml/synthesizer-yaml/adult-income_column_spec.yaml
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 1
+    batch_size: 256
+    sample_num_rows: 48842
+    keep_from_seed: [income]   # the generator keeps this column from the DP seed / 此欄維持 DP 種子值
+    share_histograms: 0.1
+    share_copula: 0.6
+    seed: 0
+    privacy_report: ./dp_advgan_adult-income_privacy_report.json
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Synthesizer
+    output: dp_advgan_adult-income
+...

@@ -23,10 +23,13 @@ declares the license expression `MIT AND Apache-2.0`.
 | --- | --- | --- | --- |
 | Aug-PE, Private Evolution for text (Xie et al., ICML 2024) | `petsard/synthesizer/LLM_synth/` (see `NOTICE` there) | https://github.com/AI-secure/aug-pe, commit `a3f292f6fec7427b6a6e6d982b83b68c1f0a86d5` | Apache License 2.0; full text in `petsard/synthesizer/LLM_synth/LICENSE-APACHE-2.0.txt` |
 | DPSDA, Private Evolution for images (Lin et al., ICLR 2024) | basis of Aug-PE, as acknowledged by the Aug-PE authors | https://github.com/microsoft/DPSDA | MIT License, Copyright (c) Microsoft Corporation |
+| Aug-PE (as above), modified for the differentially private LLM synthesizer | `petsard/synthesizer/DP_LLM_synth/` (see `NOTICE` there), used by `DP_LLM_synthesizer.py` | derived from `petsard/synthesizer/LLM_synth/` above, with 2026 modifications for differential privacy | Apache License 2.0 for the files adapted from Aug-PE (full text in `petsard/synthesizer/DP_LLM_synth/LICENSE-APACHE-2.0.txt`); the new files `accountant.py`, `dp_random.py`, `label_vote.py` and `profile.py` are MIT |
 
 The files adapted from Aug-PE carry a header naming their origin and the
 2026 modification, and `petsard/synthesizer/LLM_synth/NOTICE` lists each
-file with a summary of the changes.
+file with a summary of the changes. `petsard/synthesizer/DP_LLM_synth/` is a
+modified version of `LLM_synth/`, not an unmodified copy: its `NOTICE` lists
+the files that differ from `LLM_synth/` and the four new MIT-licensed files.
 
 `petsard/synthesizer/LLM_synth/synthetic_data/dpsda/metrics.py` is an
 original implementation written in 2026 from the published definitions of the
@@ -44,7 +47,7 @@ OpenAI-compatible server. Model weights are not included in this package.
 | --- | --- | --- | --- |
 | `sentence-transformers/all-MiniLM-L6-v2` | LLM synthesizer embeddings (default `feature_extractor`) | Apache-2.0 | https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2 |
 | `sentence-transformers/all-mpnet-base-v2` | default model of `extract_features` in `LLM_synth/synthetic_data/feature_extractor.py` | Apache-2.0 | https://huggingface.co/sentence-transformers/all-mpnet-base-v2 |
-| `openai/gpt-oss-20b` | LLM for the LLM example configurations in `demo/petsard-yaml/` | Apache-2.0 | https://huggingface.co/openai/gpt-oss-20b |
+| `openai/gpt-oss-20b` | LLM for the LLM example configurations in `demo/petsard-yaml/`, including the differentially private text example `dp-llm-synthesizer_bloodpressure.yaml` | Apache-2.0 | https://huggingface.co/openai/gpt-oss-20b |
 | Gemma 4 12B QAT (LM Studio ID `google/gemma-4-12b-qat`) | LLM for the LLM example configurations in `demo/petsard-yaml/` | Apache-2.0 | https://huggingface.co/google/gemma-4-12B-it-qat-q4_0-gguf |
 
 ## 4. Public Datasets

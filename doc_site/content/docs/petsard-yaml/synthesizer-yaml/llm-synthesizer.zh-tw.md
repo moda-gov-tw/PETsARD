@@ -3,7 +3,7 @@ title: "LLM文字合成器"
 type: docs
 weight: 657
 prev: docs/petsard-yaml/synthesizer-yaml/advgan
-next: docs/petsard-yaml/synthesizer-yaml
+next: docs/petsard-yaml/synthesizer-yaml/dp-synthesizers
 ---
 
 LLM文字合成器以大型語言模型(LLM)生成合成的自由文字紀錄，適用於每列為1段完整文字資料，例如顧客意見、問卷回答、客服工單，以及系統或網路日誌。合成器以訓練資料中的紀錄作為範例提示模型，經多輪變異改寫候選文字，並以差分隱私最近鄰投票挑選候選，全程不需對模型進行微調。

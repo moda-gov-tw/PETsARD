@@ -92,6 +92,7 @@ AdvGAN完整參數請參見「[AdvGAN合成器](advgan)」文件。
 
 3. **[自訂合成方法](custom-method)**
    - 使用 `custom_method` 整合自行開發的合成演算法
+   - **[差分隱私合成器](dp-synthesizers)**：`DPflow_Copula`、`DPflow_AdvGAN`與DP LLM文字合成器，從讀入資料到輸出的整個流程滿足差分隱私，並輸出隱私報告；欄位型別由`column_spec`宣告，不使用Preprocessor
    - **[LLM文字合成器](llm-synthesizer)**：以本機大型語言模型生成非結構化的合成文字，透過`custom_method`載入，設定`module_path: petsard/synthesizer/LLM_synthesizer.py`與`class_name: LLM_synthesizer`
 
 4. **[外部資料載入](custom-data)**

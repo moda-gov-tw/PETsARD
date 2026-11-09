@@ -94,6 +94,7 @@ This module supports the following four ways to generate or load synthetic data:
 
 3. **[Custom Synthesis Methods](custom-method)**
    - Use `custom_method` to integrate your own synthesis algorithms
+   - **[Differentially Private Synthesizers](dp-synthesizers)**: `DPflow_Copula`, `DPflow_AdvGAN` and the DP LLM text synthesizer; the whole flow from reading the data to the output is differentially private and a privacy report is written; column types are declared in `column_spec`, without a Preprocessor
    - **[LLM Text Synthesizer](llm-synthesizer)**: Generates synthetic unstructured text with a locally hosted large language model, loaded through `custom_method` with `module_path: petsard/synthesizer/LLM_synthesizer.py` and `class_name: LLM_synthesizer`
 
 4. **[External Data Loading](custom-data)**

@@ -19,12 +19,15 @@ keywords = [
 ]
 readme = "README.md" # README file displayed on PyPI project page / PyPI 專案頁面顯示的 README 文件
 license = "MIT AND Apache-2.0"  # SPDX license expression (PEP 639); Apache-2.0 covers the Aug-PE files in LLM_synth / SPDX 授權表示式（PEP 639）；Apache-2.0 適用於 LLM_synth 中改寫自 Aug-PE 之檔案
-# License files included in the distribution (LLM_synth: adapted Aug-PE code, Apache-2.0)
-# 隨發行檔附帶的授權檔（LLM_synth：改寫自 Aug-PE 之程式，Apache-2.0）
+# License files included in the distribution (LLM_synth and DP_LLM_synth: adapted Aug-PE code, Apache-2.0;
+# the four new files in DP_LLM_synth are MIT, see its NOTICE)
+# 隨發行檔附帶的授權檔（LLM_synth、DP_LLM_synth：改寫自 Aug-PE 之程式，Apache-2.0；DP_LLM_synth 新撰之4個檔案為 MIT，見其 NOTICE）
 license-files = [
     "LICENSE",
     "petsard/synthesizer/LLM_synth/LICENSE-APACHE-2.0.txt",
     "petsard/synthesizer/LLM_synth/NOTICE",
+    "petsard/synthesizer/DP_LLM_synth/LICENSE-APACHE-2.0.txt",
+    "petsard/synthesizer/DP_LLM_synth/NOTICE",
     "THIRD_PARTY_NOTICES.md",
 ]
 classifiers = [
@@ -130,6 +133,7 @@ syn = [
     {include-group = "base-common"},
     "torch>=2.13.0,<3",   # PyTorch deep learning models / PyTorch 深度學習模型
     "opacus>=1.5.4,<2",   # DP-SGD for the AdvGAN synthesizer, imported only when AdvGAN is used / AdvGAN 合成器的 DP-SGD，僅於使用 AdvGAN 時載入
+    "dp-accounting>=0.6,<0.7",   # Privacy accounting (RDP) for the DPflow_* synthesizers in petsard/synthesizer / DPflow 差分隱私合成器之隱私帳目
     # Shared synthesis dependencies
     "scipy>=1.15.3,<2 ; python_full_version < '3.11'",
     "scipy>=1.16.0,<2 ; python_full_version >= '3.11'",
@@ -164,6 +168,16 @@ jupyter = [
     "prompt-toolkit>=3.0.52,<4",
     "psutil>=7.0.0,<8",
     "tornado>=6.6,<7 ; python_full_version >= '3.11'",       # Jupyter server; 6.6 fixes CVE-2026-115927/116577/116578 / Jupyter 伺服器元件，6.6 修正上述弱點
+]
+
+# Optional evaluation scripts for experiments with the DPflow_* synthesizers; not needed by the library.
+# The scripts require Python 3.11 (Python 3.10 would resolve pillow 12.x through catboost/matplotlib).
+# 搭配 DPflow_* 合成器之實驗評估腳本(選用)；套件本身不需要。評估腳本需 Python 3.11
+experiment = [
+    {include-group = "syn"},
+    "polars>=1.30,<3 ; python_full_version >= '3.11'",         # Text evaluation scripts / 文字評估腳本
+    "pyarrow>=23.0.1,<27 ; python_full_version >= '3.11'",     # Reading parquet files / 讀取 parquet
+    "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",      # Utility evaluation of tabular results / 表格結果之效用評估
 ]
 
 # Excel file support
@@ -239,6 +253,7 @@ all = [
     # syn (PyTorch and dependencies)
     "torch>=2.13.0,<3",
     "opacus>=1.5.4,<2",
+    "dp-accounting>=0.6,<0.7",
     "fsspec>=2026.6.0",
     "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",
     "jinja2>=3.1.6,<4",
@@ -273,6 +288,15 @@ dev = [
 advgan = [
     "torch>=2.13.0,<3",
     "opacus>=1.5.4,<2",
+    "dp-accounting>=0.6,<0.7",   # DPflow_* synthesizers (dpflow) / DPflow 差分隱私合成器
+]
+# Optional experiment evaluation scripts (Python 3.11)
+# 實驗評估腳本(選用，需 Python 3.11)
+experiment = [
+    "dp-accounting>=0.6,<0.7",
+    "polars>=1.30,<3 ; python_full_version >= '3.11'",
+    "pyarrow>=23.0.1,<27 ; python_full_version >= '3.11'",
+    "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",
 ]
 # LLM text synthesizer
 # LLM 文字合成器

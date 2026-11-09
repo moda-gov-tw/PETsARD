@@ -1,0 +1,54 @@
+# Differentially private LLM text synthesizer on the public blood-pressure sentences (benchmark://bloodpressure-text).
+# 公開血壓紀錄句子(benchmark://bloodpressure-text)的差分隱私 LLM 文字合成器範例。
+#
+# Run from the repository root with LM Studio serving the model on this computer:
+# 請先在本機以 LM Studio 載入模型，再於專案根目錄執行：
+#   python -c "from petsard import Executor; Executor(config='demo/petsard-yaml/synthesizer-yaml/dp-llm-synthesizer_bloodpressure.yaml').run()"
+#
+# - The only step that reads the data is the release of a differentially private data profile (structure items,
+#   frequent words and phrases, length). The whole budget (epsilon, delta) is spent there. With epochs: 0 the
+#   model writes every row from that released profile only, which is post-processing and spends nothing more.
+#   唯一讀取資料的步驟是釋出差分隱私資料輪廓(結構、常見詞彙與片語、長度)，預算(ε, δ)全花在這一步；
+#   epochs: 0 時模型只依釋出的輪廓生成，屬於後處理，不再花預算。
+# - The profile is written to output_dir/profile.json. Every new release spends epsilon again, and epsilon adds up
+#   over all releases that are used. To generate more rows from the same release, keep output_dir and add
+#   require_released_profile: true, which stops the run if the file is missing.
+#   輪廓存在 output_dir/profile.json。每釋出一次就再花一次 ε，被使用的各次釋出 ε 相加；要用同一份輪廓再生成，
+#   保留 output_dir 並加上 require_released_profile: true(缺檔時會停止)。
+# - api_type is required. lmstudio keeps every prompt on this computer. The prompts hold only the released profile,
+#   never a data row.
+#   api_type 必填；lmstudio 使提示只送到本機；提示只含已釋出的輪廓，不含任何資料列。
+# - This file has about 100 rows, so few profile items pass the release threshold; the example shows the flow, not
+#   the utility reached on larger data.
+#   本資料約 100 筆，能通過釋出門檻的輪廓項目很少；範例用來示範流程，不代表較大資料的效用。
+---
+Loader:
+  load_text:
+    filepath: benchmark://bloodpressure-text
+Synthesizer:
+  dp_llm:
+    method: custom_method
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 0
+    stop_after_epoch: 0
+    num_samples_schedule: 20
+    sample_num_rows: 20
+    api_type: lmstudio
+    api_url: "http://127.0.0.1:1234/v1"
+    api_key: lm-studio                # LM Studio does not check this value / LM Studio 不檢查此值
+    model: openai/gpt-oss-20b         # use the model id LM Studio shows / 填 LM Studio 顯示的模型 ID
+    temperature: 1.0
+    num_procs: 4
+    sleep_time: 0
+    max_retries: 3
+    output_dir: ./dp_llm_bloodpressure_output
+    log_folder: ./dp_llm_bloodpressure_logs
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Synthesizer
+    output: dp_llm_bloodpressure
+...
