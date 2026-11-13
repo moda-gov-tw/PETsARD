@@ -1,8 +1,8 @@
 # PETsARD 教學範例 Tutorial Examples
 
-本資料夾為PETsARD教學課程的實作範例，涵蓋結構化資料(CSV)、半結構化資料(JSON)及非結構化資料(文字)的合成。範例資料均為公開資料集或教學示範資料，可直接執行。
+本資料夾為PETsARD教學課程的實作範例，涵蓋結構化資料(CSV)、半結構化資料(JSON)及非結構化資料(文字)的合成，以及三種差分隱私合成方法。範例資料均為公開資料集或教學示範資料，可直接執行。
 
-This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV), semi-structured (JSON) and unstructured (text) data. All example data are public datasets or teaching samples.
+This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV), semi-structured (JSON) and unstructured (text) data, and three differentially private synthesizers. All example data are public datasets or teaching samples.
 
 ## 安裝與執行 Installation and Run (Windows)
 
@@ -67,6 +67,29 @@ The YAML configurations used by each script are in `demo_csv/configs`, `demo_jso
    cd tutorial
    python -X utf8 run_llm1.py
    ```
+
+## 差分隱私合成方法 Differentially Private Synthesizers
+
+以下三個範例使用PETsARD的差分隱私合成器，同樣在 `tutorial` 資料夾執行。隱私預算(ε、δ)在 `demo_dp/configs` 的設定檔中設定，執行完成時畫面會顯示設定值與實際使用的ε。最近一次執行的隱私報告存在 `demo_dp/output`(dp-llm-synth在 `demo_dp/output/dp_llm_bloodpressure_output/privacy_report.json`)，重新執行會覆寫。同一份資料每合成一次就使用一次隱私預算，多次被使用或公開的結果，ε要相加。方法說明見文件網站「差分隱私合成器」頁(https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。
+
+The three examples below use the differentially private synthesizers of PETsARD and also run from the `tutorial` folder. The privacy budget (ε, δ) is set in the YAML files in `demo_dp/configs`; each run prints the target and the spent ε. The privacy report of the latest run is written to `demo_dp/output` (for dp-llm-synth, `demo_dp/output/dp_llm_bloodpressure_output/privacy_report.json`) and is overwritten by the next run. Every synthesis run on the same data spends the budget again, and ε adds up over all results that are used or released. See the documentation page "Differentially Private Synthesizers" (https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/).
+
+```bat
+cd C:\petsard\PETsARD-main	utorial
+python -X utf8 run_dp1_copula.py
+python -X utf8 run_dp2_advgan.py
+python -X utf8 run_dp3_llm.py
+```
+
+| 執行程式 Script | 方法 Method | 範例資料 Data | 設定檔 Configuration |
+|---|---|---|---|
+| `run_dp1_copula.py` | DP Copula(`DPflow_Copula`) | `demo_csv/data/adult_income.csv` | `demo_dp/configs/dp_copula_adult_income.yaml` |
+| `run_dp2_advgan.py` | 更新版DP AdvGAN Updated DP AdvGAN(`DPflow_AdvGAN`) | `demo_csv/data/adult_income.csv` | `demo_dp/configs/dp_advgan_adult_income.yaml` |
+| `run_dp3_llm.py` | dp-llm-synth(DP LLM文字合成器，`DP_LLM_synthesizer`) | `demo_llm/real_bloodpressure2.csv` | `demo_dp/configs/dp_llm_bloodpressure.yaml` |
+
+兩個結構化資料範例使用公開的欄位宣告 `demo_dp/configs/adult_income_column_spec.yaml`。`run_dp3_llm.py` 需要先完成上一節「非結構化資料範例」的套件安裝與LM Studio設定；程式會先確認LM Studio已提供設定檔中的模型，未開啟時直接停止，不讀取資料，也不使用隱私預算。執行時畫面出現的Warning訊息為套件提示，不影響結果。
+
+The two structured-data examples use the public column declaration `demo_dp/configs/adult_income_column_spec.yaml`. `run_dp3_llm.py` needs the packages and the LM Studio setup of the text example above; it first checks that LM Studio serves the configured model and stops without reading the data or spending budget if it does not. Warning messages printed during the runs come from the packages and do not affect the results.
 
 ## 再次使用 Next Time
 

@@ -1,0 +1,57 @@
+# Column declaration (column_spec) for the public Adult Income benchmark, used by the DPflow_Copula and
+# DPflow_AdvGAN examples. 公開 Adult Income 範例資料的欄位宣告，供 DPflow_Copula 與 DPflow_AdvGAN 範例使用。
+#
+# Everything here comes from the published description of the dataset (UCI Machine Learning Repository,
+# adult.names), not from statistics of the data file. A differentially private synthesizer treats this
+# declaration as public information, so the column types and category lists use no privacy budget.
+# 本檔內容取自資料集公開說明(UCI adult.names)，不是由資料檔統計而來。差分隱私合成器將此宣告視為公開資訊，欄位型別與類別清單不需耗用隱私預算。
+#
+# Format / 格式:
+#   name     column name / 欄位名稱
+#   type     num (numeric 數值) or cat (categorical 類別)
+#   values   every possible value of a categorical column / 類別欄所有可能的值
+#   integer  true for numeric columns that only hold whole numbers / 只有整數的數值欄設為 true
+#
+# Missing values: the file marks unknown values with "?". Here "?" is declared as one more category of the
+# three columns that use it, a fixed public rule that needs no statistic of the data.
+# 缺值：資料檔以「?」表示未知。此處把「?」宣告為這三個欄位的一個類別，屬於不需資料統計的固定公開規則。
+columns:
+  - {name: age, type: num, integer: true}
+  - name: workclass
+    type: cat
+    values: [Private, Self-emp-not-inc, Self-emp-inc, Federal-gov, Local-gov, State-gov, Without-pay, Never-worked, "?"]
+  - {name: fnlwgt, type: num, integer: true}
+  - name: education
+    type: cat
+    values: [Bachelors, Some-college, 11th, HS-grad, Prof-school, Assoc-acdm, Assoc-voc, 9th, 7th-8th, 12th, Masters,
+             1st-4th, 10th, Doctorate, 5th-6th, Preschool]
+  - {name: educational-num, type: num, integer: true}
+  - name: marital-status
+    type: cat
+    values: [Married-civ-spouse, Divorced, Never-married, Separated, Widowed, Married-spouse-absent, Married-AF-spouse]
+  - name: occupation
+    type: cat
+    values: [Tech-support, Craft-repair, Other-service, Sales, Exec-managerial, Prof-specialty, Handlers-cleaners,
+             Machine-op-inspct, Adm-clerical, Farming-fishing, Transport-moving, Priv-house-serv, Protective-serv,
+             Armed-Forces, "?"]
+  - name: relationship
+    type: cat
+    values: [Wife, Own-child, Husband, Not-in-family, Other-relative, Unmarried]
+  - name: race
+    type: cat
+    values: [White, Asian-Pac-Islander, Amer-Indian-Eskimo, Other, Black]
+  - name: gender
+    type: cat
+    values: [Female, Male]
+  - {name: capital-gain, type: num, integer: true}
+  - {name: capital-loss, type: num, integer: true}
+  - {name: hours-per-week, type: num, integer: true}
+  - name: native-country
+    type: cat
+    values: [United-States, Cambodia, England, Puerto-Rico, Canada, Germany, Outlying-US(Guam-USVI-etc), India, Japan,
+             Greece, South, China, Cuba, Iran, Honduras, Philippines, Italy, Poland, Jamaica, Vietnam, Mexico, Portugal,
+             Ireland, France, Dominican-Republic, Laos, Ecuador, Taiwan, Haiti, Columbia, Hungary, Guatemala, Nicaragua,
+             Scotland, Thailand, Yugoslavia, El-Salvador, Trinadad&Tobago, Peru, Hong, Holand-Netherlands, "?"]
+  - name: income
+    type: cat
+    values: ["<=50K", ">50K"]

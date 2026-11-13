@@ -12,9 +12,9 @@
 #   epochs: 0 時模型只依釋出的輪廓生成，屬於後處理，不再花預算。
 # - The profile is written to output_dir/profile.json. Every new release spends epsilon again, and epsilon adds up
 #   over all releases that are used. To generate more rows from the same release, keep output_dir and add
-#   require_released_profile: true, which stops the run if the file is missing.
+#   continue: true and require_released_profile: true, which stops the run if the file is missing.
 #   輪廓存在 output_dir/profile.json。每釋出一次就再花一次 ε，被使用的各次釋出 ε 相加；要用同一份輪廓再生成，
-#   保留 output_dir 並加上 require_released_profile: true(缺檔時會停止)。
+#   保留 output_dir 並加上 continue: true 與 require_released_profile: true(缺檔時會停止)。
 # - api_type is required. lmstudio keeps every prompt on this computer. The prompts hold only the released profile,
 #   never a data row.
 #   api_type 必填；lmstudio 使提示只送到本機；提示只含已釋出的輪廓，不含任何資料列。

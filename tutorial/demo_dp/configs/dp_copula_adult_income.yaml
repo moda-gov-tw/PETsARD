@@ -1,0 +1,35 @@
+# Differentially private Gaussian copula (DPflow_Copula) on the public Adult Income data.
+# 公開 Adult Income 資料的差分隱私高斯耦合(DPflow_Copula)範例。
+#
+# Run from tutorial/:  python -X utf8 run_dp1_copula.py
+# 請在 tutorial 資料夾執行：python -X utf8 run_dp1_copula.py
+#
+# - The whole flow from the data to the synthetic table is (epsilon, delta)-differentially private for adding or
+#   removing one row. If one person can have several rows, the guarantee is per row; see the documentation page
+#   "Differentially Private Synthesizers".
+#   從資料到合成表的整個流程，對新增或移除一筆資料滿足(ε, δ)差分隱私；同一個人有多筆資料時，保證以「每一筆」計算，
+#   詳見文件「差分隱私合成器」。
+# - Do not add a Preprocessor: DPflow_Copula processes the data within its differentially private flow, and column
+#   types come from the public column declaration (column_spec).
+#   不要加Preprocessor：DPflow_Copula於差分隱私流程內處理資料，欄位型別取自公開的欄位宣告(column_spec)。
+# - seed is optional. Keep it to reproduce a run; leave it out for a real release, so the noise comes from the
+#   operating system and cannot be recomputed.
+#   seed 可省略：要重現結果時保留；正式釋出時不設，噪音改由作業系統亂數產生，無法由設定檔重算。
+---
+Loader:
+  load_adult:
+    filepath: ./demo_csv/data/adult_income.csv
+Synthesizer:
+  dp_copula:
+    method: DPflow_Copula
+    column_spec: ./demo_dp/configs/adult_income_column_spec.yaml
+    epsilon: 8
+    delta: 1.0e-5
+    seed: 0
+    privacy_report: ./demo_dp/output/dp_copula_adult_income_privacy_report.json
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Synthesizer
+    output: ./demo_dp/output/dp_copula_adult_income
+...
