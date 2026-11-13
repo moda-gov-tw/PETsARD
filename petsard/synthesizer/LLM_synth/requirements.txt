@@ -31,6 +31,8 @@ faiss-cpu>=1.7.4
 
 # --- Hugging Face datasets (aug-pe/dpsda/data_loader.py for built-in sets) ---
 datasets>=5.0.1
+# pyarrow 26 requires NumPy 2, while PETsARD uses NumPy 1.x / pyarrow 26 版需 NumPy 2，故限 <26
+pyarrow<26
 
 # --- Metrics (aug-pe/dpsda/metrics.py — FID / k-NN precision-recall) ---
 scipy>=1.10.0
