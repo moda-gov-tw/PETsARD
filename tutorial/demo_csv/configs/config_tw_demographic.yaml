@@ -1,0 +1,41 @@
+Loader:
+  load_demo:
+    filepath: ./demo_csv/data/tw_demographic.csv
+    schema: ./demo_csv/schemas/schema_tw_demographic.yaml
+
+Splitter:
+  basic_split:
+    num_samples: 1
+    train_split_ratio: 0.8
+
+Preprocessor:
+  preprocess:
+    method: default
+    # 處理序列不含outlier，保留全部資料列，與其他CSV範例之前處理設定一致
+    sequence: [missing, encoder, scaler]
+
+Synthesizer:
+  gaussian_copula:
+    method: default
+
+Postprocessor:
+  postprocess:
+    method: default
+
+Evaluator:
+  validity_check:
+    method: sdmetrics-diagnosticreport
+
+Reporter:
+  save_data:
+    method: save_data
+    source: Postprocessor
+    output: ./demo_csv/output/tw_demographic
+
+  evaluation_report:
+    method: save_report
+    output: ./demo_csv/output/tw_demographic
+    granularity:
+      - global
+      - columnwise
+      - pairwise

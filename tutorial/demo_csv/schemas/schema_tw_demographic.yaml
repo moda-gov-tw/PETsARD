@@ -1,0 +1,40 @@
+id: tw-demographic-salary
+name: "台灣人口薪資簡表"
+description: "個人基本屬性與月薪資料"
+
+attributes:
+  年齡:
+    type: integer
+    description: "受訪者年齡"
+
+  性別:
+    type: string
+    description: "男/女"
+    category: true
+
+  縣市:
+    type: string
+    description: "居住縣市(台北市/新北市/高雄市 等)"
+    category: true
+
+  教育程度:
+    type: string
+    description: "最高學歷(國中/高中/專科/大學/研究所)"
+    category: true
+    na_values: ""
+
+  職業:
+    type: string
+    description: "職業類別(教師/製造業/服務業 等)"
+    category: true
+    na_values: ""
+
+  月薪:
+    type: integer
+    description: "月薪(新台幣)"
+    na_values: ""
+
+  婚姻狀態:
+    type: string
+    description: "已婚/未婚/離婚/喪偶"
+    category: true

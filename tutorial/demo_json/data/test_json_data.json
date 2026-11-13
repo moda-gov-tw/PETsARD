@@ -1,0 +1,242 @@
+[
+  {
+    "age": 25,
+    "height_cm": 150.0,
+    "systolic": 105,
+    "diastolic": 65,
+    "sex": "M",
+    "smoker": "yes"
+  },
+  {
+    "age": 62,
+    "height_cm": 161.5,
+    "systolic": 118,
+    "diastolic": 72,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 54,
+    "height_cm": 172.0,
+    "systolic": 131,
+    "diastolic": 79,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 46,
+    "height_cm": 183.5,
+    "systolic": 144,
+    "diastolic": 86,
+    "sex": "F",
+    "smoker": "yes"
+  },
+  {
+    "age": 38,
+    "height_cm": 154.0,
+    "systolic": 117,
+    "diastolic": 68,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 30,
+    "height_cm": 165.5,
+    "systolic": 130,
+    "diastolic": 75,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 67,
+    "height_cm": 176.0,
+    "systolic": 143,
+    "diastolic": 82,
+    "sex": "M",
+    "smoker": "yes"
+  },
+  {
+    "age": 59,
+    "height_cm": null,
+    "systolic": 116,
+    "diastolic": 89,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 51,
+    "height_cm": 158.0,
+    "systolic": 129,
+    "diastolic": 71,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 43,
+    "height_cm": 169.5,
+    "systolic": 142,
+    "diastolic": 78,
+    "sex": "F",
+    "smoker": "yes"
+  },
+  {
+    "age": 35,
+    "height_cm": 180.0,
+    "systolic": 115,
+    "diastolic": 85,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 27,
+    "height_cm": 151.5,
+    "systolic": 128,
+    "diastolic": 67,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 64,
+    "height_cm": 162.0,
+    "systolic": 141,
+    "diastolic": 74,
+    "sex": "M",
+    "smoker": "yes"
+  },
+  {
+    "age": 56,
+    "height_cm": 173.5,
+    "systolic": 114,
+    "diastolic": 81,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 48,
+    "height_cm": 184.0,
+    "systolic": 127,
+    "diastolic": 88,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 40,
+    "height_cm": 155.5,
+    "systolic": 140,
+    "diastolic": 70,
+    "sex": "F",
+    "smoker": "yes"
+  },
+  {
+    "age": 32,
+    "height_cm": 166.0,
+    "systolic": 113,
+    "diastolic": 77,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 69,
+    "height_cm": 177.5,
+    "systolic": 126,
+    "diastolic": 84,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 61,
+    "height_cm": 188.0,
+    "systolic": 139,
+    "diastolic": 66,
+    "sex": "M",
+    "smoker": "yes"
+  },
+  {
+    "age": 53,
+    "height_cm": 159.5,
+    "systolic": 112,
+    "diastolic": 73,
+    "sex": "F",
+    "smoker": null
+  },
+  {
+    "age": 45,
+    "height_cm": 170.0,
+    "systolic": 125,
+    "diastolic": 80,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 37,
+    "height_cm": 181.5,
+    "systolic": 138,
+    "diastolic": 87,
+    "sex": "F",
+    "smoker": "yes"
+  },
+  {
+    "age": 29,
+    "height_cm": 152.0,
+    "systolic": 111,
+    "diastolic": 69,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 66,
+    "height_cm": 163.5,
+    "systolic": 124,
+    "diastolic": 76,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 58,
+    "height_cm": 174.0,
+    "systolic": 137,
+    "diastolic": 83,
+    "sex": "M",
+    "smoker": "yes"
+  },
+  {
+    "age": 50,
+    "height_cm": 185.5,
+    "systolic": 110,
+    "diastolic": 65,
+    "sex": "F",
+    "smoker": "no"
+  },
+  {
+    "age": 42,
+    "height_cm": 156.0,
+    "systolic": 123,
+    "diastolic": 72,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 34,
+    "height_cm": 167.5,
+    "systolic": 136,
+    "diastolic": 79,
+    "sex": "F",
+    "smoker": "yes"
+  },
+  {
+    "age": 26,
+    "height_cm": 178.0,
+    "systolic": 109,
+    "diastolic": 86,
+    "sex": "M",
+    "smoker": "no"
+  },
+  {
+    "age": 63,
+    "height_cm": 189.5,
+    "systolic": 122,
+    "diastolic": 68,
+    "sex": "F",
+    "smoker": "no"
+  }
+]

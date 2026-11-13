@@ -1,0 +1,74 @@
+# Adult Income Dataset Schema Definition
+# This schema defines the metadata for the Adult Income (Census) dataset
+# Used for benchmark:// protocol schema loading
+
+# Required Schema parameters
+id: adult-income
+name: "Adult Income Dataset"
+description: "1994 Census database for income prediction (>50K or <=50K)"
+
+# Global parameters
+# compute_stats: true
+# leading_zeros: never
+
+
+# Attributes definitions
+attributes:
+  age:
+    type: integer
+    description: "Age of the individual"
+  workclass:
+    type: string
+    category: true
+    description: "Employment type"
+    na_values: "?"
+  fnlwgt:
+    type: integer
+    description: "Final weight (number of people the census believes the entry represents)"
+  education:
+    type: string
+    category: true
+    description: "Highest level of education"
+    na_values: "?"
+  educational-num:
+    type: integer
+    description: "Number of education years"
+  marital-status:
+    type: string
+    category: true
+    description: "Marital status"
+  occupation:
+    type: string
+    category: true
+    description: "Occupation"
+    na_values: "?"
+  relationship:
+    type: string
+    category: true
+    description: "Relationship to household"
+  race:
+    type: string
+    category: true
+    description: "Race"
+  gender:
+    type: string
+    category: true
+    description: "Biological sex"
+  capital-gain:
+    type: integer
+    description: "Capital gains"
+  capital-loss:
+    type: integer
+    description: "Capital losses"
+  hours-per-week:
+    type: integer
+    description: "Hours worked per week"
+  native-country:
+    type: string
+    category: true
+    description: "Country of origin"
+    na_values: "?"
+  income:
+    type: string
+    category: true
+    description: "Income class (target variable)"

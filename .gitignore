@@ -147,3 +147,10 @@ demo_*/output/*
 *.zip
 *.7z
 *.rar
+
+# Tutorial examples: keep the example data, ignore generated outputs
+# 教學範例：保留範例資料，忽略執行產生的輸出
+!tutorial/demo_csv/data/*.csv
+!tutorial/demo_llm/*.csv
+tutorial/demo_*/output/*
+!tutorial/demo_*/output/.gitkeep

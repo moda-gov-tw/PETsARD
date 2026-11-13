@@ -1,0 +1,95 @@
+# ============================================================
+# Schema · UCI Bank Marketing
+# ============================================================
+
+id: bank-marketing
+name: "UCI Bank Marketing"
+description: "銀行電話行銷活動的客戶回應資料"
+
+attributes:
+  # ── 客戶基本資料 ──────────────────────────────
+
+  age:
+    type: integer
+    description: "客戶年齡"
+
+  job:
+    type: string
+    category: true
+    description: "職業類別(admin / technician / services等12類)"
+    na_values: "unknown"
+
+  marital:
+    type: string
+    category: true
+    description: "婚姻狀態(married / single / divorced)"
+
+  education:
+    type: string
+    category: true
+    description: "教育程度(primary / secondary / tertiary)"
+    na_values: "unknown"
+
+  # ── 財務狀況 ──────────────────────────────────
+
+  default:
+    type: string
+    category: true
+    description: "是否有信用違約紀錄(yes / no)"
+
+  balance:
+    type: integer
+    description: "年度平均帳戶餘額(歐元)，可能為負值"
+    precision: 0
+
+  housing:
+    type: string
+    category: true
+    description: "是否有房貸(yes / no)"
+
+  loan:
+    type: string
+    category: true
+    description: "是否有個人貸款(yes / no)"
+
+  # ── 本次活動聯繫紀錄 ──────────────────────────
+
+  contact:
+    type: string
+    category: true
+    description: "聯繫方式(cellular / telephone)"
+    na_values: "unknown"
+
+  day:
+    type: integer
+    category: true
+    description: "最後聯繫日(月份中的第幾天，1-31)"
+
+  month:
+    type: string
+    category: true
+    description: "最後聯繫月份(jan-dec縮寫)"
+
+  campaign:
+    type: integer
+    description: "本次活動中對此客戶的聯繫次數"
+
+  # ── 歷史活動紀錄 ──────────────────────────────
+
+  pdays:
+    type: integer
+    description: "距上次活動聯繫的天數，-1代表從未聯繫過"
+
+  previous:
+    type: integer
+    description: "本次活動前對此客戶的聯繫次數"
+
+  poutcome:
+    type: string
+    category: true
+    description: "前次活動結果(success / failure / other)"
+
+  y:
+    type: string
+    category: true
+    description: "是否訂購定期存款(0=no, 1=yes)；以類別字串宣告，前處理視為類別欄位"

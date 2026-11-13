@@ -1,0 +1,30 @@
+# 合成資料產生之設定檔(adult_income，48,842筆)
+# 步驟1：載入資料集與Schema
+Loader:
+  load_data:
+    filepath: ./demo_csv/data/adult_income.csv
+    schema: ./demo_csv/schemas/schema_adult_income.yaml
+
+# 步驟2：前處理
+Preprocessor:
+  default:
+    method: "default"
+    # 本資料多個數值欄位以單一數值為主(例如0)，處理序列不含outlier，以保留資料列與欄位間之關聯
+    sequence: [missing, encoder, scaler]
+
+# 步驟3：合成(預設合成器)
+Synthesizer:
+  default:
+    method: default
+
+# 步驟4：後處理(還原原始尺度與類別)
+Postprocessor:
+  default:
+    method: "default"
+
+# 步驟5：儲存合成資料
+Reporter:
+  data:
+    method: "save_data"
+    source: "Postprocessor"
+    output: "./demo_csv/output/syn_adult_income"

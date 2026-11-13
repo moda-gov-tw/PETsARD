@@ -1,0 +1,49 @@
+Loader:
+  load_data:
+    filepath: ./demo_csv/data/adult_income.csv
+    schema: ./demo_csv/schemas/schema_adult_income.yaml
+
+Splitter:
+  basic_split:
+    num_samples: 1
+    train_split_ratio: 0.8
+
+Preprocessor:
+  default:
+    method: default
+    # 本資料多個數值欄位以單一數值為主(例如0)，處理序列不含outlier，以保留資料列與欄位間之關聯
+    sequence: [missing, encoder, scaler]
+
+Synthesizer:
+  external_data:
+    method: default
+
+Postprocessor:
+  default:
+    method: default
+
+Evaluator:
+  validity_check:
+    method: sdmetrics-diagnosticreport
+  fidelity_check:
+    method: sdmetrics-qualityreport
+  classification_utility:
+    method: mlutility
+    task_type: classification
+    target: income
+
+Reporter:
+  # 儲存合成資料
+  save_data:
+    method: "save_data"
+    source: "Postprocessor"
+    output: "./demo_csv/output/adult_income"
+
+  # 儲存多層次評估報告
+  evaluation_report:
+    method: "save_report"
+    output: "./demo_csv/output/adult_income"
+    granularity:
+      - global # 整體摘要分數
+      - columnwise # 逐欄分析
+      - pairwise # 欄位對相關性

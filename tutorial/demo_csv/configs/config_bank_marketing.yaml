@@ -1,0 +1,47 @@
+Loader:
+  load_bank:
+    filepath: ./demo_csv/data/bank_marketing.csv
+    schema: ./demo_csv/schemas/schema_bank_marketing.yaml
+
+Splitter:
+  basic_split:
+    num_samples: 1
+    train_split_ratio: 0.8
+
+Preprocessor:
+  preprocess:
+    method: default
+    # 本資料多個數值欄位以單一數值為主(例如0)，處理序列不含outlier，以保留資料列與欄位間之關聯
+    sequence: [missing, encoder, scaler]
+
+Synthesizer:
+  gaussian_copula:
+    method: default
+
+Postprocessor:
+  postprocess:
+    method: default
+
+Evaluator:
+  validity_check:
+    method: sdmetrics-diagnosticreport
+  fidelity_check:
+    method: sdmetrics-qualityreport
+  campaign_utility:
+    method: mlutility
+    task_type: classification
+    target: housing   # 是否有房貸(二元類別欄位，值為yes、no)
+
+Reporter:
+  save_data:
+    method: save_data
+    source: Postprocessor
+    output: ./demo_csv/output/bank
+
+  evaluation_report:
+    method: save_report
+    output: ./demo_csv/output/bank
+    granularity:
+      - global
+      - columnwise
+      - pairwise
