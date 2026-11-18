@@ -102,13 +102,16 @@ def _resolve_module_path(
     if search_paths:
         # search_paths may contain directories, so we need to join them with module_path
         for search_dir in search_paths:
-            # Skip non-directory paths
-            if isinstance(search_dir, str) and os.path.isdir(search_dir):
+            # Skip entries that are not paths (sys.path may hold other objects)
+            if not isinstance(search_dir, str):
+                continue
+            if os.path.isdir(search_dir):
                 # Combine directory with module path
                 full_path = os.path.join(search_dir, module_path)
                 all_search_paths.append(full_path)
-            else:
-                # If it's not a directory, add it as is (could be a full path)
+            elif search_dir.endswith(".py"):
+                # A full path to a Python file; other files on sys.path (zip archives,
+                # console-script launchers such as pytest.exe) are never module files
                 all_search_paths.append(search_dir)
 
     # Try each search path

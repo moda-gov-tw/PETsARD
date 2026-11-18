@@ -155,6 +155,15 @@ class TestRemovedInitialModules:
             self._load(module_path, "AdvGANSynthesizer")
         assert "method: DPflow_AdvGAN" in exc_info.value.message
 
+    # 測試 sys.path 含非 .py 檔時(例如以 pytest.exe 執行)，仍引發 UnableToLoadError 並指出替代方法
+    def test_hint_when_sys_path_holds_a_launcher_file(self, tmp_path, monkeypatch):
+        launcher = tmp_path / "pytest.exe"
+        launcher.write_bytes(b"MZ")
+        monkeypatch.setattr(sys, "path", [str(launcher), *sys.path])
+        with pytest.raises(UnableToLoadError) as exc_info:
+            self._load("petsard/synthesizer/LLM_synthesizer.py", "LLM_synthesizer")
+        assert "class_name: DP_LLM_synthesizer" in exc_info.value.message
+
     # 測試其他找不到的模組維持原有訊息
     def test_other_missing_module_keeps_message(self):
         with pytest.raises(UnableToLoadError) as exc_info:

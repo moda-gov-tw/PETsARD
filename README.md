@@ -114,7 +114,7 @@ pip install petsard
 
 # Run tests 執行測試
 pip install petsard[dev]
-pytest
+python -m pytest
 ```
 
 The PyPI package does not include the differentially private synthesizers of this version. To use them, or to run the tests of this version, install from the source root (the folder that contains `pyproject.toml`); see [Extended Features Setup](https://moda-gov-tw.github.io/PETsARD/docs/installation/extended-features/) and [tutorial/README.md](tutorial/README.md).
@@ -126,8 +126,12 @@ PyPI套件不含本版本之差分隱私合成器。使用這些合成器或執�
 pip install -e ".[all,advgan,llm,dev]"
 
 # Run tests 執行測試
-pytest
+python -m pytest
 ```
+
+On Windows, set `PYTHONUTF8=1` before running the tests (Command Prompt: `set PYTHONUTF8=1`; PowerShell: `$env:PYTHONUTF8 = "1"`).
+
+於Windows執行測試前，請先設定`PYTHONUTF8=1`(命令提示字元：`set PYTHONUTF8=1`；PowerShell：`$env:PYTHONUTF8 = "1"`)。
 
 ### Example Datasets 範例資料集
 
