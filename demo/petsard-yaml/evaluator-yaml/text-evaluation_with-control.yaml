@@ -1,6 +1,6 @@
 ---
 # =============================================================================
-# LLM synth -> text_evaluator: Anonymeter + MLUtility
+# DP LLM text synthesizer (dp-llm-synth) -> text_evaluator: Anonymeter + MLUtility
 #
 # The privacy and utility counterpart to text-evaluation.yaml, which covers SDMetrics.
 # Everything here needs `control` -- original rows held out from synthesis --
@@ -30,44 +30,33 @@ Splitter:
     train_split_ratio: 0.8
 
 Synthesizer:
-  llm-synth:
+  dp_llm:
     method: custom_method
-    module_path: petsard/synthesizer/LLM_synthesizer.py
-    class_name: LLM_synthesizer
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
 
+    # The profile is released from the 80 training rows only; the 21 control rows
+    # are never read by the synthesizer. With epochs: 0 the whole budget is spent there.
+    # 輪廓只由80筆訓練資料釋出，21筆控制資料不經合成器；epochs: 0 時預算全花在輪廓。
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 0
+    stop_after_epoch: 0
     # Number of synthetic rows for this example. A value close to the training
     # set size (80 rows) gives more stable Anonymeter and MLUtility scores.
-    sample_num_rows: 10
-    epochs: 1
+    num_samples_schedule: 20
+    sample_num_rows: 20
 
     api_type: lmstudio
-    api_url: "http://localhost:1234/v1"
-    model: google/gemma-4-12b-qat
-    variation_api_type: lmstudio
-    variation_api_url: "http://localhost:1234/v1"
-    variation_model: google/gemma-4-12b-qat
-    post_processing_api_type: lmstudio
-    post_processing_api_url: "http://localhost:1234/v1"
-    post_processing_model: google/gemma-4-12b-qat
-
-    variation_type: healthcare_blank_fill
+    api_url: "http://127.0.0.1:1234/v1"
+    api_key: lm-studio                # LM Studio does not check this value / LM Studio 不檢查此值
+    model: openai/gpt-oss-20b         # use the model id LM Studio shows / 填 LM Studio 顯示的模型 ID
     temperature: 1.0
-    seed: 42
-    do_sample: true
-    compute_fid: true
-    no_cuda: false
     num_procs: 4
-    fewshot_n_examples: 10
-    max_token_limit: 100000
     sleep_time: 0
     max_retries: 3
-    exit_on_api_error: false
-    verbose: 0
-    output_dir: ./llm_synth_output
-    continue: false
+    output_dir: ./llm_synth_output/text_eval_with-control
     log_folder: ./LOG_FILES
-    additional_info: >-
-      While use random tool to generate blood pressure, DO NOT exceed the range of +-5%
 
 Evaluator:
   text_eval:
@@ -76,12 +65,12 @@ Evaluator:
     class_name: TextEvaluatorWithControl
 
     # Your parser. Contract:  def text_parser(df) -> pd.DataFrame
-    text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
+    text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
     # text_parser_entry: text_parser
 
     # The parsed frames are written here for inspection; each column holds the
     # values that the text parser extracted from the ori, syn and control text.
-    output_dir: ./llm_synth_output/parsed
+    output_dir: ./llm_synth_output/text_eval_with-control/parsed
 
     Evaluator:
       singling_out_risk:
@@ -115,12 +104,12 @@ Reporter:
   save_synth:
     method: save_data
     source: Synthesizer
-    output: 'llm_synth_result4'
+    output: 'dp_llm_text_eval_with-control'
   save_eval:
     method: save_report
     granularity:
       - global
       - columnwise
       - details
-    output: 'llm_synth_result4'
+    output: 'dp_llm_text_eval_with-control'
 ...

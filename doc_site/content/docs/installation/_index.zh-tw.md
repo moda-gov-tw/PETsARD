@@ -52,8 +52,9 @@ next: docs/data-preparation
 
 - **[擴充功能安裝](extended-features)** - 使用本版新增功能的環境
   - 自原始碼以可編輯模式安裝
-  - JSON讀取與輸出及AdvGAN合成器(opacus)
-  - 本機LLM文字合成器與文字評測模組(LM Studio)
+  - JSON讀取與輸出
+  - 差分隱私合成器：DP Copula、更新版DP AdvGAN(opacus、dp-accounting)及DP LLM文字合成器(LM Studio)
+  - 合成文字之文字評測模組
   - 缺失資料補償(Median、KNN、MICE)
   - 建議硬體規格與安裝驗證指令
 

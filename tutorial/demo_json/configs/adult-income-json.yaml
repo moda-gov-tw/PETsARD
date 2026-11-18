@@ -2,8 +2,8 @@
 # Usability check for data/adult-income.json (21 MB, 48,842 x 15).
 #
 # Uses method: 'default' (PETsARD Gaussian Copula), so the full 48,842-row
-# file runs quickly. AdvGAN is demonstrated in test_json_advgan.yaml
-# (run_json1.py).
+# file runs quickly. The differentially private synthesizers are demonstrated
+# in demo_dp/configs (run_dp1_copula.py to run_dp3_llm.py).
 #
 # Run from tutorial/:  python -X utf8 run_json2.py
 

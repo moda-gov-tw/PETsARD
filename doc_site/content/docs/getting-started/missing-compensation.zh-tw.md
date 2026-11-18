@@ -2,7 +2,7 @@
 title: 以Median、KNN、MICE補償缺失資料
 type: docs
 weight: 160
-prev: docs/getting-started/llm-text-synthesis
+prev: docs/getting-started/external-synthesis-default-evaluation
 next: docs/getting-started
 ---
 

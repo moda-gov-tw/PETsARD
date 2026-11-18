@@ -75,8 +75,8 @@ Loader:
 | Adult Income (JSON) | `benchmark://adult-income-json` | Adult Income資料集轉為JSON紀錄陣列(48,842筆，15欄位) |
 | Customer Churn | `benchmark://customer-churn` | 示範用途產生之客戶流失資料，JSON格式(1,200筆，10欄位) |
 | TW Salary | `benchmark://tw-salary` | 欄位名稱與內容皆為繁體中文之薪資資料，JSON格式(2,000筆，8欄位) |
-| Test JSON Data | `benchmark://test-json-data` | AdvGAN範例使用之小型JSON資料(30筆，6欄位) |
-| Blood Pressure Text | `benchmark://bloodpressure-text` | 血壓問診文字，每列1句中文，供LLM文字合成器使用(101筆，單一`text`欄位) |
+| Test JSON Data | `benchmark://test-json-data` | 含缺值之小型JSON測試資料，供測試JSON讀取(30筆，6欄位) |
+| Blood Pressure Text | `benchmark://bloodpressure-text` | 血壓問診文字，每列1句中文，供DP LLM文字合成器及文字評測使用(101筆，單一`text`欄位) |
 
 不經下載使用上述資料集時(例如離線環境)，將檔案放在工作目錄之`./benchmark/<檔名>`，Loader載入時以`petsard/loader/benchmark_datasets.yaml`記錄之SHA-256驗證後即使用本地檔案。檔名為`adult-income.json`(`adult-income-json`)、`customer_churn.json`(`customer-churn`)、`tw_salary.json`(`tw-salary`)、`test_json_data.json`(`test-json-data`)及`real_bloodpressure2.csv`(`bloodpressure-text`)。
 

@@ -9,6 +9,10 @@
 
 `PETsARD`（隱私強化技術分析、研究與開發）是一套為了促進合成資料生成與評估過程而設計的 Python 程式庫。
 
+> **Note 註記**: The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. This version keeps the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and `dp-llm-synth` (`DP_LLM_synthesizer`), whose whole flow is differentially private; see [Differentially Private Synthesizers](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/). For research comparison, see the [`initial-methods`](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods) branch.
+>
+> 初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除；如需研究比較，請參考[`initial-methods`](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)分支。本版本保留整個流程皆滿足差分隱私之更新後方法`DPflow_Copula`、`DPflow_AdvGAN`及`dp-llm-synth`(`DP_LLM_synthesizer`)，說明見[差分隱私合成器](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。
+
 ---
 
 ## **✨ Features 主要功能**

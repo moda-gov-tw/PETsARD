@@ -9,9 +9,9 @@ The example configurations in `demo/petsard-yaml/` and the examples in the docum
 
 ## Offline use 離線使用
 
-Download the files from the Release page on a computer with Internet access, then place each file unchanged at `./benchmark/<filename>` in the working directory, for example `./benchmark/customer_churn.json`. Loader verifies its SHA-256 value and uses it without connecting to the network. The working directory is the folder in which Executor runs; the example notebooks change to `demo/`, and the LLM and text evaluation notebooks change to the source root.
+Download the files from the Release page on a computer with Internet access, then place each file unchanged at `./benchmark/<filename>` in the working directory, for example `./benchmark/customer_churn.json`. Loader verifies its SHA-256 value and uses it without connecting to the network. The working directory is the folder in which Executor runs; the example notebooks change to `demo/`, and the text evaluation notebook changes to the source root.
 
-於可連網之電腦自發布頁面下載檔案後，將檔案原樣放在工作目錄之`./benchmark/<檔名>`，例如`./benchmark/customer_churn.json`；Loader驗證SHA-256相符後即使用該檔案，不需連網。工作目錄為Executor執行時所在之資料夾，範例notebook切換至`demo/`，LLM及文字評測notebook切換至原始碼根目錄。
+於可連網之電腦自發布頁面下載檔案後，將檔案原樣放在工作目錄之`./benchmark/<檔名>`，例如`./benchmark/customer_churn.json`；Loader驗證SHA-256相符後即使用該檔案，不需連網。工作目錄為Executor執行時所在之資料夾，範例notebook切換至`demo/`，文字評測notebook切換至原始碼根目錄。
 
 ## Datasets 資料集
 
@@ -22,7 +22,7 @@ Download the files from the Release page on a computer with Internet access, the
 | `adult-income_ori` | `adult-income_ori.csv` | 4,221,305 | 39,073 x 15 | `evaluator-yaml/`, `describer-yaml/describer-compare.yaml`, `constrainer-yaml/validate-mode_*.yaml`, `reporter-yaml/reporter_save-report.yaml`, `splitter-yaml/custom-data.yaml` | (1) |
 | `adult-income_control` | `adult-income_control.csv` | 1,056,383 | 9,769 x 15 | Same as `adult-income_ori` | (1) |
 | `adult-income_syn` | `adult-income_syn.csv` | 4,212,684 | 39,073 x 15 | `evaluator-yaml/`, `describer-yaml/`, `constrainer-yaml/validate-mode_*.yaml`, `reporter-yaml/reporter_save-report.yaml`, `synthesizer-yaml/custom-data.yaml` | (1) |
-| `adult-income-json` | `adult-income.json` | 21,102,177 | 48,842 x 15 | `loader-yaml/json-format_large-file.yaml`, `synthesizer-yaml/advgan_adult-income-json.yaml` | (1) |
+| `adult-income-json` | `adult-income.json` | 21,102,177 | 48,842 x 15 | `loader-yaml/json-format_large-file.yaml` | (1) |
 | `taiwan-salary-statistics-300k` | `taiwan_salary_statistics_300k.csv` | 58,132,748 | 300,000 x 14 | Benchmark protocol documentation | (2) |
 | `taiwan-salary-statistics-300k_schema` | `taiwan_salary_statistics_300k_schema.yaml` | 2,574 | Schema | Benchmark protocol documentation | (2) |
 | `taiwan-salary-statistics-300k-no-di` | `taiwan_salary_statistics_300k_no_di.csv` | 46,598,897 | 300,000 x 13 | Benchmark protocol documentation | (2) |
@@ -32,10 +32,10 @@ Download the files from the Release page on a computer with Internet access, the
 | `best-practices_multi-table_tracking` | `best-practices_multi-table_tracking.csv` | 261,533 | 1,879 x 11 | Best practices (multi-table) | (3) |
 | `best-practices_multi-table` | `best-practices_multi-table.csv` | 303,012 | 1,000 x 32 | `preprocessor-yaml/preprocessor_encoder-datediff.yaml`, `preprocessor-yaml/preprocessor_scaler-time-anchor-scaling.yaml` | (3) |
 | `best-practices_categorical_high-cardinality` | `best-practices_categorical_high-cardinality.csv` | 1,568,943 | 10,000 x 19 | Best practices (categorical and high-cardinality data) | (3) |
-| `customer-churn` | `customer_churn.json` | 339,284 | 1,200 x 10 | `loader-yaml/json-format_full-evaluation.yaml`; documentation of the JSON reader, the AdvGAN synthesizer and the Reporter JSON output | (4) |
+| `customer-churn` | `customer_churn.json` | 339,284 | 1,200 x 10 | `loader-yaml/json-format_full-evaluation.yaml`; documentation of the JSON reader and the Reporter JSON output | (4) |
 | `tw-salary` | `tw_salary.json` | 445,376 | 2,000 x 8 | `loader-yaml/json-format_traditional-chinese.yaml` | (4) |
-| `test-json-data` | `test_json_data.json` | 4,004 | 30 x 6 | `synthesizer-yaml/advgan.yaml` | (4) |
-| `bloodpressure-text` | `real_bloodpressure2.csv` | 7,708 | 101 x 1 (`text`) | `synthesizer-yaml/llm-synthesizer*.yaml`, `evaluator-yaml/text-evaluation*.yaml`; documentation of the LLM text synthesizer and the text evaluation | (4) |
+| `test-json-data` | `test_json_data.json` | 4,004 | 30 x 6 | No configuration in `demo/petsard-yaml/`; the JSON reader test `tutorial/run_json1.py` uses `tutorial/demo_json/data/test_json_data.json` | (4) |
+| `bloodpressure-text` | `real_bloodpressure2.csv` | 7,708 | 101 x 1 (`text`) | `synthesizer-yaml/dp-llm-synthesizer_bloodpressure.yaml`, `evaluator-yaml/text-evaluation*.yaml`; documentation of the DP LLM text synthesizer and the text evaluation | (4) |
 
 The SHA-256 value of every file is recorded in `petsard/loader/benchmark_datasets.yaml`.
 
@@ -55,9 +55,9 @@ The SHA-256 value of every file is recorded in `petsard/loader/benchmark_dataset
 
 (3) PETsARD原有之範例資料集，供最佳實務說明文件使用(多表格、多時間戳記，以及類別型與高基數資料)。
 
-(4) Datasets prepared by the project team for the JSON, AdvGAN and LLM text examples of the extended modules. The `real_` prefix of `real_bloodpressure2.csv` marks the original input that the LLM text synthesizer learns from, as opposed to its synthetic output. All names and values in these files are fictitious; they were generated for the examples and refer to no real person.
+(4) Datasets prepared by the project team for the JSON and text examples of the extended modules. The `real_` prefix of `real_bloodpressure2.csv` marks the original input of the DP LLM text synthesizer, as opposed to its synthetic output. All names and values in these files are fictitious; they were generated for the examples and refer to no real person.
 
-(4) 本計畫團隊為擴充模組的JSON、AdvGAN及LLM文字範例準備的資料集。`real_bloodpressure2.csv`檔名中的`real_`是指LLM文字合成器學習的原始輸入資料，以與合成輸出區別。這些檔案中的姓名與數值均為虛構，專為範例產生，不對應任何真實個人。
+(4) 本計畫團隊為擴充模組的JSON及文字範例準備的資料集。`real_bloodpressure2.csv`檔名中的`real_`是指DP LLM文字合成器的原始輸入資料，以與合成輸出區別。這些檔案中的姓名與數值均為虛構，專為範例產生，不對應任何真實個人。
 
 ## Adding datasets 新增資料集
 

@@ -6,7 +6,7 @@ prev: docs/petsard-yaml/evaluator-yaml/privacy-mpuccs
 next: docs/petsard-yaml/reporter-yaml
 ---
 
-文字評測模組以PETsARD標準的評測方法評測合成的自由文字，例如[LLM文字合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}})的輸出。PETsARD評測方法以欄位為單位計算，`secret`、`target`、`aux_cols`及各項評分皆對應欄位名稱，因此本模組先以使用者提供的解析程式將文字轉為具型別的欄位，再對解析後的資料執行任意數量的PETsARD評測方法，並將結果合併為一份報告。
+文字評測模組以PETsARD標準的評測方法評測合成的自由文字，例如DP LLM文字合成器(見[差分隱私合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers" >}}))的輸出。PETsARD評測方法以欄位為單位計算，`secret`、`target`、`aux_cols`及各項評分皆對應欄位名稱，因此本模組先以使用者提供的解析程式將文字轉為具型別的欄位，再對解析後的資料執行任意數量的PETsARD評測方法，並將結果合併為一份報告。
 
 本模組以標準`custom_method`介面自`petsard/evaluator/text_evaluator.py`載入，不需修改PETsARD核心程式。
 
@@ -23,7 +23,7 @@ PETsARD依評測類別取得所需的輸入資料，因此本模組提供兩個�
 
 ## 使用範例
 
-以下範例評測以基準資料集`bloodpressure-text`生成的合成血壓問診文字(見[LLM文字合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}}))，解析程式使用原始碼所附之`petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py`，其規則請參見下方「撰寫文字解析程式」一節。範例於PETsARD原始碼根目錄執行。
+以下範例評測以DP LLM文字合成器自基準資料集`bloodpressure-text`生成的合成血壓問診文字(見[差分隱私合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers" >}}))，解析程式使用原始碼所附之`petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py`，其規則請參見下方「撰寫文字解析程式」一節。範例於PETsARD原始碼根目錄執行。
 
 ### 有效性與保真度
 
@@ -32,23 +32,29 @@ Loader:
   load_bloodpressure:
     filepath: benchmark://bloodpressure-text
 Synthesizer:
-  llm-synth:
+  dp_llm:
     method: custom_method
-    module_path: petsard/synthesizer/LLM_synthesizer.py
-    class_name: LLM_synthesizer
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 0
+    stop_after_epoch: 0
+    num_samples_schedule: 50
     sample_num_rows: 50
-    epochs: 1
     api_type: lmstudio
-    api_url: "http://localhost:1234/v1"
+    api_url: "http://127.0.0.1:1234/v1"
+    api_key: lm-studio
     model: openai/gpt-oss-20b
     num_procs: 4
+    output_dir: ./llm_synth_output/text_eval
 Evaluator:
   text_eval:
     method: custom_method
     module_path: petsard/evaluator/text_evaluator.py
     class_name: TextEvaluator
-    text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py   # 相對於執行目錄
-    output_dir: ./llm_synth_output/parsed   # 解析結果，供核對使用
+    text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py   # 相對於執行目錄
+    output_dir: ./llm_synth_output/text_eval/parsed   # 解析結果，供核對使用
     Evaluator:                              # 巢狀的PETsARD評測方法
       validity_check:
         method: sdmetrics-diagnosticreport
@@ -58,13 +64,13 @@ Reporter:
   save_synth:
     method: save_data
     source: Synthesizer
-    output: llm_text_result
+    output: dp_llm_text_result
   save_eval:
     method: save_report
     granularity:
       - global
       - columnwise
-    output: llm_text_result
+    output: dp_llm_text_result
 ```
 
 ### 隱私風險與實用性
@@ -80,23 +86,29 @@ Splitter:
     num_samples: 1
     train_split_ratio: 0.8
 Synthesizer:
-  llm-synth:
+  dp_llm:
     method: custom_method
-    module_path: petsard/synthesizer/LLM_synthesizer.py
-    class_name: LLM_synthesizer
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 0
+    stop_after_epoch: 0
+    num_samples_schedule: 80
     sample_num_rows: 80          # 與訓練集筆數相當
-    epochs: 1
     api_type: lmstudio
-    api_url: "http://localhost:1234/v1"
+    api_url: "http://127.0.0.1:1234/v1"
+    api_key: lm-studio
     model: openai/gpt-oss-20b
     num_procs: 4
+    output_dir: ./llm_synth_output/text_privacy
 Evaluator:
   text_eval:
     method: custom_method
     module_path: petsard/evaluator/text_evaluator.py
     class_name: TextEvaluatorWithControl
-    text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
-    output_dir: ./llm_synth_output/parsed
+    text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
+    output_dir: ./llm_synth_output/text_privacy/parsed
     Evaluator:
       singling_out_risk:
         method: anonymeter-singlingout
@@ -117,7 +129,7 @@ Reporter:
     method: save_report
     granularity:
       - global
-    output: llm_text_privacy
+    output: dp_llm_text_privacy
 ```
 
 巢狀評測方法中，`method`以外的各鍵皆原樣傳給該評測方法，參數寫法與[隱私保護力評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/privacy" >}})、[資料保真度評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/fidelity" >}})及[資料實用性評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/utility" >}})相同。`aux_cols`以兩個清單組成的清單撰寫時，自動轉為Anonymeter所需的清單組。
@@ -205,7 +217,7 @@ def text_parser(df: pd.DataFrame) -> pd.DataFrame:
     return parsed
 ```
 
-原始碼所附之`petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py`以相同規則擷取這五個欄位，上方範例即直接指定使用該檔案。以101筆範例資料執行時，每列的五個欄位皆可完整擷取。解析其他文字時，修改`SOURCE_COLUMN`與其中的規則運算式即可。
+原始碼所附之`petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py`以相同規則擷取這五個欄位，上方範例即直接指定使用該檔案。以101筆範例資料執行時，每列的五個欄位皆可完整擷取。解析其他文字時，修改`SOURCE_COLUMN`與其中的規則運算式即可。
 
 ## 處理流程
 

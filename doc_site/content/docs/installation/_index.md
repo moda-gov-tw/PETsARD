@@ -52,8 +52,9 @@ Based on your environment conditions, please select the appropriate installation
 
 - **[Extended Features Setup](extended-features)** - Environments using the features added in this edition
   - Editable installation from the source code
-  - JSON input and output with the AdvGAN synthesizer (opacus)
-  - Local-LLM text synthesizer and text evaluator (LM Studio)
+  - JSON input and output
+  - Differentially private synthesizers: DP Copula, the updated DP AdvGAN (opacus, dp-accounting) and the DP LLM text synthesizer (LM Studio)
+  - Text evaluator for synthetic free text
   - Missing-data compensation with Median, KNN and MICE
   - Hardware recommendations and verification commands
 

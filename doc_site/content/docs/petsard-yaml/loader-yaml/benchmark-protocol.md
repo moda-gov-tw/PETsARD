@@ -75,8 +75,8 @@ This is a simulated dataset created by the InnoServe team in 2024 for challenge 
 | Adult Income (JSON) | `benchmark://adult-income-json` | Adult Income dataset as a JSON array of records (48,842 rows, 15 columns) |
 | Customer Churn | `benchmark://customer-churn` | Customer churn records generated for demonstration, in JSON (1,200 rows, 10 columns) |
 | TW Salary | `benchmark://tw-salary` | Salary records with Traditional Chinese column names and values, in JSON (2,000 rows, 8 columns) |
-| Test JSON Data | `benchmark://test-json-data` | Small JSON sample used by the AdvGAN example (30 rows, 6 columns) |
-| Blood Pressure Text | `benchmark://bloodpressure-text` | Blood pressure records, one Chinese sentence per row, for the LLM text synthesizer (101 rows, one `text` column) |
+| Test JSON Data | `benchmark://test-json-data` | Small JSON sample with missing values, for testing the JSON reader (30 rows, 6 columns) |
+| Blood Pressure Text | `benchmark://bloodpressure-text` | Blood pressure records, one Chinese sentence per row, for the DP LLM text synthesizer and the text evaluation (101 rows, one `text` column) |
 
 To use these datasets without downloading them (for example offline), place the file at `./benchmark/<filename>` in the working directory. Loader verifies its SHA-256 against `petsard/loader/benchmark_datasets.yaml` when loading and then uses the local file. The file names are `adult-income.json` (`adult-income-json`), `customer_churn.json` (`customer-churn`), `tw_salary.json` (`tw-salary`), `test_json_data.json` (`test-json-data`) and `real_bloodpressure2.csv` (`bloodpressure-text`).
 

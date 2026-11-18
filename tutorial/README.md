@@ -1,8 +1,12 @@
 # PETsARD 教學範例 Tutorial Examples
 
-本資料夾為PETsARD教學課程的實作範例，涵蓋結構化資料(CSV)、半結構化資料(JSON)及非結構化資料(文字)的合成，以及三種差分隱私合成方法。範例資料均為公開資料集或教學示範資料，可直接執行。
+本資料夾為PETsARD教學課程的實作範例，涵蓋結構化資料(CSV)與半結構化資料(JSON)的合成，以及三種差分隱私合成方法，其中dp-llm-synth用於非結構化資料(文字)。範例資料均為公開資料集或教學示範資料，可直接執行。
 
-This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV), semi-structured (JSON) and unstructured (text) data, and three differentially private synthesizers. All example data are public datasets or teaching samples.
+This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV) and semi-structured (JSON) data, and three differentially private synthesizers, of which dp-llm-synth synthesizes unstructured text. All example data are public datasets or teaching samples.
+
+> **註記 Note**：初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除；如需研究比較，請參考 `initial-methods` 分支(https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)。本資料夾的差分隱私範例使用更新後方法 `DPflow_Copula`、`DPflow_AdvGAN` 及dp-llm-synth(`DP_LLM_synthesizer`)。
+>
+> The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. For research comparison, see the `initial-methods` branch (https://github.com/moda-gov-tw/PETsARD/tree/initial-methods). The differentially private examples in this folder use the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and dp-llm-synth (`DP_LLM_synthesizer`).
 
 ## 安裝與執行 Installation and Run (Windows)
 
@@ -36,37 +40,36 @@ Run every example from the `tutorial` folder. Results are written to each exampl
 | `run_csv2_bank.py` | 結構化 CSV | `bank_marketing.csv`(4,521筆，16欄) | Gaussian Copula，含保真度及效用評估 | `demo_csv/output` |
 | `run_csv3_tw_demographic.py` | 結構化 CSV | `tw_demographic.csv`(10,000筆，7個中文欄位) | Gaussian Copula | `demo_csv/output` |
 | `run_csv4_adult_income.py` | 結構化 CSV | `adult_income.csv`(48,842筆，15欄) | Gaussian Copula，含保真度及效用評估 | `demo_csv/output` |
-| `run_json1.py` | 半結構化 JSON | `test_json_data.json`(30筆，6欄) | AdvGAN | `demo_json/output` |
+| `run_json1.py` | 半結構化 JSON | `test_json_data.json`(30筆，6欄) | Gaussian Copula | `demo_json/output` |
 | `run_json2.py` | 半結構化 JSON | `adult-income.json`(48,842筆，15欄) | Gaussian Copula | `demo_json/output` |
 | `run_json3.py` | 半結構化 JSON | `customer_churn.json`(1,200筆，10欄) | Gaussian Copula，含隱私、保真度及效用評估 | `demo_json/output` |
-| `run_llm1.py` | 非結構化 文字 Text | `real_bloodpressure2.csv`(101筆血壓問診文本) | LLM文字合成器 LLM synthesizer | `demo_llm/output` |
 
-各執行程式使用的設定檔在 `demo_csv/configs`、`demo_json/configs` 及 `demo_llm` 中。
+各執行程式使用的設定檔在 `demo_csv/configs` 及 `demo_json/configs` 中。非結構化資料(文字)的合成請見下方「差分隱私合成方法」的 `run_dp3_llm.py`。
 
-The YAML configurations used by each script are in `demo_csv/configs`, `demo_json/configs` and `demo_llm`.
+The YAML configurations used by each script are in `demo_csv/configs` and `demo_json/configs`. For unstructured text, see `run_dp3_llm.py` under "Differentially Private Synthesizers" below.
 
-## 非結構化資料範例 Text Example (`run_llm1.py`)
+`run_json1.py` 使用預設合成器(PETsARD Gaussian Copula)。差分隱私合成器(`DPflow_Copula`、`DPflow_AdvGAN`)也可以合成由JSON讀入的資料表，但需要公開的欄位宣告(column_spec)、資料不可有缺值，且不加Preprocessor；`test_json_data.json` 刻意保留缺值，用來測試Preprocessor的缺值處理，因此本範例使用預設合成器。差分隱私合成範例見下方 `run_dp1_copula.py` 與 `run_dp2_advgan.py`。
 
-`run_llm1.py` 以本機的LM Studio執行大型語言模型，執行前需完成：
+`run_json1.py` uses the default synthesizer (PETsARD Gaussian Copula). The differentially private synthesizers (`DPflow_Copula`, `DPflow_AdvGAN`) also take tables read from JSON, but they need a public column declaration (column_spec) and data without missing values, and run without a Preprocessor. `test_json_data.json` keeps planted missing values to test the missing-value handling of the Preprocessor, so this example uses the default synthesizer. See `run_dp1_copula.py` and `run_dp2_advgan.py` below for differentially private synthesis.
 
-`run_llm1.py` uses a large language model served locally by LM Studio. Before running it:
+## 文字合成之事前準備 Preparing the Text Example (`run_dp3_llm.py`)
+
+`run_dp3_llm.py` 以本機的LM Studio執行大型語言模型，執行前需完成：
+
+`run_dp3_llm.py` uses a large language model served locally by LM Studio. Before running it:
 
 1. 在儲存庫根目錄安裝額外套件 Install the extra packages from the repository root:
 
    ```bat
    cd C:\petsard\PETsARD-main
-   pip install -r petsard\synthesizer\LLM_synth\requirements.txt
+   pip install -r petsard\synthesizer\DP_LLM_synth\requirements.txt
    ```
 
 2. 安裝LM Studio(https://lmstudio.ai)，下載並載入模型 `openai/gpt-oss-20b`，開啟本機伺服器(預設 `http://localhost:1234`)。
    Install LM Studio (https://lmstudio.ai), download and load the model `openai/gpt-oss-20b`, and start the local server (default `http://localhost:1234`).
 
-3. 回到 `tutorial` 資料夾執行 Run from the `tutorial` folder:
-
-   ```bat
-   cd tutorial
-   python -X utf8 run_llm1.py
-   ```
+3. 回到 `tutorial` 資料夾，依下一節執行 `run_dp3_llm.py`。
+   Then run `run_dp3_llm.py` from the `tutorial` folder as described in the next section.
 
 ## 差分隱私合成方法 Differentially Private Synthesizers
 
@@ -75,7 +78,7 @@ The YAML configurations used by each script are in `demo_csv/configs`, `demo_jso
 The three examples below use the differentially private synthesizers of PETsARD and also run from the `tutorial` folder. The privacy budget (ε, δ) is set in the YAML files in `demo_dp/configs`; each run prints the target and the spent ε. The privacy report of the latest run is written to `demo_dp/output` (for dp-llm-synth, `demo_dp/output/dp_llm_bloodpressure_output/privacy_report.json`) and is overwritten by the next run. Every synthesis run on the same data spends the budget again, and ε adds up over all results that are used or released. See the documentation page "Differentially Private Synthesizers" (https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/).
 
 ```bat
-cd C:\petsard\PETsARD-main	utorial
+cd C:\petsard\PETsARD-main\tutorial
 python -X utf8 run_dp1_copula.py
 python -X utf8 run_dp2_advgan.py
 python -X utf8 run_dp3_llm.py
@@ -87,9 +90,24 @@ python -X utf8 run_dp3_llm.py
 | `run_dp2_advgan.py` | 更新版DP AdvGAN Updated DP AdvGAN(`DPflow_AdvGAN`) | `demo_csv/data/adult_income.csv` | `demo_dp/configs/dp_advgan_adult_income.yaml` |
 | `run_dp3_llm.py` | dp-llm-synth(DP LLM文字合成器，`DP_LLM_synthesizer`) | `demo_llm/real_bloodpressure2.csv` | `demo_dp/configs/dp_llm_bloodpressure.yaml` |
 
-兩個結構化資料範例使用公開的欄位宣告 `demo_dp/configs/adult_income_column_spec.yaml`。`run_dp3_llm.py` 需要先完成上一節「非結構化資料範例」的套件安裝與LM Studio設定；程式會先確認LM Studio已提供設定檔中的模型，未開啟時直接停止，不讀取資料，也不使用隱私預算。執行時畫面出現的Warning訊息為套件提示，不影響結果。
+兩個結構化資料範例使用公開的欄位宣告 `demo_dp/configs/adult_income_column_spec.yaml`。`run_dp3_llm.py` 需要先完成上一節「文字合成之事前準備」的套件安裝與LM Studio設定；程式會先確認LM Studio已提供設定檔中的模型，未開啟時直接停止，不讀取資料，也不使用隱私預算。執行時畫面出現的Warning訊息為套件提示，不影響結果。
 
-The two structured-data examples use the public column declaration `demo_dp/configs/adult_income_column_spec.yaml`. `run_dp3_llm.py` needs the packages and the LM Studio setup of the text example above; it first checks that LM Studio serves the configured model and stops without reading the data or spending budget if it does not. Warning messages printed during the runs come from the packages and do not affect the results.
+The two structured-data examples use the public column declaration `demo_dp/configs/adult_income_column_spec.yaml`. `run_dp3_llm.py` needs the packages and the LM Studio setup of the previous section; it first checks that LM Studio serves the configured model and stops without reading the data or spending budget if it does not. Warning messages printed during the runs come from the packages and do not affect the results.
+
+## 教學課程錄影對照 Course Recording
+
+課程錄影使用之初版方法範例已自本版本移除，請改用更新後方法範例(對應檔案如下表)。錄影中的其他範例(`run_csv1_syn.py` 至 `run_csv4_adult_income.py`、`run_json2.py`、`run_json3.py`)不變。
+
+The examples of the initial methods used in the course recording have been removed from this version; use the examples of the updated methods in the table below instead. The other examples in the recording (`run_csv1_syn.py` to `run_csv4_adult_income.py`, `run_json2.py` and `run_json3.py`) are unchanged.
+
+| 課程錄影中的初版方法範例 Initial-method example in the recording | 本版本對應檔案 Corresponding files in this version |
+|---|---|
+| `run_json1.py`：初版AdvGAN合成JSON資料(`demo_json/configs/test_json_advgan.yaml`) Initial AdvGAN on JSON data | JSON讀取與輸出 JSON input and output：`run_json1.py`(預設合成器 default synthesizer，`demo_json/configs/test_json.yaml`)；AdvGAN合成 AdvGAN synthesis：`run_dp2_advgan.py`(更新版DP AdvGAN Updated DP AdvGAN，`demo_dp/configs/dp_advgan_adult_income.yaml`) |
+| `run_llm1.py`：初版LLM合成器合成文字(`demo_llm/llm_synth*.yaml`) Initial LLM synthesizer on text | `run_dp3_llm.py`(dp-llm-synth，`demo_dp/configs/dp_llm_bloodpressure.yaml`) |
+
+文字範例的額外套件改由 `petsard\synthesizer\DP_LLM_synth\requirements.txt` 安裝(見「文字合成之事前準備」)。
+
+The extra packages of the text example are now installed from `petsard\synthesizer\DP_LLM_synth\requirements.txt` (see "Preparing the Text Example").
 
 ## 再次使用 Next Time
 

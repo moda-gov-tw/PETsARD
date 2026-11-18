@@ -29,8 +29,8 @@ The system provides CLI interface and default configuration templates, supportin
 This edition extends PETsARD from structured tables to semi-structured and unstructured data, adds missing-data compensation to preprocessing, and adds synthesizers that are differentially private over the whole flow. Existing configurations run unchanged, and each new feature is enabled explicitly in YAML.
 
 {{< cards >}}
-{{< card link="getting-started/json-advgan-synthesis" title="JSON Data and AdvGAN Synthesis" icon="code" subtitle="Load and output JSON records with the Loader and Reporter, and synthesize semi-structured data with the AdvGAN synthesizer." >}}
-{{< card link="getting-started/llm-text-synthesis" title="Local LLM Text Synthesis" icon="chat-alt-2" subtitle="Generate synthetic free text with a locally hosted large language model, and evaluate it with the text evaluator." >}}
+{{< card link="petsard-yaml/loader-yaml/json-format" title="JSON Input and Output" icon="code" subtitle="Load JSON records with the Loader, and save the synthetic data and evaluation reports as JSON with the Reporter." >}}
+{{< card link="petsard-yaml/evaluator-yaml/text-evaluation" title="Text Data Evaluation" icon="chat-alt-2" subtitle="Parse synthetic free text into typed columns and evaluate it with the standard PETsARD evaluators." >}}
 {{< card link="getting-started/missing-compensation" title="Missing-Data Compensation" icon="puzzle" subtitle="Fill missing feature values with Median, KNN or MICE, fitted on public or external data." >}}
 {{< card link="petsard-yaml/synthesizer-yaml/dp-synthesizers" title="Differentially Private Synthesizers" icon="shield-check" subtitle="Generate synthetic data with DP Copula, the updated DP AdvGAN or the DP LLM text synthesizer; the whole flow is differentially private and a privacy report is written." >}}
 {{< /cards >}}
@@ -38,13 +38,15 @@ This edition extends PETsARD from structured tables to semi-structured and unstr
 | Feature | Module | How to enable |
 |---|---|---|
 | JSON input and output | Loader, Reporter | A `filepath` ending in `.json`; `type: 'json'` in the Reporter |
-| AdvGAN synthesizer | Synthesizer | `method: 'AdvGAN'` |
-| LLM text synthesizer | Synthesizer | `method: custom_method` with `class_name: LLM_synthesizer` |
 | Differentially private synthesizers | Synthesizer | `method: DPflow_Copula`, `method: DPflow_AdvGAN`; the DP LLM text synthesizer uses `method: custom_method` with `class_name: DP_LLM_synthesizer` |
 | Text evaluator | Evaluator | `method: custom_method` with `class_name: TextEvaluator` or `TextEvaluatorWithControl` |
 | Missing-data compensation | Preprocessor | `method: custom_method` with `class_name: MissingCompensation`, and `missing_compensation.method` set to `median`, `knn` or `mice` |
 
 To prepare the environment for these features, follow [Extended Features Setup](installation/extended-features).
+
+{{< callout type="info" >}}
+The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. For research comparison, see the [`initial-methods` branch](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods).
+{{< /callout >}}
 
 ## User Guide
 

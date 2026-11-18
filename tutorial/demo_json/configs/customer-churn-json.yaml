@@ -2,7 +2,7 @@
 # =============================================================================
 # JSON demo 3 -- full evaluation suite.
 #
-# Where 1 and 2 each exercise ONE thing (AdvGAN / scale), this one exercises
+# Where 1 and 2 each exercise ONE thing (small-file JSON in/out / scale), this one exercises
 # the EVALUATION side: a Splitter to produce the holdout set, and five
 # evaluators covering all three assessment families at once.
 #
@@ -16,7 +16,7 @@
 # with a genuine signal linking contract_type / tenure / charges to `churn`,
 # so MLUtility has something learnable to predict rather than noise.
 #
-# Run from the repo root:  python run_json3.py
+# Run from tutorial/:  python -X utf8 run_json3.py
 # =============================================================================
 
 Loader:

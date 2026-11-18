@@ -49,15 +49,15 @@ YAML（YAML Ain't Markup Language）是一種人類可讀的資料序列化格�
 
 下列情境使用本版的擴充功能，請先依[擴充功能安裝](../installation/extended-features)完成環境設定：
 
-4. **[半結構化資料：JSON讀取與輸出及AdvGAN合成](json-advgan-synthesis)**
+4. **[半結構化資料：JSON讀取與輸出](../petsard-yaml/loader-yaml/json-format)**
 
   - 資料以JSON紀錄格式儲存時
-  - 以AdvGAN合成器合成資料，並以JSON格式輸出合成資料與評測報告
+  - 以Loader讀取JSON紀錄，並以Reporter將合成資料與評測報告輸出為JSON
 
-5. **[非結構化資料：本機LLM文字合成與文字評測](llm-text-synthesis)**
+5. **[差分隱私：表格與文字之差分隱私合成器](../petsard-yaml/synthesizer-yaml/dp-synthesizers)**
 
-  - 資料含自由文字(自然語言)欄位時
-  - 以本機大型語言模型生成合成文字，並以文字評測模組評估合成結果
+  - 合成資料需具備涵蓋整個流程之差分隱私保證時
+  - 以DP Copula或更新版DP AdvGAN合成表格資料，以本機模型執行之DP LLM文字合成器合成自由文字；合成文字以[文字資料評測](../petsard-yaml/evaluator-yaml/text-evaluation)評估
 
 6. **[缺失資料：以Median、KNN、MICE補償缺失資料](missing-compensation)**
 

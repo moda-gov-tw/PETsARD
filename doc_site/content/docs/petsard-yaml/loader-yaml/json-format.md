@@ -223,8 +223,8 @@ The JSON reader uses the following Loader parameters:
 ## Related Information
 
 - **Saving JSON output**: Set `type: 'json'` in the Reporter, see [Save Data](../../reporter-yaml/save-data)
-- **Semi-structured synthesis**: The AdvGAN synthesizer works directly on JSON-sourced data, see [AdvGAN Synthesizer](../../synthesizer-yaml/advgan)
-- **End-to-end tutorial**: [JSON Data and AdvGAN Synthesis](../../../getting-started/json-advgan-synthesis)
+- **Synthesis**: The table read from JSON is passed to every synthesizer in the same way as CSV data. The differentially private synthesizers `DPflow_Copula` and `DPflow_AdvGAN` also take it, given a public column declaration (`column_spec`) that lists every column and data without missing values, see [Differentially Private Synthesizers](../../synthesizer-yaml/dp-synthesizers)
+- **Complete example**: `demo/petsard-yaml/loader-yaml/json-format_full-evaluation.yaml` loads `customer-churn`, synthesizes it with the default synthesizer, runs five evaluators and saves the synthetic data and the report as JSON
 
 ## Notes
 

@@ -223,8 +223,8 @@ JSON讀取器使用下列Loader參數：
 ## 相關說明
 
 - **輸出JSON**：於Reporter設定`type: 'json'`，請參見[儲存資料](../../reporter-yaml/save-data)
-- **半結構化資料合成**：AdvGAN合成器可直接合成JSON來源的資料，請參見[AdvGAN合成器](../../synthesizer-yaml/advgan)
-- **完整教學**：[JSON資料與AdvGAN合成](../../../getting-started/json-advgan-synthesis)
+- **資料合成**：JSON讀入的資料表與CSV相同，可交由各合成器使用；差分隱私合成器`DPflow_Copula`與`DPflow_AdvGAN`亦可使用，須以公開欄位宣告(`column_spec`)列出全部欄位，且資料不含缺值，請參見[差分隱私合成器](../../synthesizer-yaml/dp-synthesizers)
+- **完整範例**：`demo/petsard-yaml/loader-yaml/json-format_full-evaluation.yaml`讀取`customer-churn`，以預設合成器合成，執行五項評測，並將合成資料與評測報告輸出為JSON
 
 ## 使用要點
 

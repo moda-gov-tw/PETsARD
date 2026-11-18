@@ -3,7 +3,7 @@ title: 以外部合成資料做預設評測
 type: docs
 weight: 130
 prev: docs/getting-started/default-synthesis-default-evaluation
-next: docs/getting-started/json-advgan-synthesis
+next: docs/getting-started/missing-compensation
 ---
 
 

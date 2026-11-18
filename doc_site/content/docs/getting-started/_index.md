@@ -49,15 +49,15 @@ The following scenarios guide you in choosing the right YAML configuration:
 
 The following scenarios use the extended features of this edition. Prepare the environment with [Extended Features Setup](../installation/extended-features) first:
 
-4. **[Semi-structured Data: JSON Input and Output with AdvGAN Synthesis](json-advgan-synthesis)**
+4. **[Semi-structured Data: JSON Input and Output](../petsard-yaml/loader-yaml/json-format)**
 
   - When your data is stored as JSON records
-  - Synthesizes data with the AdvGAN synthesizer and outputs the synthetic data and reports as JSON
+  - Reads JSON records with the Loader and outputs the synthetic data and reports as JSON with the Reporter
 
-5. **[Unstructured Data: Local LLM Text Synthesis and Text Evaluation](llm-text-synthesis)**
+5. **[Differential Privacy: Differentially Private Synthesizers for Tables and Text](../petsard-yaml/synthesizer-yaml/dp-synthesizers)**
 
-  - When your data contains free-text (natural language) columns
-  - Generates synthetic text with a locally hosted large language model and evaluates it with the text evaluator
+  - When the synthetic data needs a differential privacy guarantee that covers the whole flow
+  - Synthesizes tables with DP Copula or the updated DP AdvGAN, and free text with the DP LLM text synthesizer on a local model; the synthetic text is evaluated with [Text Data Evaluation](../petsard-yaml/evaluator-yaml/text-evaluation)
 
 6. **[Missing Data: Missing-Data Compensation with Median, KNN and MICE](missing-compensation)**
 

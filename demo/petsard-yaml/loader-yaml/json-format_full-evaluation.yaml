@@ -1,12 +1,12 @@
 ---
 # =============================================================================
-# JSON demo 3 -- full evaluation suite.
+# JSON demo -- full evaluation suite.
 #
-# Where 1 and 2 each exercise ONE thing (AdvGAN / scale), this one exercises
+# Where json-format_large-file.yaml exercises scale, this one exercises
 # the EVALUATION side: a Splitter to produce the holdout set, and five
 # evaluators covering all three assessment families at once.
 #
-# Why the Splitter is mandatory here (it is optional in demos 1 and 2):
+# Why the Splitter is mandatory here (it is optional in json-format_large-file.yaml):
 #   anonymeter-* declares REQUIRED_INPUT_KEYS = ["ori", "syn", "control"]
 #   (petsard/evaluator/anonymeter.py:386) and mlutility does the same. Without
 #   a Splitter there is no `control` set, and those two evaluators cannot run.

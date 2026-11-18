@@ -200,7 +200,7 @@ Evaluator:
 
 ## 文字資料評測
 
-合成的自由文字(例如[LLM文字合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}})的輸出)以文字評測模組評估：先以解析程式將原始資料、合成資料及控制資料的文字轉為具型別的欄位，再以上表的評估方法，依相同的參數與建議標準評估解析後的欄位。詳見[文字資料評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}})。
+合成的自由文字(例如DP LLM文字合成器的輸出，見[差分隱私合成器]({{< ref "/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers" >}}))以文字評測模組評估：先以解析程式將原始資料、合成資料及控制資料的文字轉為具型別的欄位，再以上表的評估方法，依相同的參數與建議標準評估解析後的欄位。詳見[文字資料評測]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}})。
 
 ## 執行說明
 

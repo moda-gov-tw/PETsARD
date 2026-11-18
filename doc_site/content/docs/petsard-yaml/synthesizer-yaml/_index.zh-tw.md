@@ -46,37 +46,30 @@ Synthesizer:
     class_name: MySynthesizer_Shuffle
 ```
 
-### 使用AdvGAN合成器
+### 使用差分隱私合成器
 
-AdvGAN合成器置於Preprocessor與Postprocessor之間執行，合成筆數由`sample_num_rows`設定：
+差分隱私合成器不使用Preprocessor，欄位型別取自公開的欄位宣告`column_spec`：
 
 ```yaml
 Loader:
-  load_json:
-    filepath: benchmark://customer-churn
-Preprocessor:
-  default:
-    method: 'default'
+  load_adult:
+    filepath: benchmark://adult-income
 Synthesizer:
-  advgan:
-    method: 'AdvGAN'
-    sample_num_rows: 1200
-    sigma: 1.0
-    outlier: 10
-    epochs: 5
-Postprocessor:
-  default:
-    method: 'default'
+  dp_copula:
+    method: DPflow_Copula
+    column_spec: demo/petsard-yaml/synthesizer-yaml/adult-income_column_spec.yaml
+    epsilon: 8
+    delta: 1.0e-5
 ```
 
-AdvGAN完整參數請參見「[AdvGAN合成器](advgan)」文件。
+完整參數請參見「[差分隱私合成器](dp-synthesizers)」文件。
 
 ## 主要參數
 
 - **method** (`string`)
   - 合成方式
   - 使用 `method: default` 時，會自動使用 PETsARD 內建的 Gaussian Copula 方法作為預設合成方法。
-  - 使用`method: 'AdvGAN'`時，使用以DP-SGD訓練鑑別器的AdvGAN合成器。
+  - 使用`method: DPflow_Copula`或`method: DPflow_AdvGAN`時，使用整個流程滿足差分隱私之合成器，請參見[差分隱私合成器](dp-synthesizers)。
 
 ### 支援的合成方法
 
@@ -84,7 +77,6 @@ AdvGAN完整參數請參見「[AdvGAN合成器](advgan)」文件。
 
 1. **[PETsARD 內建方法](petsard-gaussian-copula)**
    - `petsard-gaussian-copula`：使用 Numba JIT 與 PyTorch 實現的高效高斯耦合合成器
-   - **[AdvGAN](advgan)**(`AdvGAN`)：改良式AdvGAN合成器，鑑別器透過Opacus以DP-SGD訓練，適用於JSON資料等半結構化紀錄
 
 2. **[SDV 整合方法](sdv-methods)**（可選功能）
    - **[內建整合](sdv-methods)**：直接使用 SDV 預設參數的快速方式（需額外安裝，僅供參考）
@@ -93,7 +85,6 @@ AdvGAN完整參數請參見「[AdvGAN合成器](advgan)」文件。
 3. **[自訂合成方法](custom-method)**
    - 使用 `custom_method` 整合自行開發的合成演算法
    - **[差分隱私合成器](dp-synthesizers)**：`DPflow_Copula`、`DPflow_AdvGAN`與DP LLM文字合成器，從讀入資料到輸出的整個流程滿足差分隱私，並輸出隱私報告；欄位型別由`column_spec`宣告，不使用Preprocessor
-   - **[LLM文字合成器](llm-synthesizer)**：以本機大型語言模型生成非結構化的合成文字，透過`custom_method`載入，設定`module_path: petsard/synthesizer/LLM_synthesizer.py`與`class_name: LLM_synthesizer`
 
 4. **[外部資料載入](custom-data)**
    - 使用 `custom_data` 載入其他工具產生的合成資料進行評測

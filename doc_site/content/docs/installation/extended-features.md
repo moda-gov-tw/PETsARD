@@ -8,23 +8,21 @@ next: docs/installation
 
 For environments that use the **extended features** added in this edition.
 
-This edition adds four features to PETsARD: semi-structured JSON input and output with the AdvGAN synthesizer, a local-LLM text synthesizer with a text evaluator, a missing-data compensation module offering Median, KNN and MICE, and synthesizers that are differentially private over the whole flow (DP Copula, the updated DP AdvGAN and the DP LLM text synthesizer). This page explains how to install PETsARD from the source code in editable mode, add the packages these features use, set up LM Studio for local large language model (LLM) inference, choose suitable hardware, and verify the installation.
+This edition adds four features to PETsARD: semi-structured JSON input and output, a text evaluator for synthetic free text, a missing-data compensation module offering Median, KNN and MICE, and synthesizers that are differentially private over the whole flow (DP Copula, the updated DP AdvGAN and the DP LLM text synthesizer). This page explains how to install PETsARD from the source code in editable mode, add the packages these features use, set up LM Studio for local large language model (LLM) inference, choose suitable hardware, and verify the installation.
 
 ## Feature Requirements
 
 | Feature | Module | Additional packages | Additional software |
 |---|---|---|---|
 | JSON input and output | Loader, Reporter | None (uses pandas) | None |
-| AdvGAN synthesizer | Synthesizer | `opacus` (installed with the `all` extra; also in extra `advgan`) | None; a CUDA GPU is used automatically when available |
-| LLM text synthesizer | Synthesizer | sentence-transformers, faiss-cpu, tiktoken and the LLM SDKs (extra `llm`) | [LM Studio](https://lmstudio.ai) |
 | Text evaluator | Evaluator | None (uses the built-in PETsARD evaluators) | None |
 | Missing-data compensation | Preprocessor | None (uses scikit-learn) | None |
 | DP Copula | Synthesizer | None (uses scipy) | None |
-| Updated DP AdvGAN | Synthesizer | `opacus`, `dp-accounting` (extra `advgan`) | None; a CUDA GPU is used automatically when available |
-| DP LLM text synthesizer | Synthesizer | Same as the LLM text synthesizer (extra `llm`) | [LM Studio](https://lmstudio.ai) |
+| Updated DP AdvGAN | Synthesizer | `opacus`, `dp-accounting` (installed with the `all` extra; also in extra `advgan`) | None; a CUDA GPU is used automatically when available |
+| DP LLM text synthesizer | Synthesizer | sentence-transformers, faiss-cpu, tiktoken and the LLM SDKs (extra `llm`) | [LM Studio](https://lmstudio.ai) |
 
 {{< callout type="info" >}}
-`opacus` is installed with the `all` extra. PETsARD loads it only when `method: AdvGAN` is used; in an environment without it, the other synthesizers run as usual and selecting AdvGAN reports the missing package together with the install command.
+`opacus` and `dp-accounting` are installed with the `all` extra. PETsARD loads them only when `method: DPflow_AdvGAN` is used; in an environment without them, the other synthesizers run as usual and selecting `DPflow_AdvGAN` reports the missing package together with the install command.
 {{< /callout >}}
 
 ## Step 1: Prepare Python
@@ -97,16 +95,16 @@ pip install -e ".[all,advgan,llm]"
 | Extra | What it installs |
 |---|---|
 | `all` | The complete dependency set: data handling (numpy, pandas, pyyaml), evaluation (anonymeter, sdmetrics, xgboost, scikit-learn), synthesis (torch), Jupyter and Excel support |
-| `advgan` | Opacus, which the AdvGAN synthesizer uses to train its discriminator with differentially private stochastic gradient descent (DP-SGD); `all` also includes it |
-| `llm` | Packages for the LLM text synthesizer: sentence-transformers, transformers, faiss-cpu, tiktoken, tqdm, and the openai, anthropic and google-genai SDKs |
+| `advgan` | Opacus and dp-accounting, which the updated DP AdvGAN (`DPflow_AdvGAN`) uses to train its discriminator with differentially private stochastic gradient descent (DP-SGD) and to account the privacy budget; `all` also includes them |
+| `llm` | Packages for the DP LLM text synthesizer: sentence-transformers, transformers, faiss-cpu, tiktoken, tqdm, and the openai, anthropic and google-genai SDKs |
 
 Version ranges follow `pyproject.toml`, for example `torch>=2.13.0,<3`.
 
-**Editable mode:** with `pip install -e`, Python loads `petsard` directly from the `petsard/` folder of the source root, and the source root is added to the Python path. `custom_method` entries such as `module_path: petsard/synthesizer/LLM_synthesizer.py` and `module_path: petsard/evaluator/text_evaluator.py` are therefore resolved from any working directory, while data paths such as `filepath` remain relative to the working directory. Changes to the source code take effect without reinstalling.
+**Editable mode:** with `pip install -e`, Python loads `petsard` directly from the `petsard/` folder of the source root, and the source root is added to the Python path. `custom_method` entries such as `module_path: petsard/synthesizer/DP_LLM_synthesizer.py` and `module_path: petsard/evaluator/text_evaluator.py` are therefore resolved from any working directory, while data paths such as `filepath` remain relative to the working directory. Changes to the source code take effect without reinstalling.
 
 ### GPU Acceleration (Optional)
 
-All extended features run on a CPU. The AdvGAN synthesizer moves its model and data to the GPU automatically when a CUDA GPU is detected, and prints `Using device: cuda` (or `Using device: cpu`) at the start of training.
+All extended features run on a CPU. The updated DP AdvGAN (`DPflow_AdvGAN`) trains on the GPU automatically when PyTorch detects a CUDA GPU.
 
 PyTorch from PyPI includes the CUDA runtime on Linux (x86_64). On Windows, install a CUDA build of PyTorch **before** running `pip install -e ".[all,advgan,llm]"`. Choose an index URL on the [PyTorch website](https://pytorch.org/get-started/locally/) that matches the CUDA version of the graphics driver and provides PyTorch 2.13.0 or later, for example CUDA 12.6 or CUDA 13.0:
 
@@ -120,18 +118,17 @@ pip install "torch>=2.13.0,<3" --index-url https://download.pytorch.org/whl/cu13
 
 A CUDA build within `torch>=2.13.0,<3` satisfies the version range of `pyproject.toml`, so it is kept when the extras are installed. Confirm GPU availability with the [Deep Learning Support Check](../dl-support-check).
 
-## Step 5: Set Up LM Studio (LLM Text Synthesizer)
+## Step 5: Set Up LM Studio (DP LLM Text Synthesizer)
 
-The LLM text synthesizer sends its prompts to the OpenAI-compatible API server of LM Studio on the local machine (default `http://localhost:1234/v1`), so all inference stays on the local machine.
+The DP LLM text synthesizer sends its prompts to the OpenAI-compatible API server of LM Studio on the local machine (default `http://localhost:1234/v1`), so all inference stays on the local machine. The prompts hold only the released differentially private profile, never a data row.
 
 ### Install LM Studio and Download a Model
 
 1. Download and install LM Studio from [https://lmstudio.ai](https://lmstudio.ai).
-2. On the **Discover** page, search for and download the model to use. The example configurations of this edition use the following models:
+2. On the **Discover** page, search for and download the model to use. The example configurations of this edition use the following model:
 
 | Model | Characteristics |
 |---|---|
-| `google/gemma-4-12b-qat` | Lightweight model for quick runs and tutorials |
 | `openai/gpt-oss-20b` | Larger reasoning model; the model file is about 12.11 GB |
 
 Any model loaded in LM Studio can be used. Set `model`, and optionally `variation_model` and `post_processing_model`, to its identifier.
@@ -159,26 +156,29 @@ The response lists the `id` of every available model. The `model` value in the Y
 
 ```yaml
 Synthesizer:
-  llm-synth:
+  dp_llm:
     method: custom_method
-    module_path: petsard/synthesizer/LLM_synthesizer.py
-    class_name: LLM_synthesizer
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
+    epsilon: 8
+    delta: 1.0e-5
     api_type: lmstudio
     api_url: "http://localhost:1234/v1"
-    model: google/gemma-4-12b-qat
+    model: openai/gpt-oss-20b
     num_procs: 2
 ```
 
 - `api_url` sets the LM Studio server. When `api_url` is not set, `api_type: lmstudio` reads the server URL from `api_key` (for example `api_key: "http://localhost:1234/v1"`), and the default server is `http://localhost:1234/v1`.
 - The variation and post-processing stages reuse these settings unless `variation_api_url`, `variation_model`, `post_processing_api_url` or `post_processing_model` are set.
 - `exit_on_api_error: true` stops the pipeline as soon as an API call still fails after `max_retries` attempts (default `false`), which makes connection settings quick to confirm.
-- `api_type` also accepts `openai`, `anthropic` and `gemini` for hosted LLM services; set the API key of the provider in the environment variable `PETSARD_LLM_API_KEY` before running PETsARD, so that the key stays out of the YAML file.
+- `api_type` is required and has no default. Besides `lmstudio`, it accepts `openai`, `anthropic` and `gemini` for hosted LLM services; set the API key of the provider in the environment variable `PETSARD_LLM_API_KEY` before running PETsARD, so that the key stays out of the YAML file.
+- The block also sets the privacy budget `epsilon` and `delta`, which are required.
 
-The complete parameter list is given in [LLM Text Synthesizer](../../petsard-yaml/synthesizer-yaml/llm-synthesizer), and a runnable example in [Local LLM Text Synthesis](../../getting-started/llm-text-synthesis).
+The complete parameter list is given in [Differentially Private Synthesizers](../../petsard-yaml/synthesizer-yaml/dp-synthesizers), and runnable examples are `demo/petsard-yaml/synthesizer-yaml/dp-llm-synthesizer_bloodpressure.yaml` and `tutorial/run_dp3_llm.py`.
 
 ### Sentence-Embedding Model
 
-With `compute_fid: true` (the default), the synthesizer computes sentence embeddings with the sentence-transformers model set in `feature_extractor` (default `all-MiniLM-L6-v2`). The model is downloaded from Hugging Face on the first run and cached locally, so keep the network connection available for the first run. To reduce memory usage, lower `feature_extractor_batch_size` (default `1024`) to `128`.
+With `epochs` of 1 or more (default `1`), or with `label_vote: true`, the synthesizer computes sentence embeddings for the differentially private vote with the sentence-transformers model set in `feature_extractor` (default `all-MiniLM-L6-v2`). The model is downloaded from Hugging Face on first use and cached locally, so keep the network connection available for that run. The examples set `epochs: 0`, which generates text from the released profile only and does not use the embedding model. To reduce memory usage, lower `feature_extractor_batch_size` (default `1024`) to `128`.
 
 ### Connecting from a Docker Container (Optional)
 
@@ -215,11 +215,11 @@ The imputer parameters are fixed, so results are reproducible across runs. Confi
 | Feature | CPU | RAM | GPU | Other requirements |
 |---|---|---|---|---|
 | JSON input and output, default synthesizer and evaluation | Any current CPU | Depends on the number of rows and columns | Not required | None |
-| AdvGAN synthesizer (PyTorch, Opacus) | A CPU is sufficient | Depends on the number of rows and columns | Optional; used automatically when a CUDA GPU is detected | The batch size is fixed at 2; training time grows with the number of rows and `epochs` |
-| LLM text synthesizer (local inference with LM Studio) | 4 cores or more | 16 GB or more; 32 GB or more without a GPU | 16 GB of VRAM or more recommended; 24 GB or more for longer contexts, larger batches or higher throughput; CPU-only inference is also supported | 15 GB or more of free disk space (`openai/gpt-oss-20b` is about 12.11 GB); model context length of at least 32,768 tokens; sentence embeddings and FAISS nearest-neighbor search can run on the CPU |
+| Updated DP AdvGAN (PyTorch, Opacus) | A CPU is sufficient | Depends on the number of rows and columns | Optional; used automatically when a CUDA GPU is detected | Training time grows with the number of rows and `epochs` |
+| DP LLM text synthesizer (local inference with LM Studio) | 4 cores or more | 16 GB or more; 32 GB or more without a GPU | 16 GB of VRAM or more recommended; 24 GB or more for longer contexts, larger batches or higher throughput; CPU-only inference is also supported | 15 GB or more of free disk space (`openai/gpt-oss-20b` is about 12.11 GB); model context length of at least 32,768 tokens; sentence embeddings and FAISS nearest-neighbor search can run on the CPU |
 | Missing-data compensation (scikit-learn) | CPU; the MICE random forest uses all cores | Depends on the number of rows and features | Not required | None |
 
-A verified CPU-only configuration for the LLM text synthesizer is a Windows 11 virtual machine with 32 GB of RAM and 12 virtual CPUs, running LM Studio 0.4.21 with `openai/gpt-oss-20b`.
+A CPU-only reference configuration for local inference with LM Studio is a Windows 11 virtual machine with 32 GB of RAM and 12 virtual CPUs, running LM Studio 0.4.21 with `openai/gpt-oss-20b`.
 
 ## Verify the Installation
 
@@ -231,16 +231,16 @@ python -c "import petsard; print(petsard.__file__)"
 
 The path points to `petsard/__init__.py` under the source root, for example `<source root>/petsard/__init__.py`. A path inside `site-packages` means that PETsARD was installed from PyPI; run `pip install -e ".[all,advgan,llm]"` again from the source root.
 
-**2. Confirm the JSON loader, the AdvGAN synthesizer and the text evaluator**
+**2. Confirm the JSON loader, the differentially private synthesizers and the text evaluator**
 
 ```bash
-python -c "from petsard import Executor; from petsard.loader.loader_pandas import LoaderPandasJson; from petsard.synthesizer.DP_AdvGAN import AdvGANSynthesizer; from petsard.evaluator.text_evaluator import TextEvaluator; print('OK')"
+python -c "from petsard import Executor; from petsard.loader.loader_pandas import LoaderPandasJson; from petsard.synthesizer.DPflow_Copula import DPflowCopulaSynthesizer; from petsard.synthesizer.DPflow_AdvGAN import DPflowAdvGANSynthesizer; from petsard.evaluator.text_evaluator import TextEvaluator; print('OK')"
 ```
 
-**3. Confirm the packages of the AdvGAN and LLM text synthesizers**
+**3. Confirm the packages of the updated DP AdvGAN and the DP LLM text synthesizer**
 
 ```bash
-python -c "import opacus, sentence_transformers, faiss, tiktoken, openai, anthropic, google.genai; print('OK')"
+python -c "import opacus, dp_accounting, sentence_transformers, faiss, tiktoken, openai, anthropic, google.genai; print('OK')"
 ```
 
 **4. Confirm missing-data compensation**
@@ -257,8 +257,8 @@ curl http://localhost:1234/v1/models
 
 Commands 2 to 4 print `OK`, and command 5 returns the list of loaded models. The environment is then ready for the tutorials:
 
-- [JSON Data and AdvGAN Synthesis](../../getting-started/json-advgan-synthesis)
-- [Local LLM Text Synthesis](../../getting-started/llm-text-synthesis)
+- [Differentially Private Synthesizers](../../petsard-yaml/synthesizer-yaml/dp-synthesizers)
+- [Text Data Evaluation](../../petsard-yaml/evaluator-yaml/text-evaluation)
 - [Missing-Data Compensation](../../getting-started/missing-compensation)
 
 {{< callout type="info" >}}
@@ -271,8 +271,8 @@ PETsARD reads YAML and schema files with the default encoding of the operating s
 |---|---|
 | `ModuleNotFoundError: No module named 'opacus'` | Run `pip install -e ".[all,advgan,llm]"` from the source root (Step 4) |
 | `ModuleNotFoundError: No module named 'tiktoken'`, `'faiss'`, `'sentence_transformers'` or `'google'` | Run `pip install -e ".[all,advgan,llm]"` from the source root (Step 4) |
-| `Unsupported file extension: .json`, or `Module 'petsard/synthesizer/LLM_synthesizer.py' not found in any of the following locations` | Install PETsARD in editable mode from the source root (Step 4) and confirm the location with `petsard.__file__` |
+| `Unsupported file extension: .json`, or `Module 'petsard/synthesizer/DP_LLM_synthesizer.py' not found in any of the following locations` | Install PETsARD in editable mode from the source root (Step 4) and confirm the location with `petsard.__file__` |
 | `codec can't decode byte` when a YAML or schema file is loaded on Windows | Run with `python -X utf8` or set `PYTHONUTF8=1` |
 | The LLM log folder (`log_folder`, default `LOG_FILES` in the working directory) records `Failed to connect to LM Studio server` | Start the LM Studio server and confirm it with `curl http://localhost:1234/v1/models` (Step 5) |
 | The LLM call reports a model error | Set `model`, `variation_model` and `post_processing_model` to an `id` returned by `/v1/models` |
-| AdvGAN prints `Using device: cpu` on a machine with an NVIDIA GPU | Install a CUDA build of PyTorch ([GPU Acceleration](#gpu-acceleration-optional)) |
+| `DPflow_AdvGAN` trains on the CPU on a machine with an NVIDIA GPU (`python -c "import torch; print(torch.cuda.is_available())"` prints `False`) | Install a CUDA build of PyTorch ([GPU Acceleration](#gpu-acceleration-optional)) |

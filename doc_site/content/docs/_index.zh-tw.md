@@ -29,8 +29,8 @@ PETsARD 採用模組化設計，透過 YAML 描述資料處理流程。系統整
 本版將PETsARD適用範圍由結構化表格延伸至半結構化與非結構化資料，於前處理新增缺失資料補償，並新增整個流程滿足差分隱私之合成器。既有設定檔可直接沿用，各項新功能於YAML中明確指定即可啟用。
 
 {{< cards >}}
-{{< card link="getting-started/json-advgan-synthesis" title="JSON資料與AdvGAN合成" icon="code" subtitle="以Loader與Reporter讀取及輸出JSON紀錄，並以AdvGAN合成器合成半結構化資料。" >}}
-{{< card link="getting-started/llm-text-synthesis" title="本機LLM文字合成" icon="chat-alt-2" subtitle="以本機大型語言模型生成合成文字，並以文字評測模組評估合成結果。" >}}
+{{< card link="petsard-yaml/loader-yaml/json-format" title="JSON讀取與輸出" icon="code" subtitle="以Loader讀取JSON紀錄，並以Reporter將合成資料與評測報告輸出為JSON。" >}}
+{{< card link="petsard-yaml/evaluator-yaml/text-evaluation" title="文字資料評測" icon="chat-alt-2" subtitle="將合成的自由文字解析為具型別的欄位，再以PETsARD標準評測方法評估。" >}}
 {{< card link="getting-started/missing-compensation" title="缺失資料補償" icon="puzzle" subtitle="以公開或外部資料擬合Median、KNN或MICE補值策略，補償特徵欄位的缺失值。" >}}
 {{< card link="petsard-yaml/synthesizer-yaml/dp-synthesizers" title="差分隱私合成器" icon="shield-check" subtitle="以DP Copula、更新版DP AdvGAN或DP LLM文字合成器產生合成資料，整個流程滿足差分隱私並輸出隱私報告。" >}}
 {{< /cards >}}
@@ -38,13 +38,15 @@ PETsARD 採用模組化設計，透過 YAML 描述資料處理流程。系統整
 | 功能 | 模組 | 啟用方式 |
 |---|---|---|
 | JSON讀取與輸出 | Loader、Reporter | `filepath`副檔名為`.json`；Reporter設定`type: 'json'` |
-| AdvGAN合成器 | Synthesizer | `method: 'AdvGAN'` |
-| LLM文字合成器 | Synthesizer | `method: custom_method`，並設定`class_name: LLM_synthesizer` |
 | 差分隱私合成器 | Synthesizer | `method: DPflow_Copula`、`method: DPflow_AdvGAN`；DP LLM文字合成器為`method: custom_method`，並設定`class_name: DP_LLM_synthesizer` |
 | 文字評測模組 | Evaluator | `method: custom_method`，並設定`class_name: TextEvaluator`或`TextEvaluatorWithControl` |
 | 缺失資料補償 | Preprocessor | `method: custom_method`，並設定`class_name: MissingCompensation`，以`missing_compensation.method`指定`median`、`knn`或`mice` |
 
 使用上述功能前，請依[擴充功能安裝](installation/extended-features)完成環境設定。
+
+{{< callout type="info" >}}
+初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除；如需研究比較，請參考[`initial-methods`分支](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)。
+{{< /callout >}}
 
 ## 使用指南
 

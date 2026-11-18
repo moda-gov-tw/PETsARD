@@ -203,7 +203,7 @@ Evaluator:
 
 ## Text Data Evaluation
 
-Synthetic free text, such as the output of the [LLM Text Synthesizer]({{< ref "/docs/petsard-yaml/synthesizer-yaml/llm-synthesizer" >}}), is evaluated with the text evaluation module. A parser converts the original, synthetic and control text into typed columns, and the evaluation methods in the table above then run on the parsed columns with the same arguments and standards. See [Text Data Evaluation]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}}).
+Synthetic free text, such as the output of the DP LLM text synthesizer (see [Differentially Private Synthesizers]({{< ref "/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers" >}})), is evaluated with the text evaluation module. A parser converts the original, synthetic and control text into typed columns, and the evaluation methods in the table above then run on the parsed columns with the same arguments and standards. See [Text Data Evaluation]({{< ref "/docs/petsard-yaml/evaluator-yaml/text-evaluation" >}}).
 
 ## Execution Notes
 

@@ -1,8 +1,8 @@
 ---
 # =============================================================================
-# LLM synth -> text_evaluator
+# DP LLM text synthesizer (dp-llm-synth) -> text_evaluator
 #
-# LLM synth emits natural-language text; PETsARD's evaluators are column-
+# dp-llm-synth emits natural-language text; PETsARD's evaluators are column-
 # addressed. text_evaluator bridges the two: it parses ori and syn with your
 # parser, then fans the parsed frames out to any number of native evaluators.
 #
@@ -26,42 +26,31 @@ Loader:
     filepath: benchmark://bloodpressure-text
 
 Synthesizer:
-  llm-synth:
+  dp_llm:
     method: custom_method
-    module_path: petsard/synthesizer/LLM_synthesizer.py
-    class_name: LLM_synthesizer
+    module_path: petsard/synthesizer/DP_LLM_synthesizer.py
+    class_name: DP_LLM_synthesizer
 
+    # The only step that reads the data is the release of a differentially private
+    # data profile; with epochs: 0 the whole budget (epsilon, delta) is spent there.
+    # 唯一讀取資料的步驟是釋出差分隱私資料輪廓；epochs: 0 時預算(ε, δ)全花在這一步。
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 0
+    stop_after_epoch: 0
+    num_samples_schedule: 50
     sample_num_rows: 50
-    epochs: 1
 
     api_type: lmstudio
-    api_url: "http://localhost:1234/v1"
-    model: openai/gpt-oss-20b
-    variation_api_type: lmstudio
-    variation_api_url: "http://localhost:1234/v1"
-    variation_model: openai/gpt-oss-20b
-    post_processing_api_type: lmstudio
-    post_processing_api_url: "http://localhost:1234/v1"
-    post_processing_model: openai/gpt-oss-20b
-
-    variation_type: healthcare_blank_fill
+    api_url: "http://127.0.0.1:1234/v1"
+    api_key: lm-studio                # LM Studio does not check this value / LM Studio 不檢查此值
+    model: openai/gpt-oss-20b         # use the model id LM Studio shows / 填 LM Studio 顯示的模型 ID
     temperature: 1.0
-    seed: 42
-    do_sample: true
-    compute_fid: true
-    no_cuda: false
     num_procs: 4
-    fewshot_n_examples: 10
-    max_token_limit: 100000
     sleep_time: 0
     max_retries: 3
-    exit_on_api_error: false
-    verbose: 0
-    output_dir: ./llm_synth_output
-    continue: false
+    output_dir: ./llm_synth_output/text_eval
     log_folder: ./LOG_FILES
-    additional_info: >-
-      While use random tool to generate blood pressure, DO NOT exceed the range of +-5%
 
 Evaluator:
   text_eval:
@@ -70,12 +59,12 @@ Evaluator:
     class_name: TextEvaluator
 
     # Your parser. Contract:  def text_parser(df) -> pd.DataFrame
-    text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
+    text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
     # text_parser_entry: text_parser
 
     # The parsed frames are written here for inspection; each column holds the
     # values that the text parser extracted from the original and synthetic text.
-    output_dir: ./llm_synth_output/parsed
+    output_dir: ./llm_synth_output/text_eval/parsed
 
     # Native evaluators run on the parsed frames. Add as many as you like;
     # each one's own arguments sit beside its `method`.
@@ -89,12 +78,12 @@ Reporter:
   save_synth:
     method: save_data
     source: Synthesizer
-    output: 'llm_synth_result3'
+    output: 'dp_llm_text_eval'
   save_eval:
     method: save_report
     granularity:
       - global
       - columnwise
       - details
-    output: 'llm_synth_result3'
+    output: 'dp_llm_text_eval'
 ...

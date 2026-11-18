@@ -3,7 +3,7 @@ title: Evaluation of External Synthetic Data with Default Parameters
 type: docs
 weight: 130
 prev: docs/getting-started/default-synthesis-default-evaluation
-next: docs/getting-started/json-advgan-synthesis
+next: docs/getting-started/missing-compensation
 ---
 
 External synthesis with default evaluation.
