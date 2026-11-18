@@ -128,7 +128,7 @@ Full example: `demo/petsard-yaml/synthesizer-yaml/DPflow_AdvGAN_adult-income.yam
 | `column_spec`, `epsilon`, `delta`, `seed`, `privacy_report` | As for DPflow_Copula |
 | `epochs` | Training epochs, default 50 |
 | `batch_size` | Batch size, default 64; keep it well below the row count |
-| `sample_num_rows` | Rows to generate, default 100; set it explicitly |
+| `sample_num_rows` | Rows to generate; default: as many as the training data |
 | `share_histograms`, `share_copula` | Budget split ($\mu^2$ shares), default 0.1 and 0.6; DP-SGD gets the remaining 0.3. Their sum must be below 1 |
 | `keep_from_seed` | Optional: columns the generator leaves unchanged, taken from the seed, for example label columns |
 | `k`, `two_stage`, `lr`, `round_integers` | Histogram bins (default 64), two-stage histograms (default `true`), learning rate (default 5e-4), integer output (default `true`) |

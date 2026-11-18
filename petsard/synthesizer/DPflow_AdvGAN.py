@@ -127,7 +127,9 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
         self.delta = float(c.get("delta", 1e-5))
         self.EPOCHS = int(c.get("epochs", 50))
         self.batch_size = int(c.get("batch_size", c.get("batch", 64)))
-        self.sample_num_rows = int(c.get("sample_num_rows", 100))
+        # Rows to generate: sample_num_rows, or as many rows as the training data when it is not set (fixed in _fit
+        # before any budget is spent; an invalid value is rejected here)
+        self.sample_num_rows = self._rows_to_generate(c.get("sample_num_rows"), None)
         # seed is optional: set it to reproduce results; leave it out for a real release (operating-system randomness)
         self.seed, self.rng, self._torch_seed = resolve_seed(c)
         self.lr = float(c.get("lr", 5e-4))
@@ -144,6 +146,18 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
         if unknown:
             raise ConfigError(f"keep_from_seed names columns not in column_spec: {sorted(unknown)}")
         self.privacy: dict = {}
+
+    @staticmethod
+    def _rows_to_generate(value, default):
+        """sample_num_rows when it is set, otherwise `default`. 0 means not set (the Synthesizer front end passes 0)."""
+        if value is None:
+            return default
+        rows = int(value)
+        if rows == 0:
+            return default
+        if rows < 0:
+            raise ConfigError(f"sample_num_rows must be a positive integer, got {value}.")
+        return rows
 
     def _check(self, data: pd.DataFrame) -> pd.DataFrame:
         names = [c["name"] for c in self.spec]
@@ -175,6 +189,9 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
 
         raw = self._check(data)
         n = len(raw)
+        self.training_data_rows = n
+        # Decide the number of rows to generate before any budget is spent
+        self.sample_num_rows = self._rows_to_generate(self.config.get("sample_num_rows"), n)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         torch.manual_seed(self._torch_seed)
 

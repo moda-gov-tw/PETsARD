@@ -174,6 +174,36 @@ class TestDPflowAdvGAN:
         out = syn.fit_sample(make_data())
         assert len(out) == 30
 
+    # 未設定 sample_num_rows：經 Synthesizer 前端 create/fit/sample，產生與訓練資料相同筆數
+    def test_front_end_without_sample_num_rows_generates_training_rows(self):
+        syn = Synthesizer(method="DPflow_AdvGAN", column_spec=SPEC, epsilon=2, seed=0, epochs=1, batch_size=64)
+        syn.create()
+        syn.fit(make_data(150))
+        out = syn.sample()
+        assert out.shape == (150, len(SPEC))
+        assert syn._impl.privacy["achieved_epsilon"] <= 2
+
+    # 直接使用且設定中沒有 sample_num_rows：同樣產生與訓練資料相同筆數(與 DPflow_Copula 一致)
+    def test_direct_use_without_sample_num_rows_generates_training_rows(self):
+        from petsard.synthesizer.DPflow_AdvGAN import DPflowAdvGANSynthesizer
+
+        syn = DPflowAdvGANSynthesizer(
+            {"syn_method": "DPflow_AdvGAN", "column_spec": SPEC, "epsilon": 2, "seed": 0, "epochs": 1})
+        syn.fit(make_data(120))
+        assert len(syn.sample()) == 120
+
+    # 不合法的 sample_num_rows 在花用隱私預算前就被拒絕，不產生隱私報告
+    def test_invalid_sample_num_rows_is_rejected_before_the_budget_is_spent(self, tmp_path):
+        with pytest.raises(ConfigError, match="sample_num_rows"):
+            make("DPflow_AdvGAN", sample_num_rows=-5)
+        report = tmp_path / "privacy.json"
+        syn = make("DPflow_AdvGAN", seed=0, epochs=1, privacy_report=str(report))
+        syn.update_config({"sample_num_rows": -1})
+        with pytest.raises(ConfigError, match="sample_num_rows"):
+            syn.fit(make_data())
+        assert syn.privacy == {}
+        assert not report.exists()
+
     def test_budget_shares_must_leave_room_for_dp_sgd(self):
         with pytest.raises(ConfigError, match="share"):
             make("DPflow_AdvGAN", epsilon=1, share_histograms=0.5, share_copula=0.5)
