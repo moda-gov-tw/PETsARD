@@ -33,6 +33,10 @@ dist/
 
 # 環境與虛擬環境 Environment and virtual environments
 **/*{env,venv}
+# Virtual environments created by the documented setup (tutorial/README.md, extended-features) 文件建議建立之虛擬環境
+petsard-env/
+venv/
+.venv/
 **/.python-version
 
 # 套件管理 Package management
@@ -107,6 +111,10 @@ demo_*/output/*
 # DP LLM文字合成器之中間產物與呼叫紀錄 DP LLM synthesizer intermediates and call logs
 **/LOG_FILES/
 **/llm_synth_output/
+# Outputs of the demo YAMLs run from the repository root 於儲存庫根目錄執行範例設定檔之輸出
+/dp_*_privacy_report.json
+/dp_llm_*_output/
+/dp_llm_*_logs/
 **/prompt_generation.jsonl
 **/*.jsonl
 **/checkpoint*.csv

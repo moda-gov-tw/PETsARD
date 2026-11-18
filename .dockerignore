@@ -31,6 +31,7 @@ MANIFEST
 .venv
 env/
 venv/
+petsard-env/
 ENV/
 env.bak/
 venv.bak/
@@ -109,6 +110,9 @@ module_functional_designs/
 /tutorial/test_cases/_output/
 /LOG_FILES/
 /llm_synth_output/
+/dp_*_privacy_report.json
+/dp_llm_*_output/
+/dp_llm_*_logs/
 
 # Important files included 包含的重要檔案:
 # - petsard/ (main package 主要套件)
