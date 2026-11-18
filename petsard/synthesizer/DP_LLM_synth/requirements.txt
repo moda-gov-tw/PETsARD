@@ -1,57 +1,43 @@
-# --- Synthetic Data Research / Aug-PE workspace ---
-# Python 3.10+ recommended (matches existing gretel_env).
-# Install:  python -m venv gretel_env
-#           gretel_env\Scripts\activate
-#           pip install -U pip
-#           pip install -r requirements.txt
+# --- Packages of the DP LLM text synthesizer (DP_LLM_synthesizer.py) ---
+# 差分隱私 LLM 文字合成器(DP_LLM_synthesizer.py)所需套件
 #
-# PyTorch: install the CUDA wheel matching your driver from https://pytorch.org/get-started/locally/
-# Use an index that provides torch>=2.13.0 (e.g. cu126 or cu130):
-# e.g. CUDA 12.6 → pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu126
-# e.g. CUDA 13.0 → pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu130
+# Recommended: install the `llm` extra from the PETsARD source root (the folder that contains pyproject.toml);
+# the version ranges are defined in pyproject.toml and locked in uv.lock:
+# 建議於 PETsARD 原始碼根目錄(含 pyproject.toml 之資料夾)安裝套件群組 llm，版本範圍見 pyproject.toml，鎖定版本見 uv.lock：
+#           pip install ".[all,llm]"
+#
+# This file lists the same packages with the same version ranges, for environments that install from a
+# requirements file: pip install -r petsard/synthesizer/DP_LLM_synth/requirements.txt
+# 本檔以相同版本範圍列出相同套件，供以 requirements 檔安裝之環境使用。
+#
+# PyTorch: on Windows, install a CUDA build first if a GPU is used, from https://pytorch.org/get-started/locally/
+# (e.g. CUDA 12.6: pip install "torch>=2.13.0,<3" --index-url https://download.pytorch.org/whl/cu126)
+# PyTorch：Windows 使用 GPU 時，請先依上述網址安裝 CUDA 版本
 
 # --- Core numerics & data ---
-numpy>=1.24,<3
-pandas>=2.3.3
+numpy>=1.26.4,<2
+pandas>=2.3.2,<3
 
-# --- PyTorch stack (Aug-PE, embeddings, DP histogram) ---
-# CUDA build: install via the official index for your CUDA version, e.g. CUDA 12.6:
-#   pip install "torch>=2.13.0" --index-url https://download.pytorch.org/whl/cu126
-torch>=2.13.0
-transformers>=5.10.0
-sentence-transformers>=5.6.0
-tiktoken>=0.5.0
-tqdm>=4.66.3
+# --- PyTorch stack (embeddings of the DP vote) ---
+torch>=2.13.0,<3
+transformers>=5.10.0,<6
+sentence-transformers>=5.6.0,<7
+tiktoken>=0.5.0,<1
+tqdm>=4.66.3,<5
 
-# --- Vector search (aug-pe/dpsda/dp_counter.py) ---
-# faiss-gpu is available via conda; on pip use faiss-gpu-cu12 for CUDA 12.x:
-#   pip install faiss-gpu-cu12
-# Falling back to faiss-cpu for pure-pip installs:
-faiss-cpu>=1.7.4
+# --- Vector search (synthetic_data/dpsda/dp_counter.py) ---
+faiss-cpu>=1.7.4,<2
 
-# --- Hugging Face datasets (aug-pe/dpsda/data_loader.py for built-in sets) ---
-datasets>=5.0.1
-# pyarrow 26 requires NumPy 2, while PETsARD uses NumPy 1.x / pyarrow 26 版需 NumPy 2，故限 <26
-pyarrow<26
+# --- Metrics (synthetic_data/dpsda/metrics.py) ---
+scipy>=1.15.3,<2
 
-# --- Metrics (aug-pe/dpsda/metrics.py — FID / k-NN precision-recall) ---
-scipy>=1.10.0
-scikit-learn>=1.7.1
+# --- LLM SDKs (api/) ---
+openai>=1.30.0,<4
+anthropic>=0.25.0,<2
+google-genai>=1.0.0,<3
 
-# --- LLM SDKs (aug-pe/apis + aug-pe/external_api) ---
-openai>=1.30.0
-anthropic>=0.25.0
-google-genai>=1.0.0
-
-# --- Optional: Gradio launcher UI (see aug-pe-frontend/requirements.txt) ---
-# gradio>=4.44.0
-
-# --- Optional: utility_eval / MAUVE / plotting (aug-pe/utility_eval, metric.py) ---
-# evaluate>=0.4.0
-# matplotlib>=3.7.0
-# seaborn>=0.13.0
-
-# other
-anonymeter>=1.0.0,<2
+# --- Evaluation of the synthetic text (PETsARD evaluators) ---
+scikit-learn>=1.7.1,<2
+anonymeter>=1.0.0,<1.1
 xgboost>=3.0.5
 sdmetrics>=0.23.0,<1
