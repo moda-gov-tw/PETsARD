@@ -12,7 +12,8 @@ vulnerabilities:
       - "pkg:pypi/filelock@3.20.3"
     statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
     expired_at: 2027-04-30
-  # tornado 6.5.10 is the Jupyter server for Python 3.10; fixed in 6.6, which requires Python 3.11; Python 3.11 resolves 6.6
+  # tornado 6.5.10 is the Jupyter server for Python 3.10; CVE-2026-115927/116577/116578 are fixed in 6.6 and CVE-2026-126347
+  # in 6.6.1, both of which require Python 3.11; Python 3.11 resolves 6.6.1
   - id: CVE-2026-115927
     purls:
       - "pkg:pypi/tornado@6.5.10"
@@ -28,8 +29,24 @@ vulnerabilities:
       - "pkg:pypi/tornado@6.5.10"
     statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
     expired_at: 2027-04-30
-  # soupsieve 2.10 is resolved for Python < 3.11.5 (beautifulsoup4, through nbconvert in the Jupyter extra); fixed in 4.0.0, which requires Python 3.11.5; Python 3.11.5+ resolves 4.1
+  - id: CVE-2026-126347
+    purls:
+      - "pkg:pypi/tornado@6.5.10"
+    statement: "Python 3.10 only; no fixed upstream release supports Python 3.10 (fix requires Python 3.11). Python 3.11 environments, including the Docker image, use the fixed release. 僅 Python 3.10 使用，上游無修正版本"
+    expired_at: 2027-04-30
+  # soupsieve 2.10 is resolved for Python < 3.11.5 (beautifulsoup4, through nbconvert in the Jupyter extra); CVE-2026-126190 is fixed in 4.0.0
+  # and CVE-2026-126191/126193 in 3.0.2, both of which require Python 3.11.5; Python 3.11.5+ resolves 4.1
   - id: CVE-2026-126190
+    purls:
+      - "pkg:pypi/soupsieve@2.10"
+    statement: "Python 3.10 and 3.11.0-3.11.4 only; no fixed upstream release supports these versions (fix requires Python 3.11.5). Python 3.11.5+ environments, including the Docker image, use the fixed release. 僅 Python 3.11.5 以前版本使用，上游無修正版本"
+    expired_at: 2027-04-30
+  - id: CVE-2026-126191
+    purls:
+      - "pkg:pypi/soupsieve@2.10"
+    statement: "Python 3.10 and 3.11.0-3.11.4 only; no fixed upstream release supports these versions (fix requires Python 3.11.5). Python 3.11.5+ environments, including the Docker image, use the fixed release. 僅 Python 3.11.5 以前版本使用，上游無修正版本"
+    expired_at: 2027-04-30
+  - id: CVE-2026-126193
     purls:
       - "pkg:pypi/soupsieve@2.10"
     statement: "Python 3.10 and 3.11.0-3.11.4 only; no fixed upstream release supports these versions (fix requires Python 3.11.5). Python 3.11.5+ environments, including the Docker image, use the fixed release. 僅 Python 3.11.5 以前版本使用，上游無修正版本"
