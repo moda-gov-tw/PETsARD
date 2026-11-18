@@ -175,9 +175,14 @@ Full example: `demo/petsard-yaml/synthesizer-yaml/dp-llm-synthesizer_bloodpressu
 | `temperature`, `num_procs`, `sleep_time`, `max_retries`, `exit_on_api_error` | Sampling temperature (default 1.0), parallel requests (default 8; match Max Concurrent Predictions in LM Studio), seconds between calls (default 1), attempts for a failed call (default 3), and whether to stop when a call still fails (default `false`) |
 | `feature_extractor`, `feature_extractor_batch_size` | Sentence-embedding model of the vote (default `all-MiniLM-L6-v2`) and its batch size (default 1024); used only with `epochs` of 1 or more or with `label_vote: true` |
 | `continue` | Resume from `output_dir`; the released profile and the noisy votes already drawn are reused, never drawn again |
+| `check_server` | Default `true`: before anything is computed from the data, every `lmstudio` stage (initial generation, variation) must answer `GET <api_url>/models` and list its model; otherwise the run stops without releasing the profile. Set `false` only for an OpenAI-compatible server without the `/models` endpoint |
 | `log_folder` | Folder for the log of every LLM call (default `./LOG_FILES`) |
 
 Every release of a profile spends the budget once. If a profile is released again and both are used or published, the $\varepsilon$ values add up.
+
+{{< callout type="info" >}}
+Start the LM Studio server and load the model before the run. The run first checks the server (`check_server`) and, if the server or the model is not available, stops before anything is computed from the data, so no budget is spent. If a run still produces no valid row, for example because the server stopped during the run, it stops with an error; the profile in `output_dir` has then been released. To try again without releasing the data again, keep `output_dir` and run with `continue: true` and `require_released_profile: true`.
+{{< /callout >}}
 
 ### Outputs
 

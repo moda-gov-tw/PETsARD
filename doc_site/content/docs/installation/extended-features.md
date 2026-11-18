@@ -273,6 +273,7 @@ PETsARD reads YAML and schema files with the default encoding of the operating s
 | `ModuleNotFoundError: No module named 'tiktoken'`, `'faiss'`, `'sentence_transformers'` or `'google'` | Run `pip install -e ".[all,advgan,llm]"` from the source root (Step 4) |
 | `Unsupported file extension: .json`, or `Module 'petsard/synthesizer/DP_LLM_synthesizer.py' not found in any of the following locations` | Install PETsARD in editable mode from the source root (Step 4) and confirm the location with `petsard.__file__` |
 | `codec can't decode byte` when a YAML or schema file is loaded on Windows | Run with `python -X utf8` or set `PYTHONUTF8=1` |
-| The LLM log folder (`log_folder`, default `LOG_FILES` in the working directory) records `Failed to connect to LM Studio server` | Start the LM Studio server and confirm it with `curl http://localhost:1234/v1/models` (Step 5) |
+| `Cannot connect to the LLM server`, or the LLM log folder (`log_folder`, default `LOG_FILES` in the working directory) records `Failed to connect to LM Studio server` | Start the LM Studio server and confirm it with `curl http://localhost:1234/v1/models` (Step 5) |
+| `does not serve the model` | Load the model in LM Studio, or set `model` to an `id` returned by `/v1/models` |
 | The LLM call reports a model error | Set `model`, `variation_model` and `post_processing_model` to an `id` returned by `/v1/models` |
 | `DPflow_AdvGAN` trains on the CPU on a machine with an NVIDIA GPU (`python -c "import torch; print(torch.cuda.is_available())"` prints `False`) | Install a CUDA build of PyTorch ([GPU Acceleration](#gpu-acceleration-optional)) |

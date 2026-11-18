@@ -273,6 +273,7 @@ PETsARD以作業系統預設編碼讀取YAML設定檔與Schema檔。於Windows�
 | `ModuleNotFoundError: No module named 'tiktoken'`、`'faiss'`、`'sentence_transformers'`或`'google'` | 於原始碼根目錄執行`pip install -e ".[all,advgan,llm]"`(步驟4) |
 | `Unsupported file extension: .json`，或`Module 'petsard/synthesizer/DP_LLM_synthesizer.py' not found in any of the following locations` | 於原始碼根目錄以可編輯模式安裝PETsARD(步驟4)，並以`petsard.__file__`確認載入位置 |
 | Windows載入YAML或Schema檔時顯示`codec can't decode byte` | 以`python -X utf8`執行，或設定`PYTHONUTF8=1` |
-| LLM呼叫紀錄資料夾(`log_folder`，預設為工作目錄下`LOG_FILES`)記錄`Failed to connect to LM Studio server` | 啟動LM Studio伺服器，並以`curl http://localhost:1234/v1/models`確認(步驟5) |
+| 出現`Cannot connect to the LLM server`，或LLM呼叫紀錄資料夾(`log_folder`，預設為工作目錄下`LOG_FILES`)記錄`Failed to connect to LM Studio server` | 啟動LM Studio伺服器，並以`curl http://localhost:1234/v1/models`確認(步驟5) |
+| 出現`does not serve the model` | 於LM Studio載入該模型，或將`model`設為`/v1/models`回傳之`id` |
 | LLM呼叫顯示模型相關的錯誤 | 將`model`、`variation_model`及`post_processing_model`設為`/v1/models`回傳的`id` |
 | 具NVIDIA GPU的電腦執行`DPflow_AdvGAN`時仍以CPU訓練(`python -c "import torch; print(torch.cuda.is_available())"`顯示`False`) | 安裝CUDA版PyTorch([以GPU加速](#以gpu加速選用)) |

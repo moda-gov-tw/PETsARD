@@ -112,3 +112,50 @@ def test_require_released_profile_stops_without_profile(fake_server, texts, tmp_
     syn.fit(texts)
     with pytest.raises(RuntimeError, match="require_released_profile"):
         syn.sample()
+
+
+def _closed_port_url() -> str:
+    """URL of a local port that nothing listens on."""
+    import socket
+
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port = s.getsockname()[1]
+    return f"http://127.0.0.1:{port}/v1"
+
+
+def test_unreachable_server_stops_before_the_profile(texts, tmp_path):
+    from petsard.synthesizer.DP_LLM_synthesizer import DP_LLM_synthesizer
+
+    syn = DP_LLM_synthesizer(config(_closed_port_url(), tmp_path))
+    syn.fit(texts)
+    with pytest.raises(RuntimeError, match="Cannot connect to the LLM server"):
+        syn.sample()
+    # nothing was released: no profile, no privacy report
+    assert not (tmp_path / "out" / "profile.json").exists()
+    assert not (tmp_path / "out" / "privacy_report.json").exists()
+
+
+def test_model_not_served_stops_before_the_profile(fake_server, texts, tmp_path):
+    from petsard.synthesizer.DP_LLM_synthesizer import DP_LLM_synthesizer
+
+    syn = DP_LLM_synthesizer(config(fake_server, tmp_path, model="not-loaded"))
+    syn.fit(texts)
+    with pytest.raises(RuntimeError, match="does not serve the model 'not-loaded'"):
+        syn.sample()
+    assert not (tmp_path / "out" / "profile.json").exists()
+
+
+def test_no_valid_row_raises_after_the_release(texts, tmp_path):
+    from petsard.synthesizer.DP_LLM_synthesizer import DP_LLM_synthesizer
+
+    # check_server: false lets the run reach the release; every model call then fails
+    syn = DP_LLM_synthesizer(config(_closed_port_url(), tmp_path, check_server=False, stop_after_epoch=None,
+                                    num_samples_schedule=2, sample_num_rows=2, max_retries=1))
+    syn.fit(texts)
+    with pytest.raises(RuntimeError, match="No valid synthetic row"):
+        syn.sample()
+    assert (tmp_path / "out" / "profile.json").exists()
+    report = json.loads((tmp_path / "out" / "privacy_report.json").read_text(encoding="utf-8"))
+    assert report["status"] == "no valid synthetic row"
+    assert report["epsilon_spent"] <= report["epsilon_budget"] + 1e-9

@@ -277,6 +277,12 @@ class DP_LLM_synthesizer:
       retry_wait_time     float  Seconds to wait before retrying a failed API call (default 15)
       exit_on_api_error   bool   Stop the process when an API call still fails after
                                  max_retries attempts (default False)
+      check_server        bool   Before anything is computed from the private rows, every
+                                 lmstudio stage (init, variation) must answer
+                                 GET <api_url>/models and list its model; otherwise sample()
+                                 stops without releasing the profile or spending budget.
+                                 False skips this check, e.g. for an OpenAI-compatible server
+                                 without the /models endpoint (default True)
       num_procs           int    Parallel workers (default 8)
       additional_info     str    Optional extra text in <AdditionalInfo> tags (default "")
       require_released_profile bool  Stop unless output_dir already holds profile.json, so that a
@@ -302,6 +308,7 @@ class DP_LLM_synthesizer:
         self._data: pd.DataFrame | None = None
         self._training_samples: list[tuple[int, str]] = []
         self._generator = None
+        self._stage_apis: tuple = ()  # (config key, API) of the stages that send requests
         self._init_columns: list[str] | None = None  # label vote: columns the LLM writes first
 
     @staticmethod
@@ -360,6 +367,9 @@ class DP_LLM_synthesizer:
         """Run the DP pipeline and return a pd.DataFrame."""
         if self._generator is None:
             raise RuntimeError("Call fit() before sample().")
+        if self.config.get("check_server", True):
+            # a run that cannot generate text stops here: no profile, no budget spent
+            self._check_servers()
 
         from DP_LLM_synth.synthetic_data.dpsda.accountant import plan_budget
         from DP_LLM_synth.synthetic_data.dpsda.dp_counter import dp_nn_histogram
@@ -497,6 +507,7 @@ class DP_LLM_synthesizer:
                                status=f"stopped after epoch {t}", **report_args)
             df = self._to_dataframe([s for s in samples if s[1].strip()])
             df.to_csv(os.path.join(output_dir, f"epoch{t}_result.csv"), index=False)
+            self._require_rows(df, output_dir)
             # the synthetic record each row descends from: variations of one record are
             # near-duplicates and must share a cross-validation fold in evaluations
             ids = [k for k, text in samples
@@ -712,9 +723,13 @@ class DP_LLM_synthesizer:
             final = final + [s for s in extra if s[1].strip()][:need]
             log_samples(samples=final, headers=header, folder=_step_dir)
 
+        df = self._to_dataframe(final)
+        if len(df) == 0:
+            self._write_report(report_path, vote_rounds=vote_rounds, complete=False,
+                               status="no valid synthetic row", **report_args)
+            self._require_rows(df, output_dir)
         self._write_report(report_path, vote_rounds=vote_rounds, complete=True, **report_args)
 
-        df = self._to_dataframe(final)
         if len(df) < sample_num_rows:
             g.logger.simple_log(f"Only {len(df)} valid rows for sample_num_rows={sample_num_rows}")
         return df.head(sample_num_rows).reset_index(drop=True)
@@ -722,6 +737,63 @@ class DP_LLM_synthesizer:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _check_servers(self) -> None:
+        """Every lmstudio stage that generates text (init, variation) must answer
+        GET <api_url>/models and list its model. Called before anything is computed from
+        the private rows, so a run that cannot generate text releases no profile and spends
+        no budget. The post-processing stage sends no request and is not checked."""
+        import ipaddress
+        import urllib.parse
+        import urllib.request
+
+        from DP_LLM_synth.api import LMStudioAPI
+
+        def _is_local(host: str) -> bool:
+            if host == "localhost" or host.endswith(".localhost"):
+                return True
+            try:
+                return ipaddress.ip_address(host).is_loopback
+            except ValueError:
+                return False
+
+        checked = set()
+        for key, api in self._stage_apis:
+            if not isinstance(api, LMStudioAPI):
+                continue
+            url, model = api._base_url.rstrip("/"), api.get_model()
+            if (url, model) in checked:
+                continue
+            checked.add((url, model))
+            request = urllib.request.Request(
+                url + "/models", headers={"Authorization": f"Bearer {api._api_key}"})
+            host = (urllib.parse.urlsplit(url).hostname or "").lower()
+            # a local server is reached directly, never through a system proxy
+            opener = (urllib.request.build_opener(urllib.request.ProxyHandler({}))
+                      if _is_local(host) else urllib.request.build_opener())
+            try:
+                with opener.open(request, timeout=5) as response:
+                    served = [m.get("id") for m in json.load(response).get("data", [])]
+            except Exception as exc:  # noqa: BLE001 - any failure means no usable server
+                raise RuntimeError(
+                    f"Cannot connect to the LLM server {url} ({key}): {exc}. Start LM Studio, "
+                    "load the model and start the server, then run again. Nothing was computed "
+                    "from the private rows.") from exc
+            if model and model != "default" and model not in served:
+                raise RuntimeError(
+                    f"The LLM server {url} ({key}) does not serve the model '{model}'; it serves "
+                    f"{served}. Load the model in LM Studio or set the model to one of these ids, "
+                    "then run again. Nothing was computed from the private rows.")
+
+    @staticmethod
+    def _require_rows(df: pd.DataFrame, output_dir: str) -> None:
+        """Stop with an error instead of returning an empty table."""
+        if len(df) == 0:
+            raise RuntimeError(
+                "No valid synthetic row was generated: check the LLM server, the model and the "
+                f"call log (log_folder). The DP profile in {output_dir} has been released; to try "
+                "again without releasing the data again, keep output_dir and set continue: true "
+                "and require_released_profile: true.")
 
     @staticmethod
     def _released_profile(output_dir, resume):
@@ -961,6 +1033,8 @@ class DP_LLM_synthesizer:
             cfg.get("post_processing_model", cfg.get("model")),
             cfg.get("post_processing_api_url", cfg.get("api_url")),
         )
+        # stages that send requests, checked by _check_servers before the profile is released
+        self._stage_apis = (("api_url", init_api), ("variation_api_url", variation_api))
 
         # generic note built from the schema only; the user's additional_info is optional
         csv_note = self._csv_note(self._columns)

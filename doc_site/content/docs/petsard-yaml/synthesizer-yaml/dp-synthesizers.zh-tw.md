@@ -175,9 +175,14 @@ Synthesizer:
 | `temperature`、`num_procs`、`sleep_time`、`max_retries`、`exit_on_api_error` | 取樣溫度(預設1.0)、同時送出的請求數(預設8，與LM Studio的Max Concurrent Predictions相配合)、呼叫間隔秒數(預設1)、失敗呼叫的嘗試次數(預設3)，以及呼叫仍失敗時是否停止(預設`false`) |
 | `feature_extractor`、`feature_extractor_batch_size` | 投票用的句向量模型(預設`all-MiniLM-L6-v2`)與批次大小(預設1024)；只在`epochs`為1以上或`label_vote: true`時使用 |
 | `continue` | 自`output_dir`接續執行；已釋出的輪廓與已抽出的加噪投票直接沿用，不會重抽 |
+| `check_server` | 預設`true`：由資料計算任何結果之前，每個`lmstudio`階段(初始生成、變異)須回應`GET <api_url>/models`並列出其模型，否則停止執行，不釋出輪廓；僅於OpenAI相容伺服器不提供`/models`端點時設為`false` |
 | `log_folder` | 每次LLM呼叫紀錄的資料夾(預設`./LOG_FILES`) |
 
 每釋出一次輪廓就花一次預算。若重新釋出，新舊輪廓都被使用或公開時，$\varepsilon$相加。
+
+{{< callout type="info" >}}
+執行前請先開啟LM Studio伺服器並載入模型。執行時會先確認伺服器(`check_server`)，伺服器或模型無法使用時，在由資料計算任何結果之前即停止，不花用預算。若執行中仍未產生任何有效資料列(例如伺服器在執行途中關閉)，會以錯誤訊息停止，此時`output_dir`中的輪廓已經釋出；要重新執行而不再釋出資料，請保留`output_dir`，並設定`continue: true`與`require_released_profile: true`。
+{{< /callout >}}
 
 ### 輸出
 
