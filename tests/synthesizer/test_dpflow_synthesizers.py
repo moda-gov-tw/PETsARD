@@ -211,3 +211,46 @@ class TestDPflowAdvGAN:
     def test_keep_from_seed_must_name_declared_columns(self):
         with pytest.raises(ConfigError, match="keep_from_seed"):
             make("DPflow_AdvGAN", epsilon=1, keep_from_seed=["label"])
+
+
+# 內建 Gaussian Copula(petsard_gaussian_copula.py)之常數欄位修正只在其自身程式路徑：
+# DPflow_Copula 與 DPflow_AdvGAN 不呼叫其相關矩陣程式，固定種子下輸出逐值相同(含常數欄位之資料)
+CONST_SPEC = SPEC + [
+    {"name": "const_num", "type": "num", "integer": True},
+    {"name": "const_cat", "type": "cat", "values": ["x", "y"]},
+]
+
+
+def make_constant_data(n: int = 400) -> pd.DataFrame:
+    data = make_data(n, seed=1)
+    data["const_num"] = 0
+    data["const_cat"] = "x"
+    return data
+
+
+class TestBuiltinCopulaCodeIsNotUsed:
+    @pytest.mark.parametrize("constant", [False, True], ids=["no_constant", "constant_columns"])
+    @pytest.mark.parametrize(
+        "method",
+        [
+            "DPflow_Copula",
+            pytest.param("DPflow_AdvGAN", marks=pytest.mark.skipif(not HAS_ADVGAN, reason="needs the advgan extra")),
+        ],
+    )
+    def test_same_output_without_the_builtin_copula_code(self, method, constant):
+        from unittest.mock import patch
+
+        from petsard.synthesizer.petsard_gaussian_copula import (
+            PetsardGaussianCopulaSynthesizer,
+        )
+
+        data, spec = (make_constant_data(), CONST_SPEC) if constant else (make_data(), SPEC)
+        extra = {"epochs": 1, "batch_size": 64} if method == "DPflow_AdvGAN" else {}
+        _, first = run(method, data, column_spec=spec, seed=0, **extra)
+
+        def not_used(*args, **kwargs):
+            raise AssertionError("the built-in Gaussian Copula correlation code was used")
+
+        with patch.object(PetsardGaussianCopulaSynthesizer, "_separate_constant_columns", not_used),                 patch.object(PetsardGaussianCopulaSynthesizer, "_regularize_correlation_matrix", not_used):
+            _, second = run(method, data, column_spec=spec, seed=0, **extra)
+        pd.testing.assert_frame_equal(first, second, check_exact=True)

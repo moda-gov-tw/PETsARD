@@ -6,10 +6,13 @@ Note: This synthesizer assumes preprocessed data (all numeric)
 注意：此合成器假設數據已預處理（全為數值型）
 """
 
+import logging
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
+import pytest
 import torch
 
 from petsard.synthesizer import Synthesizer
@@ -313,6 +316,81 @@ class TestPetsardGaussianCopulaSynthesizer(unittest.TestCase):
 
         self.assertAlmostEqual(orig_mean, synth_mean, delta=0.5)
         self.assertAlmostEqual(orig_std, synth_std, delta=0.5)
+
+
+def _correlated_data(n: int = 300, constant: bool = False) -> pd.DataFrame:
+    """Numeric data with one strongly correlated pair (b, b2), optionally with constant columns."""
+    rng = np.random.default_rng(5)
+    df = pd.DataFrame(
+        {
+            "a": rng.normal(0, 1, n),
+            "b": rng.integers(0, 3, n),
+            "c": rng.uniform(0, 1, n),
+        }
+    )
+    df["b2"] = df["b"] * 2 + rng.integers(0, 2, n)
+    if constant:
+        df.insert(1, "k", 4)  # constant column between the others
+        df["k0"] = 0.0
+    return df
+
+
+def _fit_sample(data: pd.DataFrame, rows: int = 250):
+    np.random.seed(11)
+    torch.manual_seed(11)
+    syn = PetsardGaussianCopulaSynthesizer(
+        {"syn_method": "petsard-gaussian_copula", "sample_num_rows": rows}
+    )
+    syn.fit(data)
+    return syn, syn.sample()
+
+
+class TestConstantColumnCorrelation:
+    """常數欄位造成相關矩陣出現 NaN 時，只把常數欄位之列與行設為 0(對角線為 1)，保留其他欄位相關"""
+
+    # (a) 含常數欄位：非常數欄位之間的相關被保留(與不含常數欄位時相同)，不再改用單位矩陣
+    def test_correlations_between_other_columns_are_kept(self, caplog):
+        caplog.set_level(logging.WARNING)
+        syn, out = _fit_sample(_correlated_data(constant=True))
+        assert "using identity" not in caplog.text
+
+        corr = syn.get_correlation_matrix()
+        others = ["a", "b", "c", "b2"]
+        reference, _ = _fit_sample(_correlated_data(constant=False))
+        np.testing.assert_allclose(
+            corr.loc[others, others].to_numpy(),
+            reference.get_correlation_matrix().loc[others, others].to_numpy(),
+            atol=1e-6,
+        )
+        assert corr.loc["b", "b2"] > 0.8
+        for col in ["k", "k0"]:
+            assert corr.loc[col, col] == pytest.approx(1.0)
+            assert (corr.loc[col].drop(col) == 0).all()
+        np.linalg.cholesky(syn.correlation_matrix.cpu().numpy().astype(np.float64))
+
+        # the synthetic data keep the correlated pair and the constant values
+        assert out["b"].corr(out["b2"]) > 0.7
+        assert (out["k"] == 4).all()
+        assert (out["k0"] == 0).all()
+
+    # (b) 沒有常數欄位：輸出與修改前相同(固定種子；修改前即不經過新步驟)
+    def test_data_without_constant_columns_are_unchanged(self):
+        data = _correlated_data(constant=False)
+        syn, out = _fit_sample(data)
+        with patch.object(
+            PetsardGaussianCopulaSynthesizer,
+            "_separate_constant_columns",
+            lambda self, corr_matrix, gaussian_data: corr_matrix,
+        ):
+            before_syn, before = _fit_sample(data)
+        pd.testing.assert_frame_equal(out, before, check_exact=True)
+        assert torch.equal(syn.correlation_matrix, before_syn.correlation_matrix)
+
+    # 相關矩陣沒有 NaN/Inf 時直接傳回原物件
+    def test_finite_matrix_is_returned_as_it_is(self):
+        syn = PetsardGaussianCopulaSynthesizer({"syn_method": "petsard-gaussian_copula"})
+        matrix = np.array([[1.0, 0.3], [0.3, 1.0]])
+        assert syn._separate_constant_columns(matrix, np.zeros((5, 2))) is matrix
 
 
 if __name__ == "__main__":

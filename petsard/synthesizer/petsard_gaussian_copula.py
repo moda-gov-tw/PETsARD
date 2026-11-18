@@ -492,6 +492,9 @@ class PetsardGaussianCopulaSynthesizer(BaseSynthesizer):
                 f"     Computing np.corrcoef on {gaussian_data_clean.shape[0]:,} rows..."
             )
             correlation_matrix = np.corrcoef(gaussian_data_clean.T)
+            correlation_matrix = self._separate_constant_columns(
+                correlation_matrix, gaussian_data_clean
+            )
         corr_time = time.time() - step_start
         self._logger.info(f"[5/6] Correlation calculated: {corr_time:.3f}s")
 
@@ -516,6 +519,47 @@ class PetsardGaussianCopulaSynthesizer(BaseSynthesizer):
             f"  Breakdown: Marginals={fit_marginals_time:.2f}s, Transform={transform_time:.2f}s, Corr={corr_time:.2f}s, Reg={reg_time:.2f}s"
         )
         self._logger.info("=" * 60)
+
+    def _separate_constant_columns(
+        self, corr_matrix: np.ndarray, gaussian_data: np.ndarray
+    ) -> np.ndarray:
+        """
+        Keep the correlations between the other columns when some columns are constant.
+
+        A constant column has no variance, so np.corrcoef gives NaN in its row and column,
+        and _regularize_correlation_matrix would then replace the whole matrix with the
+        identity matrix. Here only the rows and columns of the constant columns are set
+        to 0, with 1 on the diagonal (a constant column is independent of the others);
+        the result still goes through _regularize_correlation_matrix.
+
+        Args:
+            corr_matrix: Correlation matrix from np.corrcoef (NumPy array)
+            gaussian_data: The complete cases it was computed from (rows x columns)
+
+        Returns:
+            The matrix with the constant columns separated; the input itself when it
+            has no NaN/Inf or no constant column
+        """
+        if corr_matrix.ndim != 2 or np.isfinite(corr_matrix).all():
+            return corr_matrix
+
+        with np.errstate(invalid="ignore"):
+            constant = ~np.isfinite(gaussian_data).all(axis=0) | (
+                np.ptp(gaussian_data, axis=0) == 0
+            )
+        if not constant.any():
+            return corr_matrix
+
+        separated = corr_matrix.copy()
+        separated[constant, :] = 0.0
+        separated[:, constant] = 0.0
+        separated[constant, constant] = 1.0
+        constant_names = [self.column_names[i] for i in np.flatnonzero(constant)]
+        self._logger.info(
+            f"     Constant columns {constant_names}: correlation 0 with the other columns; "
+            "the correlations between the other columns are kept"
+        )
+        return separated
 
     def _regularize_correlation_matrix(self, corr_matrix: np.ndarray) -> np.ndarray:
         """
