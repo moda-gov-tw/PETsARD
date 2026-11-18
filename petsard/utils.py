@@ -97,6 +97,11 @@ def _resolve_module_path(
         os.path.join(cwd, module_path),
     ]
 
+    # File name of the requested module, for the search paths that are files
+    module_file_name = os.path.normcase(
+        os.path.basename(module_path.replace("\\", "/"))
+    )
+
     # Combine default and additional search paths
     all_search_paths = default_search_paths[:]
     if search_paths:
@@ -109,9 +114,13 @@ def _resolve_module_path(
                 # Combine directory with module path
                 full_path = os.path.join(search_dir, module_path)
                 all_search_paths.append(full_path)
-            elif search_dir.endswith(".py"):
-                # A full path to a Python file; other files on sys.path (zip archives,
-                # console-script launchers such as pytest.exe) are never module files
+            elif (
+                search_dir.endswith(".py")
+                and os.path.normcase(os.path.basename(search_dir)) == module_file_name
+            ):
+                # A full path to the requested Python file. Other .py files are other
+                # modules, and other files on sys.path (zip archives, console-script
+                # launchers such as pytest.exe) are never module files
                 all_search_paths.append(search_dir)
 
     # Try each search path

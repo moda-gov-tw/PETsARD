@@ -178,6 +178,15 @@ class TestRemovedInitialModules:
             self._load("petsard/synthesizer/LLM_synthesizer.py", "LLM_synthesizer")
         assert "class_name: DP_LLM_synthesizer" in exc_info.value.message
 
+    # 測試 sys.path 含其他 .py 檔時，不載入該檔，仍引發 UnableToLoadError 並指出替代方法
+    def test_hint_when_sys_path_holds_another_python_file(self, tmp_path, monkeypatch):
+        unrelated = tmp_path / "unrelated_script.py"
+        unrelated.write_text("x = 1\n", encoding="utf-8")
+        monkeypatch.setattr(sys, "path", [str(unrelated), *sys.path])
+        with pytest.raises(UnableToLoadError) as exc_info:
+            self._load("petsard/synthesizer/DP_AdvGAN.py", "AdvGANSynthesizer")
+        assert "method: DPflow_AdvGAN" in exc_info.value.message
+
     # 測試其他找不到的模組維持原有訊息
     def test_other_missing_module_keeps_message(self):
         with pytest.raises(UnableToLoadError) as exc_info:
