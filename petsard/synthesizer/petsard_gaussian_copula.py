@@ -491,7 +491,11 @@ class PetsardGaussianCopulaSynthesizer(BaseSynthesizer):
             self._logger.info(
                 f"     Computing np.corrcoef on {gaussian_data_clean.shape[0]:,} rows..."
             )
-            correlation_matrix = np.corrcoef(gaussian_data_clean.T)
+            # A constant column is -inf in the Gaussian space (norm.ppf of its uniform
+            # value 0), so np.corrcoef warns and gives NaN in its row and column; that is
+            # expected and handled by _separate_constant_columns
+            with np.errstate(invalid="ignore", divide="ignore"):
+                correlation_matrix = np.corrcoef(gaussian_data_clean.T)
             correlation_matrix = self._separate_constant_columns(
                 correlation_matrix, gaussian_data_clean
             )

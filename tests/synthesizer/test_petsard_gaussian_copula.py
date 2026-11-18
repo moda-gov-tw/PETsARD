@@ -8,6 +8,7 @@ Note: This synthesizer assumes preprocessed data (all numeric)
 
 import logging
 import unittest
+import warnings
 from unittest.mock import patch
 
 import numpy as np
@@ -393,6 +394,16 @@ class TestConstantColumnCorrelation:
         )
         matrix = np.array([[1.0, 0.3], [0.3, 1.0]])
         assert syn._separate_constant_columns(matrix, np.zeros((5, 2))) is matrix
+
+    # 含常數欄位時，計算相關係數不再顯示 numpy 的 RuntimeWarning(輸出不變，見 (b) 與固定種子比對)
+    def test_constant_columns_give_no_numpy_runtime_warning(self):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            _fit_sample(_correlated_data(constant=True))
+        runtime_warnings = [
+            str(w.message) for w in caught if issubclass(w.category, RuntimeWarning)
+        ]
+        assert runtime_warnings == []
 
 
 if __name__ == "__main__":
