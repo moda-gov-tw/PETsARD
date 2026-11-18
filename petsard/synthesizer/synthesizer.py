@@ -36,6 +36,15 @@ VALID_SYNTHESIZER_METHODS = [
     "DPflow_AdvGAN",
 ]
 
+# Method names of the initial methods removed from this version (the part before the first
+# dash, upper case, as in SynthesizerMap.map) and the replacement named in the error message
+REMOVED_SYNTHESIZER_METHODS = {
+    "ADVGAN": (
+        "The initial AdvGAN synthesizer has been removed from this version; "
+        "use method: DPflow_AdvGAN (see the Differentially Private Synthesizers page)."
+    ),
+}
+
 
 class SynthesizerMap:
     """
@@ -102,6 +111,12 @@ class SynthesizerConfig(BaseConfig):
             )
         except KeyError as e:
             error_msg: str = f"Unsupported synthesizer method: {self.method}"
+            libname_match = re.match(r"^[^-]*", self.method)
+            removed_hint = REMOVED_SYNTHESIZER_METHODS.get(
+                libname_match.group().upper() if libname_match else ""
+            )
+            if removed_hint:
+                error_msg = f"{error_msg}. {removed_hint}"
             self._logger.error(error_msg)
             raise UnsupportedMethodError(
                 error_msg,

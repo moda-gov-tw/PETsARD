@@ -1,12 +1,30 @@
 import logging
 import sys
+from pathlib import PureWindowsPath
 
 import pandas as pd
 
-from petsard.exceptions import ConfigError
+from petsard.exceptions import ConfigError, UnableToLoadError
 from petsard.metadater import Schema
 from petsard.synthesizer.synthesizer_base import BaseSynthesizer
 from petsard.utils import load_external_module
+
+# Module files of the initial methods removed from this version and the replacement
+# named in the error message when such a module_path is not found
+_ADVGAN_HINT = (
+    "The initial AdvGAN synthesizer has been removed from this version; "
+    "use method: DPflow_AdvGAN (see the Differentially Private Synthesizers page)."
+)
+REMOVED_INITIAL_MODULES: dict[str, str] = {
+    "LLM_synthesizer.py": (
+        "The initial LLM synthesizer has been removed from this version; use "
+        "module_path: petsard/synthesizer/DP_LLM_synthesizer.py with "
+        "class_name: DP_LLM_synthesizer (see the Differentially Private Synthesizers page)."
+    ),
+    "AdvGAN.py": _ADVGAN_HINT,
+    "DP_AdvGAN.py": _ADVGAN_HINT,
+    "DP_GAN.py": _ADVGAN_HINT,
+}
 
 
 class CustomSynthesizer(BaseSynthesizer):
@@ -54,13 +72,26 @@ class CustomSynthesizer(BaseSynthesizer):
 
         # Pass sys.path as search_paths to support notebook environments
         # This allows finding modules in the same directory as the notebook
-        _, synthesizer_class = load_external_module(
-            module_path=self.config["module_path"],
-            class_name=self.config["class_name"],
-            logger=self._logger,
-            required_methods=self.REQUIRED_METHODS,
-            search_paths=sys.path,  # Include Python path for module search
-        )
+        try:
+            _, synthesizer_class = load_external_module(
+                module_path=self.config["module_path"],
+                class_name=self.config["class_name"],
+                logger=self._logger,
+                required_methods=self.REQUIRED_METHODS,
+                search_paths=sys.path,  # Include Python path for module search
+            )
+        except UnableToLoadError as e:
+            # PureWindowsPath splits on both "/" and "\"
+            removed_hint = REMOVED_INITIAL_MODULES.get(
+                PureWindowsPath(str(self.config["module_path"])).name
+            )
+            if removed_hint is None:
+                raise
+            error_msg = f"{e.message}\n{removed_hint}"
+            self._logger.error(removed_hint)
+            raise UnableToLoadError(
+                error_msg, filepath=self.config["module_path"]
+            ) from e
 
         self._impl = synthesizer_class(config=config, metadata=metadata)
 
