@@ -310,6 +310,21 @@ def load_column_spec(source) -> list[dict]:
     return loaded
 
 
+def rows_to_generate(value, default):
+    """sample_num_rows when it is set, otherwise `default`. 0 means not set (the Synthesizer front end passes 0).
+
+    A negative value raises ConfigError; DPflow_Copula and DPflow_AdvGAN check it before any budget is spent.
+    """
+    if value is None:
+        return default
+    rows = int(value)
+    if rows == 0:
+        return default
+    if rows < 0:
+        raise ConfigError(f"sample_num_rows must be a positive integer, got {value}.")
+    return rows
+
+
 class DPflowBase(BaseSynthesizer):
     """Common behaviour: parameter handling, input checks, seeding, privacy report and output types.
 
@@ -335,6 +350,7 @@ class DPflowBase(BaseSynthesizer):
         self.two_stage = bool(config.get("two_stage", False))
         self.round_integers = bool(config.get("round_integers", True))
         self.spec = load_column_spec(config["column_spec"])
+        rows_to_generate(config.get("sample_num_rows"), None)  # reject an invalid row count before fit
         self.privacy: dict = {}
 
     def _check(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -366,6 +382,8 @@ class DPflowBase(BaseSynthesizer):
     def _fit(self, data: pd.DataFrame) -> None:
         raw = self._check(data)
         self.training_data_rows = len(raw)
+        # Check the number of rows to generate before any budget is spent
+        rows_to_generate(self.config.get("sample_num_rows"), self.training_data_rows)
         self.seed, self.rng, torch_seed = resolve_seed({"seed": self.seed})
         if self.NEEDS_TORCH:
             import torch
@@ -383,8 +401,8 @@ class DPflowBase(BaseSynthesizer):
         self._impl = True  # the real data is not kept on this object
 
     def _sample(self) -> pd.DataFrame:
-        n = self.config.get("sample_num_rows") or self.training_data_rows
-        df = self._generate(int(n))
+        n = rows_to_generate(self.config.get("sample_num_rows"), self.training_data_rows)
+        df = self._generate(n)
         df = df[[c["name"] for c in self.spec]]
         for c in self.spec:
             name = c["name"]

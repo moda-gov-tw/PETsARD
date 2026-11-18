@@ -125,6 +125,28 @@ class TestDPflowCopula:
         with pytest.raises(ConfigError, match="differ"):
             run("DPflow_Copula", data)
 
+    # 未設定(或為 0)sample_num_rows：產生與訓練資料相同筆數
+    def test_without_sample_num_rows_generates_training_rows(self):
+        _, out = run("DPflow_Copula", make_data(150), seed=0, sample_num_rows=0)
+        assert len(out) == 150
+        syn = DPflowCopulaSynthesizer({"syn_method": "DPflow_Copula", "column_spec": SPEC, "epsilon": 2, "seed": 0})
+        syn.fit(make_data(120))
+        assert len(syn.sample()) == 120
+
+    # 負的 sample_num_rows：與 DPflow_AdvGAN 相同，在花用隱私預算前以 ConfigError 拒絕，不產生隱私報告
+    def test_negative_sample_num_rows_is_rejected_before_the_budget_is_spent(self, tmp_path):
+        with pytest.raises(ConfigError, match="sample_num_rows"):
+            make("DPflow_Copula", sample_num_rows=-5)
+        with pytest.raises(ConfigError, match="sample_num_rows"):
+            Synthesizer(method="DPflow_Copula", sample_num_rows=-5, column_spec=SPEC, epsilon=2, seed=0).create()
+        report = tmp_path / "privacy.json"
+        syn = make("DPflow_Copula", seed=0, privacy_report=str(report))
+        syn.update_config({"sample_num_rows": -1})
+        with pytest.raises(ConfigError, match="sample_num_rows"):
+            syn.fit(make_data())
+        assert syn.privacy == {}
+        assert not report.exists()
+
     def test_required_parameters(self):
         with pytest.raises(ConfigError, match="epsilon"):
             DPflowCopulaSynthesizer({"syn_method": "DPflow_Copula", "column_spec": SPEC})

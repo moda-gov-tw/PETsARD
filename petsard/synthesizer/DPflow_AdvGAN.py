@@ -59,6 +59,7 @@ from petsard.synthesizer.DPflow_common import (
     mu_for,
     release_copula_loading,
     resolve_seed,
+    rows_to_generate,
     seed_report,
     solve_noise_multiplier,
 )
@@ -147,17 +148,8 @@ class DPflowAdvGANSynthesizer(BaseSynthesizer):
             raise ConfigError(f"keep_from_seed names columns not in column_spec: {sorted(unknown)}")
         self.privacy: dict = {}
 
-    @staticmethod
-    def _rows_to_generate(value, default):
-        """sample_num_rows when it is set, otherwise `default`. 0 means not set (the Synthesizer front end passes 0)."""
-        if value is None:
-            return default
-        rows = int(value)
-        if rows == 0:
-            return default
-        if rows < 0:
-            raise ConfigError(f"sample_num_rows must be a positive integer, got {value}.")
-        return rows
+    # sample_num_rows when it is set, otherwise the given default; the same rule as DPflow_Copula
+    _rows_to_generate = staticmethod(rows_to_generate)
 
     def _check(self, data: pd.DataFrame) -> pd.DataFrame:
         names = [c["name"] for c in self.spec]
