@@ -131,9 +131,10 @@ def test_unreachable_server_stops_before_the_profile(texts, tmp_path):
     syn.fit(texts)
     with pytest.raises(RuntimeError, match="Cannot connect to the LLM server"):
         syn.sample()
-    # nothing was released: no profile, no privacy report
+    # nothing was released: no profile, no privacy report, and no empty log folder is left behind
     assert not (tmp_path / "out" / "profile.json").exists()
     assert not (tmp_path / "out" / "privacy_report.json").exists()
+    assert not (tmp_path / "logs").exists()
 
 
 def test_model_not_served_stops_before_the_profile(fake_server, texts, tmp_path):
@@ -144,6 +145,29 @@ def test_model_not_served_stops_before_the_profile(fake_server, texts, tmp_path)
     with pytest.raises(RuntimeError, match="does not serve the model 'not-loaded'"):
         syn.sample()
     assert not (tmp_path / "out" / "profile.json").exists()
+    assert not (tmp_path / "logs").exists()
+
+
+def test_failed_server_check_keeps_existing_log_folders(texts, tmp_path):
+    from petsard.synthesizer.DP_LLM_synthesizer import DP_LLM_synthesizer
+
+    # a log folder that already exists (here with a file) is kept; only folders created by fit() are removed
+    (tmp_path / "logs").mkdir()
+    (tmp_path / "logs" / "earlier.txt").write_text("earlier run", encoding="utf-8")
+    syn = DP_LLM_synthesizer(config(_closed_port_url(), tmp_path))
+    syn.fit(texts)
+    with pytest.raises(RuntimeError, match="Cannot connect to the LLM server"):
+        syn.sample()
+    assert (tmp_path / "logs" / "earlier.txt").exists()
+
+    # nested log folders created by fit() are all removed
+    nested = tmp_path / "new" / "deeper" / "logs"
+    syn = DP_LLM_synthesizer(config(_closed_port_url(), tmp_path, log_folder=str(nested)))
+    syn.fit(texts)
+    assert nested.is_dir()
+    with pytest.raises(RuntimeError, match="Cannot connect to the LLM server"):
+        syn.sample()
+    assert not (tmp_path / "new").exists()
 
 
 def test_no_valid_row_raises_after_the_release(texts, tmp_path):

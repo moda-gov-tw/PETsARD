@@ -38,11 +38,20 @@ VALID_SYNTHESIZER_METHODS = [
 
 # Method names of the initial methods removed from this version (the part before the first
 # dash, upper case, as in SynthesizerMap.map) and the replacement named in the error message
+_REMOVED_LLM_HINT = (
+    "The initial LLM synthesizer has been removed from this version; use method: custom_method "
+    "with module_path: petsard/synthesizer/DP_LLM_synthesizer.py and "
+    "class_name: DP_LLM_synthesizer (see the Differentially Private Synthesizers page)."
+)
 REMOVED_SYNTHESIZER_METHODS = {
     "ADVGAN": (
         "The initial AdvGAN synthesizer has been removed from this version; "
         "use method: DPflow_AdvGAN (see the Differentially Private Synthesizers page)."
     ),
+    # llm-synth, llm-synthesizer, LLM_synth, LLM_synthesizer
+    "LLM": _REMOVED_LLM_HINT,
+    "LLM_SYNTH": _REMOVED_LLM_HINT,
+    "LLM_SYNTHESIZER": _REMOVED_LLM_HINT,
 }
 
 

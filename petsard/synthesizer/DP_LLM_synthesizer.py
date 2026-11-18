@@ -309,6 +309,7 @@ class DP_LLM_synthesizer:
         self._training_samples: list[tuple[int, str]] = []
         self._generator = None
         self._stage_apis: tuple = ()  # (config key, API) of the stages that send requests
+        self._new_log_dirs: list[str] = []  # log folders created by fit(), deepest first
         self._init_columns: list[str] | None = None  # label vote: columns the LLM writes first
 
     @staticmethod
@@ -361,6 +362,12 @@ class DP_LLM_synthesizer:
         self._training_samples = [
             (i, serialize_row(row)) for i, row in enumerate(self._data.to_numpy())
         ]
+        # building the generator creates log_folder (default ./LOG_FILES); the folders it creates
+        # are removed again when the server check in sample() fails, so that run leaves none behind
+        from DP_LLM_synth.utils.LLM_result_logger import FOLDER
+
+        log_folder = self.config.get("log_folder")
+        self._new_log_dirs = self._missing_dirs(FOLDER if log_folder is None else log_folder)
         self._generator = self._build_generator()
 
     def sample(self) -> pd.DataFrame:
@@ -369,7 +376,11 @@ class DP_LLM_synthesizer:
             raise RuntimeError("Call fit() before sample().")
         if self.config.get("check_server", True):
             # a run that cannot generate text stops here: no profile, no budget spent
-            self._check_servers()
+            try:
+                self._check_servers()
+            except RuntimeError:
+                self._remove_new_log_dirs()
+                raise
 
         from DP_LLM_synth.synthetic_data.dpsda.accountant import plan_budget
         from DP_LLM_synth.synthetic_data.dpsda.dp_counter import dp_nn_histogram
@@ -784,6 +795,28 @@ class DP_LLM_synthesizer:
                     f"The LLM server {url} ({key}) does not serve the model '{model}'; it serves "
                     f"{served}. Load the model in LM Studio or set the model to one of these ids, "
                     "then run again. Nothing was computed from the private rows.")
+
+    @staticmethod
+    def _missing_dirs(path: str) -> list[str]:
+        """The folders on `path` that do not exist yet, deepest first."""
+        missing = []
+        path = os.path.abspath(path)
+        while not os.path.exists(path):
+            missing.append(path)
+            parent = os.path.dirname(path)
+            if parent == path:
+                break
+            path = parent
+        return missing
+
+    def _remove_new_log_dirs(self) -> None:
+        """Remove the log folders created by fit() while they are still empty."""
+        for path in self._new_log_dirs:
+            try:
+                os.rmdir(path)  # fails, and stops here, unless the folder is empty
+            except OSError:
+                break
+        self._new_log_dirs = []
 
     @staticmethod
     def _require_rows(df: pd.DataFrame, output_dir: str) -> None:

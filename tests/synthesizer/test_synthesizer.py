@@ -117,6 +117,20 @@ class TestDPflowAdvGANOptionalDependency:
         assert "has been removed" in exc_info.value.message
         assert "method: DPflow_AdvGAN" in exc_info.value.message
 
+    # 測試初版 LLM 合成器之方法名稱：說明已移除，並指出以 custom_method 載入 DP_LLM_synthesizer.py
+    @pytest.mark.parametrize(
+        "method",
+        ["llm-synth", "LLM_synthesizer", "llm_synth", "LLM-synthesizer"],
+    )
+    def test_removed_llm_method_names_point_to_dp_llm(self, method):
+        with pytest.raises(UnsupportedMethodError) as exc_info:
+            Synthesizer(method=method)
+        message = exc_info.value.message
+        assert "The initial LLM synthesizer has been removed" in message
+        assert "method: custom_method" in message
+        assert "module_path: petsard/synthesizer/DP_LLM_synthesizer.py" in message
+        assert "class_name: DP_LLM_synthesizer" in message
+
     # 測試其他不支援的方法名稱不附初版方法移除說明
     def test_unknown_method_has_no_removal_hint(self):
         with pytest.raises(UnsupportedMethodError) as exc_info:
