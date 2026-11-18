@@ -20,7 +20,7 @@ Usage:
     logger.log("What is 2+2?", "2+2 equals 4")
 
     # With custom filename and console output (verbose 1 = standard messages)
-    logger = Logger("claude", "custom_session.txt", verbose=1)
+    logger = Logger("lmstudio", "custom_session.txt", verbose=1)
     logger.simple_log("Session started")
 
 Design Philosophy:

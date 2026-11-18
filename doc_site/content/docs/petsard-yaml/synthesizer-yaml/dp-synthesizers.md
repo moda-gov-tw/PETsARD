@@ -20,7 +20,7 @@ PETsARD provides three differentially private synthesizers. The whole flow, from
 {{< /callout >}}
 
 {{< callout type="info" >}}
-The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version; the three synthesizers on this page are the updated methods. For research comparison, see the [`initial-methods` branch](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods).
+The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version; the three synthesizers on this page are the updated methods.
 {{< /callout >}}
 
 ## Before You Start

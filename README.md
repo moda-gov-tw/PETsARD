@@ -9,9 +9,9 @@
 
 `PETsARD`（隱私強化技術分析、研究與開發）是一套為了促進合成資料生成與評估過程而設計的 Python 程式庫。
 
-> **Note 註記**: The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. This version keeps the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and `dp-llm-synth` (`DP_LLM_synthesizer`), whose whole flow is differentially private; see [Differentially Private Synthesizers](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/). For research comparison, see the [`initial-methods`](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods) branch.
+> **Note 註記**: The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. This version keeps the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and `dp-llm-synth` (`DP_LLM_synthesizer`), whose whole flow is differentially private; see [Differentially Private Synthesizers](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/). Install from the source code to use them; see [Extended Features Setup](https://moda-gov-tw.github.io/PETsARD/docs/installation/extended-features/).
 >
-> 初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除；如需研究比較，請參考[`initial-methods`](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)分支。本版本保留整個流程皆滿足差分隱私之更新後方法`DPflow_Copula`、`DPflow_AdvGAN`及`dp-llm-synth`(`DP_LLM_synthesizer`)，說明見[差分隱私合成器](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。
+> 初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除。本版本保留整個流程皆滿足差分隱私之更新後方法`DPflow_Copula`、`DPflow_AdvGAN`及`dp-llm-synth`(`DP_LLM_synthesizer`)，說明見[差分隱私合成器](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。使用時請自原始碼安裝，見[擴充功能安裝](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/installation/extended-features/)。
 
 ---
 
@@ -104,6 +104,7 @@ services:
 ### Requirements 需求
 
 - Python 3.10 or 3.11 Python 3.10 或 3.11
+- Python 3.11.5 or later is recommended: on Python 3.10 and 3.11.0-3.11.4, a few dependencies resolve to older releases with known vulnerabilities, because their fixed releases need a newer Python (see `.trivyignore.yaml`) 建議使用Python 3.11.5以上版本：於Python 3.10及3.11.0至3.11.4，數個相依套件會安裝含已知弱點之舊版，因其修正版需較新之Python(見`.trivyignore.yaml`)
 
 ### Quick Start 快速開始
 
@@ -113,6 +114,18 @@ pip install petsard
 
 # Run tests 執行測試
 pip install petsard[dev]
+pytest
+```
+
+The PyPI package does not include the differentially private synthesizers of this version. To use them, or to run the tests of this version, install from the source root (the folder that contains `pyproject.toml`); see [Extended Features Setup](https://moda-gov-tw.github.io/PETsARD/docs/installation/extended-features/) and [tutorial/README.md](tutorial/README.md).
+
+PyPI套件不含本版本之差分隱私合成器。使用這些合成器或執行本版本之測試時，請於原始碼根目錄(含`pyproject.toml`之資料夾)安裝，見[擴充功能安裝](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/installation/extended-features/)及[tutorial/README.md](tutorial/README.md)。
+
+```bash
+# Install from the source root 自原始碼根目錄安裝
+pip install -e ".[all,advgan,llm,dev]"
+
+# Run tests 執行測試
 pytest
 ```
 

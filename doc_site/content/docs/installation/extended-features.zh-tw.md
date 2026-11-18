@@ -27,7 +27,7 @@ next: docs/installation
 
 ## 步驟1：準備Python
 
-本版支援Python 3.10與3.11(`pyproject.toml`設定`requires-python = ">=3.10,<3.12"`)，建議使用Python 3.11。
+本版支援Python 3.10與3.11(`pyproject.toml`設定`requires-python = ">=3.10,<3.12"`)，建議使用Python 3.11.5以上版本(例如3.11.9)：於Python 3.10及3.11.0至3.11.4，部分相依套件(soupsieve；Python 3.10另有tornado、filelock)會安裝含已知弱點之舊版，因其修正版需較新之Python，評估說明見原始碼根目錄之`.trivyignore.yaml`。`py -3.11 --version`與`python3.11 --version`會顯示完整版本號碼。
 
 ```bash
 # Windows：列出已安裝的Python版本，並確認3.11可執行

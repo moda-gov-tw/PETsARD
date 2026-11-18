@@ -42,8 +42,9 @@ Synthesizer:
     delta: 1.0e-5
     epochs: 0
     stop_after_epoch: 0
-    # Number of synthetic rows for this example. A value close to the training
-    # set size (80 rows) gives more stable Anonymeter and MLUtility scores.
+    # This example uses 20 rows to keep the run short; a value close to the training
+    # split (80 rows) gives more stable Anonymeter and MLUtility scores.
+    # 本範例為縮短執行時間使用20筆；接近訓練資料筆數(80筆)時，Anonymeter與MLUtility分數較穩定。
     num_samples_schedule: 20
     sample_num_rows: 20
 

@@ -27,7 +27,7 @@ This edition adds four features to PETsARD: semi-structured JSON input and outpu
 
 ## Step 1: Prepare Python
 
-This edition supports Python 3.10 and 3.11 (`requires-python = ">=3.10,<3.12"` in `pyproject.toml`). Python 3.11 is recommended.
+This edition supports Python 3.10 and 3.11 (`requires-python = ">=3.10,<3.12"` in `pyproject.toml`). Python 3.11.5 or later, for example 3.11.9, is recommended: on Python 3.10 and 3.11.0 to 3.11.4, a few dependencies (soupsieve, and on Python 3.10 also tornado and filelock) resolve to older releases with known vulnerabilities, because their fixed releases need a newer Python; these are assessed in `.trivyignore.yaml` of the source root. `py -3.11 --version` and `python3.11 --version` print the full version number.
 
 ```bash
 # Windows: list the installed Python versions and confirm that 3.11 runs

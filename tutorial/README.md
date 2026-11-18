@@ -4,15 +4,15 @@
 
 This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV) and semi-structured (JSON) data, and three differentially private synthesizers, of which dp-llm-synth synthesizes unstructured text. All example data are public datasets or teaching samples.
 
-> **註記 Note**：初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除；如需研究比較，請參考 `initial-methods` 分支(https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)。本資料夾的差分隱私範例使用更新後方法 `DPflow_Copula`、`DPflow_AdvGAN` 及dp-llm-synth(`DP_LLM_synthesizer`)。
+> **註記 Note**：初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除。本資料夾的差分隱私範例使用更新後方法 `DPflow_Copula`、`DPflow_AdvGAN` 及dp-llm-synth(`DP_LLM_synthesizer`)。
 >
-> The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. For research comparison, see the `initial-methods` branch (https://github.com/moda-gov-tw/PETsARD/tree/initial-methods). The differentially private examples in this folder use the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and dp-llm-synth (`DP_LLM_synthesizer`).
+> The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. The differentially private examples in this folder use the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and dp-llm-synth (`DP_LLM_synthesizer`).
 
 ## 安裝與執行 Installation and Run (Windows)
 
-需要Python 3.10或3.11。以下指令在「命令提示字元」(CMD)中執行，假設本儲存庫已下載並解壓縮到 `C:\petsard\PETsARD-main`。
+需要Python 3.10或3.11，建議使用Python 3.11.5以上版本(Python 3.10及3.11.0至3.11.4會安裝數個含已知弱點之相依套件舊版，見原始碼根目錄之`.trivyignore.yaml`)；可用 `python --version` 確認版本。以下指令在「命令提示字元」(CMD)中執行，假設本儲存庫已下載並解壓縮到 `C:\petsard\PETsARD-main`。
 
-Requires Python 3.10 or 3.11. Run in Command Prompt (CMD), assuming this repository is unzipped to `C:\petsard\PETsARD-main`.
+Requires Python 3.10 or 3.11; Python 3.11.5 or later is recommended (on Python 3.10 and 3.11.0-3.11.4, a few dependencies resolve to older releases with known vulnerabilities, see `.trivyignore.yaml` in the repository root). Check the version with `python --version`. Run in Command Prompt (CMD), assuming this repository is unzipped to `C:\petsard\PETsARD-main`.
 
 ```bat
 cd C:\petsard\PETsARD-main
@@ -58,11 +58,11 @@ The YAML configurations used by each script are in `demo_csv/configs` and `demo_
 
 `run_dp3_llm.py` uses a large language model served locally by LM Studio. Before running it:
 
-1. 在儲存庫根目錄安裝額外套件 Install the extra packages from the repository root:
+1. 在儲存庫根目錄安裝套件群組 `llm`(版本範圍依 `pyproject.toml`) Install the `llm` extra from the repository root (version ranges follow `pyproject.toml`):
 
    ```bat
    cd C:\petsard\PETsARD-main
-   pip install -r petsard\synthesizer\DP_LLM_synth\requirements.txt
+   pip install ".[all,llm]"
    ```
 
 2. 安裝LM Studio(https://lmstudio.ai)，下載並載入模型 `openai/gpt-oss-20b`，開啟本機伺服器(預設 `http://localhost:1234`)。
@@ -104,10 +104,11 @@ The examples of the initial methods used in the course recording have been remov
 |---|---|
 | `run_json1.py`：初版AdvGAN合成JSON資料(`demo_json/configs/test_json_advgan.yaml`) Initial AdvGAN on JSON data | JSON讀取與輸出 JSON input and output：`run_json1.py`(預設合成器 default synthesizer，`demo_json/configs/test_json.yaml`)；AdvGAN合成 AdvGAN synthesis：`run_dp2_advgan.py`(更新版DP AdvGAN Updated DP AdvGAN，`demo_dp/configs/dp_advgan_adult_income.yaml`) |
 | `run_llm1.py`：初版LLM合成器合成文字(`demo_llm/llm_synth*.yaml`) Initial LLM synthesizer on text | `run_dp3_llm.py`(dp-llm-synth，`demo_dp/configs/dp_llm_bloodpressure.yaml`) |
+| `demo_json/configs/default-synthesis.yaml`：初版AdvGAN合成 `adult-income.json` Initial AdvGAN on `adult-income.json` | `run_json2.py`(預設合成器 default synthesizer，`demo_json/configs/adult-income-json.yaml`)；差分隱私合成 differentially private synthesis：`run_dp1_copula.py`、`run_dp2_advgan.py` |
 
-文字範例的額外套件改由 `petsard\synthesizer\DP_LLM_synth\requirements.txt` 安裝(見「文字合成之事前準備」)。
+文字範例的額外套件改以套件群組 `llm` 安裝：`pip install ".[all,llm]"`(見「文字合成之事前準備」)。
 
-The extra packages of the text example are now installed from `petsard\synthesizer\DP_LLM_synth\requirements.txt` (see "Preparing the Text Example").
+The extra packages of the text example are now installed with the `llm` extra: `pip install ".[all,llm]"` (see "Preparing the Text Example").
 
 ## 再次使用 Next Time
 
