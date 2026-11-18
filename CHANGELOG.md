@@ -21,6 +21,33 @@
   (`check_server`, default `true`) before anything is computed from the data, and stops with an
   error instead of returning an empty table when no valid row is generated
 
+- **utils**: A `custom_method` module that is not found now raises `UnableToLoadError` (with the
+  replacement hint for a removed initial module) also when the tests run through a console-script
+  launcher such as `pytest.exe`: non-directory `sys.path` entries are candidates only when they end
+  with `.py`
+
+- **synthesizer**: `DPflow_AdvGAN` without `sample_num_rows` generates as many rows as the
+  training data, as `DPflow_Copula` does, and decides the row count before any budget is spent;
+  it used to train, write the privacy report and then fail at sampling
+
+- **synthesizer**: `method: llm-synth`, `LLM_synthesizer` and similar initial LLM method names
+  name the DP LLM synthesizer (`custom_method` with `DP_LLM_synthesizer.py`); the DP LLM
+  synthesizer no longer leaves an empty `log_folder` behind when its server check fails
+
+- **evaluator**: Anonymeter SinglingOut maps column names that pandas queries cannot use (for
+  example `marital-status`) to query-safe names before the evaluation and writes the original names
+  back into the reported queries; such names used to make the queries fail. Data whose column names
+  are all safe give the same result as before
+
+- **synthesizer**: The built-in Gaussian Copula (`petsard-gaussian_copula`, the default method)
+  keeps the correlations between the other columns when some columns are constant, instead of
+  using the identity matrix for the whole correlation matrix; `DPflow_Copula` and `DPflow_AdvGAN`
+  are not affected
+
+- **docker**: Assess in `.trivyignore.yaml` the setuptools 70.3.0 entry of pip's SBOM
+  (CVE-2025-47273, CVE-2026-59890, GHSA-xmj3-9gf7-h52w) that image scans report; pip vendors only
+  `pkg_resources` from it, and the installed setuptools is 84.2.1
+
 ### Documentation
 
 - Remove the guides, demo configurations, notebooks and tutorial scripts of the initial methods;
@@ -28,6 +55,9 @@
 
 - Recommend Python 3.11.5 or later, install the text example with the `llm` extra, and describe
   the installation from the source root in `README.md`
+
+- Run the tests with `python -m pytest` and set `PYTHONUTF8=1` on Windows (`README.md`); the DP
+  synthesizer pages state the new `DPflow_AdvGAN` default for `sample_num_rows`
 
 
 ## v1.10.2-rc.5 (2026-07-10)
