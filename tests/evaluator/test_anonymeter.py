@@ -244,6 +244,31 @@ class TestSinglingOutColumnNames:
                 getattr(rates, rate_type).error
             )
 
+    # 非字串欄名(例如整數 0、1)：DataFrame.query 無法引用，查詢保留安全名稱；以名稱對應改名後可在原始資料上執行
+    def test_non_string_names_keep_the_safe_names(self, adult_splits, monkeypatch):
+        numbered = {
+            key: df.set_axis(range(df.shape[1]), axis=1)
+            for key, df in adult_splits.items()
+        }
+
+        _seed_anonymeter(monkeypatch)
+        evaluator = Anonymeter(config=dict(SINGLINGOUT_CONFIG))
+        result = evaluator.eval(numbered)
+
+        mapping = evaluator._column_mapping
+        assert mapping == {i: f"_{i}" for i in range(adult_splits["ori"].shape[1])}
+        attack_queries = result["details"]["attack_queries"]
+        assert attack_queries
+        assert not any("`" in q for q in attack_queries)
+
+        renamed = {key: df.rename(columns=mapping) for key, df in numbered.items()}
+        _seed_anonymeter(monkeypatch)
+        before = _direct_anonymeter(renamed)
+        assert attack_queries == before.queries()
+        ori = renamed["ori"].drop_duplicates()
+        for query in attack_queries:
+            assert len(ori.query(query, engine="python")) == 1
+
     # 名稱對應規則：只改不安全的名稱、避免重名，查詢改回原名時不動引號內的值
     def test_query_safe_names_and_restoring_them(self):
         from petsard.evaluator.anonymeter import _query_safe_names, _restore_query_names

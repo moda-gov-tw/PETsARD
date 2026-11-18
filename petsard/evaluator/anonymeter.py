@@ -69,11 +69,13 @@ def _query_safe_names(columns: list[Any]) -> dict[Any, str]:
     return mapping
 
 
-def _restore_query_names(query: str, reverse_mapping: dict[str, Any]) -> str:
+def _restore_query_names(query: str, reverse_mapping: dict[str, str]) -> str:
     """
     Write the original column names back into a query that uses the safe names.
     The original names are put in backticks, the way pandas DataFrame.query expects
-    names that are not identifiers. Values in quotes are left unchanged.
+    names that are not identifiers, so the query runs on the original data. Values in
+    quotes are left unchanged. Only string names can be written back this way
+    (see Anonymeter._restore_names).
     """
     try:
         tokens = list(tokenize.generate_tokens(io.StringIO(query).readline))
@@ -532,18 +534,25 @@ class Anonymeter(BaseEvaluator):
     def _restore_names(self, queries: list[str]) -> list[str]:
         """
         Write the original column names back into SinglingOut queries.
+        Only string names are written back: pandas DataFrame.query cannot refer to an
+        integer column name such as 0, even in backticks, so non-string names keep their
+        query-safe name (the mapping is logged at INFO level; rename the columns with it
+        to run such queries).
 
         Args:
             queries (list[str]): Queries that use the query-safe column names.
 
         Return:
-            (list[str]): The queries with the original names; unchanged when no name was mapped.
+            (list[str]): The queries with the original string names; unchanged when no
+                string name was mapped.
         """
-        if not self._column_mapping:
-            return queries
-        reverse_mapping: dict[str, Any] = {
-            safe: original for original, safe in self._column_mapping.items()
+        reverse_mapping: dict[str, str] = {
+            safe: original
+            for original, safe in self._column_mapping.items()
+            if isinstance(original, str)
         }
+        if not reverse_mapping:
+            return queries
         return [_restore_query_names(query, reverse_mapping) for query in queries]
 
     def _extract_scores(self) -> dict[str, Any]:
