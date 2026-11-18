@@ -1,7 +1,7 @@
 """DPflow_AdvGAN: AdvGAN's perturbation design with the whole flow under differential privacy. Column types come from
 the user's public column declaration (column_spec), not from the data.
 
-Output = seed + G(seed, z). Compared with the AdvGAN method (method: AdvGAN), where DP-SGD covers the discriminator:
+Output = seed + G(seed, z), and every step that uses the real data is covered by the privacy accounting:
 1. Column types: read from `column_spec` (a YAML/JSON list, or a Markdown type document converted by
    DPflow_column_spec.py). Categorical columns get a softmax head and are decoded to their listed values; integer
    columns are rounded.

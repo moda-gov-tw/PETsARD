@@ -22,10 +22,19 @@ from petsard.synthesizer.synthesizer_base import BaseSynthesizer
 # This allows PETsARD to function without SDV installed
 _SDVSingleTableSynthesizer = None
 
-# Lazy import for AdvGAN, which needs Opacus (extra "advgan")
+# DPflow_AdvGAN needs Opacus and dp-accounting (extra "advgan") and is imported only when selected
 # This allows PETsARD to function without Opacus installed
-_AdvGANSynthesizer = None
 ADVGAN_INSTALL_COMMAND = "pip install 'petsard[advgan]'"
+
+# Method names listed in the error message for an unsupported method
+VALID_SYNTHESIZER_METHODS = [
+    "default",
+    "petsard-gaussian_copula",
+    "sdv-single_table-<model>",
+    "custom_method",
+    "DPflow_Copula",
+    "DPflow_AdvGAN",
+]
 
 
 class SynthesizerMap:
@@ -37,7 +46,6 @@ class SynthesizerMap:
     SDV: int = 10
     CUSTOM_METHOD: int = 3
     PETSARD: int = 4
-    ADVGAN: int = 5
     DPFLOW_COPULA: int = 6  # DPflow_Copula: differentially private Gaussian copula (DPflow_Copula.py)
     DPFLOW_ADVGAN: int = 7  # DPflow_AdvGAN: differentially private AdvGAN (DPflow_AdvGAN.py)
 
@@ -95,14 +103,18 @@ class SynthesizerConfig(BaseConfig):
         except KeyError as e:
             error_msg: str = f"Unsupported synthesizer method: {self.method}"
             self._logger.error(error_msg)
-            raise UnsupportedMethodError(error_msg) from e
+            raise UnsupportedMethodError(
+                error_msg,
+                method_name=self.method,
+                valid_methods=VALID_SYNTHESIZER_METHODS,
+            ) from e
 
         # Check if SDV is required and available
         if self.method_code == SynthesizerMap.SDV:
             self._check_sdv_availability()
 
         # Check if Opacus is required and available
-        if self.method_code in (SynthesizerMap.ADVGAN, SynthesizerMap.DPFLOW_ADVGAN):
+        if self.method_code == SynthesizerMap.DPFLOW_ADVGAN:
             self._check_advgan_availability()
 
         # Set the default
@@ -141,10 +153,10 @@ class SynthesizerConfig(BaseConfig):
 
     def _check_advgan_availability(self) -> None:
         """
-        Check if Opacus is available when the AdvGAN synthesizer is selected.
+        Check if Opacus is available when the DPflow_AdvGAN synthesizer is selected.
 
         Raises:
-            MissingDependencyError: If Opacus is not installed but required by AdvGAN.
+            MissingDependencyError: If Opacus is not installed but required by DPflow_AdvGAN.
         """
         try:
             import opacus  # noqa: F401
@@ -170,14 +182,13 @@ class Synthesizer:
     as well as generating synthetic data based on the fitted model.
     """
 
-    # Note: SDV and AdvGAN synthesizers are loaded lazily in create() method
+    # Note: SDV, DPflow_Copula and DPflow_AdvGAN synthesizers are loaded lazily in create() method
     # to avoid ImportError when sdv or opacus is not installed
     SYNTHESIZER_MAP: dict[int, BaseSynthesizer] = {
         SynthesizerMap.DEFAULT: PetsardGaussianCopulaSynthesizer,  # Default to built-in synthesizer
         SynthesizerMap.SDV: None,  # Lazy-loaded SDVSingleTableSynthesizer
         SynthesizerMap.CUSTOM_METHOD: CustomSynthesizer,
         SynthesizerMap.PETSARD: PetsardGaussianCopulaSynthesizer,
-        SynthesizerMap.ADVGAN: None,  # Lazy-loaded AdvGANSynthesizer
         SynthesizerMap.DPFLOW_COPULA: None,  # Lazy-loaded DPflowCopulaSynthesizer
         SynthesizerMap.DPFLOW_ADVGAN: None,  # Lazy-loaded DPflowAdvGANSynthesizer (needs opacus, dp-accounting)
     }
@@ -434,7 +445,7 @@ class Synthesizer:
     def _get_synthesizer_class(self, method_code: int) -> BaseSynthesizer:
         """
         Get the synthesizer class for the given method code.
-        Lazy loads the SDV, AdvGAN, DPflow_Copula and DPflow_AdvGAN synthesizers if needed.
+        Lazy loads the SDV, DPflow_Copula and DPflow_AdvGAN synthesizers if needed.
 
         Args:
             method_code (int): The synthesizer method code.
@@ -442,28 +453,9 @@ class Synthesizer:
         Returns:
             BaseSynthesizer: The synthesizer class.
         """
-        global _SDVSingleTableSynthesizer, _AdvGANSynthesizer
+        global _SDVSingleTableSynthesizer
 
         synthesizer_class = self.SYNTHESIZER_MAP.get(method_code)
-
-        if synthesizer_class is None and method_code == SynthesizerMap.ADVGAN:
-            if _AdvGANSynthesizer is None:
-                self._logger.debug("Lazy loading AdvGAN synthesizer")
-                try:
-                    from petsard.synthesizer.DP_AdvGAN import AdvGANSynthesizer
-
-                    _AdvGANSynthesizer = AdvGANSynthesizer
-                    self._logger.debug("AdvGAN synthesizer loaded successfully")
-                except ImportError as e:
-                    # This should not happen as we check in __post_init__
-                    error_msg = f"Failed to import AdvGAN synthesizer: {e}"
-                    self._logger.error(error_msg)
-                    raise MissingDependencyError(
-                        message=error_msg,
-                        package_name="opacus",
-                        install_command=ADVGAN_INSTALL_COMMAND,
-                    ) from e
-            return _AdvGANSynthesizer
 
         if synthesizer_class is None and method_code == SynthesizerMap.DPFLOW_COPULA:
             from petsard.synthesizer.DPflow_Copula import DPflowCopulaSynthesizer

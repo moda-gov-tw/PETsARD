@@ -1,5 +1,5 @@
-PETsARD LLM synthesizer (petsard/synthesizer/DP_LLM_synth)
-=======================================================
+PETsARD differentially private LLM synthesizer (petsard/synthesizer/DP_LLM_synth)
+=================================================================================
 
 This directory contains software adapted from Aug-PE.
 
@@ -55,12 +55,12 @@ Reimplemented file
 The rest of PETsARD is distributed under the MIT License; see LICENSE and
 THIRD_PARTY_NOTICES.md at the repository root.
 
-Differentially private copy of this directory
----------------------------------------------
+Modifications for differential privacy
+--------------------------------------
 
-This directory (DP_LLM_synth) is a copy of LLM_synth used only by
-petsard/synthesizer/DP_LLM_synthesizer.py. LLM_synth and LLM_synthesizer.py are
-unchanged. The copy differs from LLM_synth as follows:
+This directory is used by petsard/synthesizer/DP_LLM_synthesizer.py. In
+addition to the changes listed above, the following files implement the
+differentially private flow:
 
   synthetic_data/main.py, llm_generation.py, agents/init_generation_agent.py,
   agents/variation_agent.py

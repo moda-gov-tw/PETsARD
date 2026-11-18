@@ -5,7 +5,12 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 
-from petsard.exceptions import ConfigError, MissingDependencyError, UncreatedError
+from petsard.exceptions import (
+    ConfigError,
+    MissingDependencyError,
+    UncreatedError,
+    UnsupportedMethodError,
+)
 from petsard.synthesizer.synthesizer import Synthesizer, SynthesizerMap
 
 
@@ -70,13 +75,13 @@ class TestSynthesizer:
         assert result.empty
 
 
-# 測試 AdvGAN 選用依賴
-class TestAdvGANOptionalDependency:
-    # 測試未安裝 Opacus 時選用 AdvGAN 會引發錯誤
-    def test_advgan_without_opacus_raises_missing_dependency(self):
+# 測試 DPflow_AdvGAN 選用依賴
+class TestDPflowAdvGANOptionalDependency:
+    # 測試未安裝 Opacus 時選用 DPflow_AdvGAN 會引發錯誤
+    def test_dpflow_advgan_without_opacus_raises_missing_dependency(self):
         with patch.dict(sys.modules, {"opacus": None}):
             with pytest.raises(MissingDependencyError) as exc_info:
-                Synthesizer(method="AdvGAN")
+                Synthesizer(method="DPflow_AdvGAN")
         assert "petsard[advgan]" in str(exc_info.value)
 
     # 測試未安裝 Opacus 時可匯入 PETsARD
@@ -88,14 +93,22 @@ class TestAdvGANOptionalDependency:
         assert result.returncode == 0, result.stderr[-2000:]
         assert result.stdout.strip().endswith("ok")
 
-    # 測試延遲載入 AdvGAN 合成器
-    def test_advgan_lazy_loads_synthesizer_class(self):
+    # 測試延遲載入 DPflow_AdvGAN 合成器
+    def test_dpflow_advgan_lazy_loads_synthesizer_class(self):
         pytest.importorskip("opacus")
-        from petsard.synthesizer.DP_AdvGAN import AdvGANSynthesizer
+        pytest.importorskip("dp_accounting")
+        from petsard.synthesizer.DPflow_AdvGAN import DPflowAdvGANSynthesizer
 
-        synthesizer = Synthesizer(method="AdvGAN")
-        assert synthesizer.config.method_code == SynthesizerMap.ADVGAN
+        synthesizer = Synthesizer(method="DPflow_AdvGAN")
+        assert synthesizer.config.method_code == SynthesizerMap.DPFLOW_ADVGAN
         assert (
-            synthesizer._get_synthesizer_class(SynthesizerMap.ADVGAN)
-            is AdvGANSynthesizer
+            synthesizer._get_synthesizer_class(SynthesizerMap.DPFLOW_ADVGAN)
+            is DPflowAdvGANSynthesizer
         )
+
+    # 測試方法名稱 AdvGAN 已不受支援，引發 UnsupportedMethodError 並列出可用方法
+    def test_removed_advgan_method_is_unsupported(self):
+        with pytest.raises(UnsupportedMethodError, match="Unsupported synthesizer method") as exc_info:
+            Synthesizer(method="AdvGAN")
+        assert "DPflow_AdvGAN" in exc_info.value.context["valid_methods"]
+        assert "DPflow_AdvGAN" in exc_info.value.get_suggestion()

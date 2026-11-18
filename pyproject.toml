@@ -18,14 +18,12 @@ keywords = [
     "machine learning",
 ]
 readme = "README.md" # README file displayed on PyPI project page / PyPI 專案頁面顯示的 README 文件
-license = "MIT AND Apache-2.0"  # SPDX license expression (PEP 639); Apache-2.0 covers the Aug-PE files in LLM_synth / SPDX 授權表示式（PEP 639）；Apache-2.0 適用於 LLM_synth 中改寫自 Aug-PE 之檔案
-# License files included in the distribution (LLM_synth and DP_LLM_synth: adapted Aug-PE code, Apache-2.0;
-# the four new files in DP_LLM_synth are MIT, see its NOTICE)
-# 隨發行檔附帶的授權檔（LLM_synth、DP_LLM_synth：改寫自 Aug-PE 之程式，Apache-2.0；DP_LLM_synth 新撰之4個檔案為 MIT，見其 NOTICE）
+license = "MIT AND Apache-2.0"  # SPDX license expression (PEP 639); Apache-2.0 covers the Aug-PE files in DP_LLM_synth / SPDX 授權表示式（PEP 639）；Apache-2.0 適用於 DP_LLM_synth 中改寫自 Aug-PE 之檔案
+# License files included in the distribution (DP_LLM_synth: adapted Aug-PE code, Apache-2.0;
+# its four new files are MIT, see its NOTICE)
+# 隨發行檔附帶的授權檔（DP_LLM_synth：改寫自 Aug-PE 之程式，Apache-2.0；其中新撰之4個檔案為 MIT，見其 NOTICE）
 license-files = [
     "LICENSE",
-    "petsard/synthesizer/LLM_synth/LICENSE-APACHE-2.0.txt",
-    "petsard/synthesizer/LLM_synth/NOTICE",
     "petsard/synthesizer/DP_LLM_synth/LICENSE-APACHE-2.0.txt",
     "petsard/synthesizer/DP_LLM_synth/NOTICE",
     "THIRD_PARTY_NOTICES.md",
@@ -132,7 +130,7 @@ eval = [
 syn = [
     {include-group = "base-common"},
     "torch>=2.13.0,<3",   # PyTorch deep learning models / PyTorch 深度學習模型
-    "opacus>=1.5.4,<2",   # DP-SGD for the AdvGAN synthesizer, imported only when AdvGAN is used / AdvGAN 合成器的 DP-SGD，僅於使用 AdvGAN 時載入
+    "opacus>=1.5.4,<2",   # DP-SGD for the DPflow_AdvGAN synthesizer, imported only when DPflow_AdvGAN is used / DPflow_AdvGAN 合成器的 DP-SGD，僅於使用 DPflow_AdvGAN 時載入
     "dp-accounting>=0.6,<0.7",   # Privacy accounting (RDP) for the DPflow_* synthesizers in petsard/synthesizer / DPflow 差分隱私合成器之隱私帳目
     # Shared synthesis dependencies
     "scipy>=1.15.3,<2 ; python_full_version < '3.11'",
@@ -283,8 +281,8 @@ dev = [
     "ruff>=0.12.12",
 ]
 
-# AdvGAN synthesizer
-# AdvGAN 合成器
+# Differentially private synthesizer DPflow_AdvGAN and the DPflow_* privacy accounting
+# 差分隱私合成器 DPflow_AdvGAN 與 DPflow 隱私帳目
 advgan = [
     "torch>=2.13.0,<3",
     "opacus>=1.5.4,<2",
@@ -298,8 +296,8 @@ experiment = [
     "pyarrow>=23.0.1,<26 ; python_full_version >= '3.11'",
     "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",
 ]
-# LLM text synthesizer
-# LLM 文字合成器
+# Differentially private LLM text synthesizer (DP_LLM_synthesizer)
+# 差分隱私 LLM 文字合成器(DP_LLM_synthesizer)
 llm = [
     "torch>=2.13.0,<3",
     "sentence-transformers>=5.6.0,<7",

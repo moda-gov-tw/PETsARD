@@ -99,12 +99,12 @@ $RECYCLE.BIN/
 demo_*/output/*
 !demo_*/output/.gitkeep
 /petsard_*.csv
-# Reporter 以 type: json 寫出之結果(檔名以 ] 結尾，例如 advgan_Reporter[global].json) Reporter JSON outputs (names end with "]")
+# Reporter 以 type: json 寫出之結果(檔名以 ] 結尾，例如 dp_advgan_Reporter[global].json) Reporter JSON outputs (names end with "]")
 **/*].json
 # 測試時 Executor 寫出之紀錄 Executor logs written by the tests
 /test_logs/
 
-# LLM文字合成器之中間產物與呼叫紀錄 LLM synthesizer intermediates and call logs
+# DP LLM文字合成器之中間產物與呼叫紀錄 DP LLM synthesizer intermediates and call logs
 **/LOG_FILES/
 **/llm_synth_output/
 **/prompt_generation.jsonl

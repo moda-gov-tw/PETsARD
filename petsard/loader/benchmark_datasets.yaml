@@ -90,12 +90,12 @@ datasets:
     filename: tw_salary.json
     access: public
     sha256: 5a77b0ad20b832768623158b3962bb1084e4d2eee6c02b0a563d3d65938c284d
-  # Small JSON sample for the AdvGAN example
+  # Small JSON sample (30 rows, 6 columns) for the JSON examples
   test-json-data:
     filename: test_json_data.json
     access: public
     sha256: 8df32c27a40a961eb8bb93b4cb319cb82d434cd7090cfe7864eaa22ffdf4afda
-  # Blood pressure records, one Chinese sentence per row, for the LLM text synthesizer
+  # Blood pressure records, one Chinese sentence per row, for the differentially private LLM text synthesizer and the text evaluation examples
   bloodpressure-text:
     filename: real_bloodpressure2.csv
     access: public

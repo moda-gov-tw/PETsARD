@@ -1,10 +1,10 @@
 """
 Custom text parser for the blood-pressure datasets.
 
-Loaded by petsard/processor/text_parser.py, which is wired into the pipeline
+Loaded by petsard/evaluator/text_evaluator.py, which is wired into the pipeline
 from YAML::
 
-    parser_path: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
+    text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
 
 The only contract is the entry function::
 

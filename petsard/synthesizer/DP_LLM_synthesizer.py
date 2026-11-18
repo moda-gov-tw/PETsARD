@@ -44,7 +44,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Make DP_LLM_synth (next to this file) importable as a top-level package without
 # adding petsard/synthesizer/ to sys.path, where its sdv.py and other modules
-# would shadow installed packages of the same name (e.g. sdv). Same as LLM_synthesizer.py.
+# would shadow installed packages of the same name (e.g. sdv).
 # ---------------------------------------------------------------------------
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))  # petsard/synthesizer/
 if "DP_LLM_synth" not in sys.modules:
@@ -64,7 +64,7 @@ _LOGGER = logging.getLogger("PETsARD.DP_LLM_synthesizer")
 _BLANK_SYMBOL = "<MASK>"  # same as DP_LLM_synth.synthetic_data.agents.variation_agent.BLANK_SYMBOL
 _FENCE_RE = re.compile(r"^```[A-Za-z]*[ \t]*\n(.*?)\n?```$", re.S)
 
-# keys of the non-DP synthesizer that the DP synthesizer does not accept
+# keys this synthesizer rejects, with the reason
 _REJECTED_KEYS = {
     "main_column_name": "the DP version always synthesizes whole rows",
     "noise_multiplier": "the vote noise is derived from epsilon, delta and epochs",
@@ -185,7 +185,7 @@ class DP_LLM_synthesizer:
     The noise of every step is derived from epsilon/delta/epochs (dpsda/accountant.py);
     privacy_report.json in output_dir records what was spent.
 
-    Full reference: llm_synth_config.md. Keys marked * are required.
+    Documentation: doc_site/content/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers.md. Keys marked * are required.
 
     PETsARD fixed keys (handled by CustomSynthesizer adapter, not this class):
       method          str   Must be "custom_method"

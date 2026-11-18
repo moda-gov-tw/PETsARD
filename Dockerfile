@@ -32,7 +32,7 @@ RUN pip install --no-cache-dir uv==0.13.5 \
 	&& pip install --no-cache-dir -r /tmp/requirements.txt \
 	&& pip install --no-cache-dir --no-deps --force-reinstall -c /tmp/requirements.txt nvidia-nccl-cu13 \
 	&& pip uninstall -y uv \
-	&& rm /tmp/requirements.txt # petsard default + jupyter + Excel + AdvGAN + LLM
+	&& rm /tmp/requirements.txt # petsard default + jupyter + Excel + DPflow_AdvGAN (advgan extra) + DP LLM (llm extra)
 
 # Create necessary directories for Jupyter
 # 為 Jupyter 創建必要的目錄

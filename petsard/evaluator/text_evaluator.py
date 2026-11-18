@@ -23,7 +23,7 @@ Wire it up with the native custom_method hook -- no PETsARD core changes::
         method: custom_method
         module_path: petsard/evaluator/text_evaluator.py
         class_name: TextEvaluator
-        text_parser: petsard/synthesizer/LLM_synth/utils/bloodpressure_text_parser.py
+        text_parser: petsard/synthesizer/DP_LLM_synth/utils/bloodpressure_text_parser.py
         Evaluator:
           validity:
             method: sdmetrics-diagnosticreport
