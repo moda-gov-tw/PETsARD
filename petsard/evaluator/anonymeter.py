@@ -1,5 +1,9 @@
+import io
+import keyword
 import logging
 import re
+import tokenize
+import unicodedata
 import warnings
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -16,6 +20,81 @@ from petsard.config_base import BaseConfig
 from petsard.evaluator.evaluator_base import BaseEvaluator
 from petsard.exceptions import ConfigError, UnsupportedMethodError
 from petsard.utils import safe_round
+
+
+def _is_query_safe(name: Any) -> bool:
+    """
+    True when a column name can be written as it is in the pandas query strings that
+    Anonymeter's SinglingOut builds (for example `age >= 30 & workclass == 'Private'`):
+    a Python identifier that is not a keyword and that Python does not normalize.
+    Names such as `marital-status`, `hours per week` or `capital.gain` are not safe.
+    """
+    return (
+        isinstance(name, str)
+        and name.isidentifier()
+        and not keyword.iskeyword(name)
+        and unicodedata.normalize("NFKC", name) == name
+    )
+
+
+def _query_safe_names(columns: list[Any]) -> dict[Any, str]:
+    """
+    Map every column name that is not query safe to a safe name: each character that cannot
+    be part of an identifier becomes an underscore, a name that starts with a digit or is a
+    keyword gets an underscore in front, and _2, _3, ... avoid clashes with the other names.
+
+    Args:
+        columns (list): The column names, in order.
+
+    Return:
+        (dict): {original name: safe name}; empty when every name is already safe.
+    """
+    if all(_is_query_safe(col) for col in columns):
+        return {}
+
+    taken: set[str] = {col for col in columns if _is_query_safe(col)}
+    mapping: dict[Any, str] = {}
+    for col in columns:
+        if _is_query_safe(col) or col in mapping:
+            continue
+        base = "".join(ch if _is_query_safe(f"_{ch}") else "_" for ch in str(col))
+        if not _is_query_safe(base):
+            base = f"_{base}"  # empty name, leading digit or keyword
+        safe, suffix = base, 2
+        while safe in taken:
+            safe = f"{base}_{suffix}"
+            suffix += 1
+        taken.add(safe)
+        mapping[col] = safe
+    return mapping
+
+
+def _restore_query_names(query: str, reverse_mapping: dict[str, Any]) -> str:
+    """
+    Write the original column names back into a query that uses the safe names.
+    The original names are put in backticks, the way pandas DataFrame.query expects
+    names that are not identifiers. Values in quotes are left unchanged.
+    """
+    try:
+        tokens = list(tokenize.generate_tokens(io.StringIO(query).readline))
+    except (tokenize.TokenError, SyntaxError):
+        return query
+
+    line_starts: list[int] = [0]
+    for line in query.splitlines(keepends=True):
+        line_starts.append(line_starts[-1] + len(line))
+
+    parts: list[str] = []
+    position: int = 0
+    for token in tokens:
+        if token.type == tokenize.NAME and token.string in reverse_mapping:
+            start = line_starts[token.start[0] - 1] + token.start[1]
+            end = line_starts[token.end[0] - 1] + token.end[1]
+            parts.append(query[position:start])
+            parts.append(f"`{reverse_mapping[token.string]}`")
+            position = end
+    parts.append(query[position:])
+    return "".join(parts)
 
 
 class AnonymeterMap(Enum):
@@ -447,6 +526,25 @@ class Anonymeter(BaseEvaluator):
         )
 
         self._impl: Any = None
+        # SinglingOut only: {original column name: query-safe name}, empty when all names are safe
+        self._column_mapping: dict[Any, str] = {}
+
+    def _restore_names(self, queries: list[str]) -> list[str]:
+        """
+        Write the original column names back into SinglingOut queries.
+
+        Args:
+            queries (list[str]): Queries that use the query-safe column names.
+
+        Return:
+            (list[str]): The queries with the original names; unchanged when no name was mapped.
+        """
+        if not self._column_mapping:
+            return queries
+        reverse_mapping: dict[str, Any] = {
+            safe: original for original, safe in self._column_mapping.items()
+        }
+        return [_restore_query_names(query, reverse_mapping) for query in queries]
 
     def _extract_scores(self) -> dict[str, Any]:
         """
@@ -526,8 +624,12 @@ class Anonymeter(BaseEvaluator):
 
         # SinglingOut attacks of Univariate. control queries didn't been stored
         if self.anonymeter_config.eval_method_code == AnonymeterMap.SINGLINGOUT:
-            details["attack_queries"] = self._impl.queries(baseline=False)
-            details["baseline_queries"] = self._impl.queries(baseline=True)
+            details["attack_queries"] = self._restore_names(
+                self._impl.queries(baseline=False)
+            )
+            details["baseline_queries"] = self._restore_names(
+                self._impl.queries(baseline=True)
+            )
         # Linkability: Dict[int, Set(int)], aux_cols[0] indexes links to aux_cols[1]
         elif self.anonymeter_config.eval_method_code == AnonymeterMap.LINKABILITY:
             n_neighbors = self.anonymeter_config.n_neighbors
@@ -596,16 +698,42 @@ class Anonymeter(BaseEvaluator):
             f"Mapped method code: {self.anonymeter_config.eval_method_code}"
         )
 
-        self._impl = evaluator_class(
-            **self.anonymeter_config.get_params(
-                param_configs=[
-                    {attr: {"action": "INCLUDE"}}
-                    for attr in self.REQUIRED_ANONYMETER_KEYS_MAP[
-                        self.anonymeter_config.eval_method_code
-                    ]
+        evaluator_params: dict[str, Any] = self.anonymeter_config.get_params(
+            param_configs=[
+                {attr: {"action": "INCLUDE"}}
+                for attr in self.REQUIRED_ANONYMETER_KEYS_MAP[
+                    self.anonymeter_config.eval_method_code
                 ]
-            )
+            ]
         )
+
+        # SinglingOut writes the column names into pandas query strings, so a name such as
+        # 'marital-status' makes every query that uses it fail. Such names are mapped to
+        # query-safe names here and written back into the queries in _get_details().
+        # Linkability and Inference do not build queries and get the data unchanged.
+        self._column_mapping = {}
+        if self.anonymeter_config.eval_method_code == AnonymeterMap.SINGLINGOUT:
+            columns: list[Any] = []
+            for key in ["ori", "syn", "control"]:
+                if evaluator_params.get(key) is not None:
+                    columns.extend(
+                        col
+                        for col in evaluator_params[key].columns
+                        if col not in columns
+                    )
+            self._column_mapping = _query_safe_names(columns)
+            if self._column_mapping:
+                self._logger.info(
+                    "Column names mapped to query-safe names for SinglingOut: "
+                    f"{self._column_mapping}"
+                )
+                for key in ["ori", "syn", "control"]:
+                    if evaluator_params.get(key) is not None:
+                        evaluator_params[key] = evaluator_params[key].rename(
+                            columns=self._column_mapping
+                        )
+
+        self._impl = evaluator_class(**evaluator_params)
 
         # catch warnings during synthesizer initialization:
         # UserWarning: Attack is as good or worse as baseline model.
