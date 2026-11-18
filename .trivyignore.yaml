@@ -51,3 +51,21 @@ vulnerabilities:
       - "pkg:pypi/soupsieve@2.10"
     statement: "Python 3.10 and 3.11.0-3.11.4 only; no fixed upstream release supports these versions (fix requires Python 3.11.5). Python 3.11.5+ environments, including the Docker image, use the fixed release. 僅 Python 3.11.5 以前版本使用，上游無修正版本"
     expired_at: 2027-04-30
+  # setuptools 70.3.0 is not an installed package: pip (upgraded to 26.3, the latest release, in the Dockerfile) vendors only
+  # pkg_resources from setuptools 70.3.0 and lists that version in its SBOM, pip/_vendor/bom.cdx.json, which image scans read.
+  # The installed setuptools is 84.2.1 (uv.lock), which has all three fixes; no pip release vendors a fixed setuptools
+  - id: CVE-2025-47273
+    purls:
+      - "pkg:pypi/setuptools@70.3.0"
+    statement: "Only in the SBOM of pip's vendored pkg_resources; the vulnerable PackageIndex (setuptools/package_index.py) is not vendored by pip, and the installed setuptools is 84.2.1. 僅為 pip 內附 pkg_resources 之 SBOM 記載，弱點程式不在 pip 內附部分"
+    expired_at: 2027-04-30
+  - id: CVE-2026-59890
+    purls:
+      - "pkg:pypi/setuptools@70.3.0"
+    statement: "Only in the SBOM of pip's vendored pkg_resources; the vulnerable sdist FileList (MANIFEST.in handling) is not vendored by pip, and the installed setuptools is 84.2.1. 僅為 pip 內附 pkg_resources 之 SBOM 記載，弱點程式不在 pip 內附部分"
+    expired_at: 2027-04-30
+  - id: GHSA-xmj3-9gf7-h52w
+    purls:
+      - "pkg:pypi/setuptools@70.3.0"
+    statement: "Only in the SBOM of pip's vendored pkg_resources; the vulnerable legacy wheel installation (setuptools/wheel.py) is not vendored by pip, and the installed setuptools is 84.2.1. 僅為 pip 內附 pkg_resources 之 SBOM 記載，弱點程式不在 pip 內附部分"
+    expired_at: 2027-04-30

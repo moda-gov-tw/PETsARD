@@ -23,6 +23,9 @@ COPY petsard/ ./petsard/
 COPY .release/docker/entrypoint.sh ./
 # COPY demo/ ./demo/
 
+# pip vendors pkg_resources from setuptools 70.3.0 and lists that version in its SBOM (pip/_vendor/bom.cdx.json), so image
+# scans report setuptools 70.3.0; the installed setuptools comes from uv.lock (see .trivyignore.yaml)
+# pip 內附 setuptools 70.3.0 之 pkg_resources 並記於其 SBOM，映像檔掃描因此列出 setuptools 70.3.0；實際安裝之 setuptools 依 uv.lock(見.trivyignore.yaml)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 # RUN pip install --no-cache-dir -e .
 # Install the versions locked in uv.lock (group all plus the advgan and llm extras), then reinstall the CUDA 13 NCCL used by torch
