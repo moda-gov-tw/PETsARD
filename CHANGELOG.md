@@ -23,30 +23,44 @@
 
 - **utils**: A `custom_method` module that is not found now raises `UnableToLoadError` (with the
   replacement hint for a removed initial module) also when the tests run through a console-script
-  launcher such as `pytest.exe`: non-directory `sys.path` entries are candidates only when they end
-  with `.py`
+  launcher such as `pytest.exe` or when an unrelated `.py` file is on `sys.path`: a non-directory
+  `sys.path` entry is a candidate only when it is a `.py` file with the file name of `module_path`
 
 - **synthesizer**: `DPflow_AdvGAN` without `sample_num_rows` generates as many rows as the
   training data, as `DPflow_Copula` does, and decides the row count before any budget is spent;
-  it used to train, write the privacy report and then fail at sampling
+  through the Synthesizer front end or Executor it used to train, write the privacy report and then
+  fail at sampling, and direct use of `DPflowAdvGANSynthesizer` generated 100 rows
 
-- **synthesizer**: `method: llm-synth`, `LLM_synthesizer` and similar initial LLM method names
-  name the DP LLM synthesizer (`custom_method` with `DP_LLM_synthesizer.py`); the DP LLM
-  synthesizer no longer leaves an empty `log_folder` behind when its server check fails
+- **synthesizer**: `DPflow_Copula` rejects a negative `sample_num_rows` with `ConfigError` when it
+  is created and before any budget is spent, with the same rule as `DPflow_AdvGAN`; it used to
+  release the marginals and the copula and write the privacy report before failing at sampling
+  (direct use), or to generate as many rows as the training data (through the Synthesizer front end
+  or Executor)
+
+- **synthesizer**: A `method:` set to a name of the initial LLM synthesizer (`llm-synth`, the
+  experiment name of its examples, or `LLM_synthesizer`, its class) now gets an error that names the
+  DP LLM synthesizer (`custom_method` with `DP_LLM_synthesizer.py`); these names were never valid
+  methods and used to get the plain unsupported-method error. The DP LLM synthesizer no longer
+  leaves an empty `log_folder` behind when its server check fails
 
 - **evaluator**: Anonymeter SinglingOut maps column names that pandas queries cannot use (for
   example `marital-status`) to query-safe names before the evaluation and writes the original names
   back into the reported queries; such names used to make the queries fail. Data whose column names
-  are all safe give the same result as before
+  are all safe give the same result as before. Non-string column names (for example `0`), which
+  `DataFrame.query` cannot refer to, keep their query-safe names in the reported queries
+
+- **evaluator**: Anonymeter SinglingOut with `mode: univariate` runs instead of stopping with
+  `TypeError` (`n_cols` is not used in that mode)
 
 - **synthesizer**: The built-in Gaussian Copula (`petsard-gaussian_copula`, the default method)
   keeps the correlations between the other columns when some columns are constant, instead of
-  using the identity matrix for the whole correlation matrix; `DPflow_Copula` and `DPflow_AdvGAN`
-  are not affected
+  using the identity matrix for the whole correlation matrix, and no longer prints numpy's
+  `RuntimeWarning: invalid value encountered in subtract` for them; `DPflow_Copula` and
+  `DPflow_AdvGAN` are not affected
 
 - **docker**: Assess in `.trivyignore.yaml` the setuptools 70.3.0 entry of pip's SBOM
-  (CVE-2025-47273, CVE-2026-59890, GHSA-xmj3-9gf7-h52w) that image scans report; pip vendors only
-  `pkg_resources` from it, and the installed setuptools is 84.2.1
+  (CVE-2025-47273, CVE-2026-59890, GHSA-xmj3-9gf7-h52w) that image scans report; pip 26.3
+  vendors only `pkg_resources` from it, and the installed setuptools is 84.2.1
 
 ### Documentation
 
@@ -56,8 +70,10 @@
 - Recommend Python 3.11.5 or later, install the text example with the `llm` extra, and describe
   the installation from the source root in `README.md`
 
-- Run the tests with `python -m pytest` and set `PYTHONUTF8=1` on Windows (`README.md`); the DP
-  synthesizer pages state the new `DPflow_AdvGAN` default for `sample_num_rows`
+- Run the tests with `python -m pytest` from the installation from source, and set `PYTHONUTF8=1`
+  on Windows so that YAML and schema files with non-ASCII text load as UTF-8 (`README.md`); the DP
+  synthesizer pages state the new `DPflow_AdvGAN` default for `sample_num_rows` and that it is a
+  positive integer
 
 
 ## v1.10.2-rc.5 (2026-07-10)
