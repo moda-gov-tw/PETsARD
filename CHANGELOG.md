@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## Unreleased
+
+### Breaking Changes
+
+- **synthesizer**: Remove the initial AdvGAN synthesizer (`method: AdvGAN`) and the initial LLM
+  text synthesizer (`custom_method` with class `LLM_synthesizer`); their synthetic output does not
+  carry a differential privacy guarantee covering the whole flow. Use `method: DPflow_AdvGAN` and
+  the DP LLM text synthesizer (`DP_LLM_synthesizer`, dp-llm-synth). A configuration that still names
+  them stops with an error that names the replacement.
+
+### Bug Fixes
+
+- **deps**: Upgrade opentelemetry-api to 1.45.2 and tornado to 6.6.1 (Python 3.11); assess
+  CVE-2026-126347, CVE-2026-126191 and CVE-2026-126193 in `.trivyignore.yaml`
+
+- **synthesizer**: The DP LLM text synthesizer checks every `lmstudio` server and model
+  (`check_server`, default `true`) before anything is computed from the data, and stops with an
+  error instead of returning an empty table when no valid row is generated
+
+### Documentation
+
+- Remove the guides, demo configurations, notebooks and tutorial scripts of the initial methods;
+  add removal notes to `README.md`, `tutorial/README.md` and the documentation site
+
+- Recommend Python 3.11.5 or later, install the text example with the `llm` extra, and describe
+  the installation from the source root in `README.md`
+
+
 ## v1.10.2-rc.5 (2026-07-10)
 
 ### Chores
