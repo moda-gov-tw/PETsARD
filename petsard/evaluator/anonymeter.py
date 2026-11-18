@@ -325,7 +325,8 @@ class AnonymeterConfig(BaseConfig):
         self.control = data["control"]
 
         if self.eval_method_code == AnonymeterMap.SINGLINGOUT:
-            if self.n_cols > self.ori.shape[1]:
+            # n_cols is None in univariate mode, which uses one column per query
+            if self.n_cols is not None and self.n_cols > self.ori.shape[1]:
                 error_msg = (
                     "The singling must be less than the number of columns in the data."
                 )

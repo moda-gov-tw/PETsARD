@@ -244,6 +244,43 @@ class TestSinglingOutColumnNames:
                 getattr(rates, rate_type).error
             )
 
+    # univariate 模式(n_cols 為 None)：可執行，含「-」欄位的查詢不失敗，結果與欄名先改好時相同
+    def test_univariate_mode_with_dashes(self, adult_splits, monkeypatch, caplog):
+        config = {
+            "eval_method": "anonymeter-singlingout",
+            "n_attacks": 50,
+            "mode": "univariate",
+        }
+        caplog.set_level(logging.WARNING)
+
+        _seed_anonymeter(monkeypatch)
+        evaluator = Anonymeter(config=dict(config))
+        result = evaluator.eval(adult_splits)
+
+        assert evaluator.anonymeter_config.n_cols is None
+        assert not _failed_query_logs(caplog)
+        attack_queries = result["details"]["attack_queries"]
+        assert attack_queries
+        assert not any("marital_status" in q for q in attack_queries)
+        ori = adult_splits["ori"].drop_duplicates()
+        for query in attack_queries:
+            assert len(ori.query(query, engine="python")) == 1
+
+        safe = {
+            key: df.rename(columns=lambda c: c.replace("-", "_"))
+            for key, df in adult_splits.items()
+        }
+        _seed_anonymeter(monkeypatch)
+        before = SinglingOutEvaluator(
+            ori=safe["ori"],
+            syn=safe["syn"],
+            control=safe["control"],
+            n_attacks=config["n_attacks"],
+            n_cols=None,
+        ).evaluate(mode="univariate")
+        assert attack_queries == evaluator._restore_names(before.queries())
+        assert result["global"].iloc[0]["risk"] == safe_round(before.risk().value)
+
     # 非字串欄名(例如整數 0、1)：DataFrame.query 無法引用，查詢保留安全名稱；以名稱對應改名後可在原始資料上執行
     def test_non_string_names_keep_the_safe_names(self, adult_splits, monkeypatch):
         numbered = {
