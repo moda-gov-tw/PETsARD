@@ -388,7 +388,9 @@ class TestConstantColumnCorrelation:
 
     # 相關矩陣沒有 NaN/Inf 時直接傳回原物件
     def test_finite_matrix_is_returned_as_it_is(self):
-        syn = PetsardGaussianCopulaSynthesizer({"syn_method": "petsard-gaussian_copula"})
+        syn = PetsardGaussianCopulaSynthesizer(
+            {"syn_method": "petsard-gaussian_copula"}
+        )
         matrix = np.array([[1.0, 0.3], [0.3, 1.0]])
         assert syn._separate_constant_columns(matrix, np.zeros((5, 2))) is matrix
 
