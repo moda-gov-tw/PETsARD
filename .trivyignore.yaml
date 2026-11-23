@@ -54,7 +54,7 @@ vulnerabilities:
   # setuptools 70.3.0 is not an installed package: pip 26.3 (the release the Dockerfile installed when this was assessed)
   # vendors only pkg_resources from setuptools 70.3.0 and lists that version in its SBOM, pip/_vendor/bom.cdx.json, which
   # image scans read. The installed setuptools is 84.2.1 (uv.lock), which has all three fixes; no pip release vendors a
-  # fixed setuptools. The Dockerfile does not pin pip, so assess these entries again when a rebuild installs another pip
+  # fixed setuptools. The Dockerfile pins pip 26.3, so assess these entries again when pip is upgraded
   - id: CVE-2025-47273
     purls:
       - "pkg:pypi/setuptools@70.3.0"

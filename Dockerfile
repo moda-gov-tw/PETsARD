@@ -23,10 +23,12 @@ COPY petsard/ ./petsard/
 COPY .release/docker/entrypoint.sh ./
 # COPY demo/ ./demo/
 
-# pip vendors pkg_resources from setuptools 70.3.0 and lists that version in its SBOM (pip/_vendor/bom.cdx.json), so image
-# scans report setuptools 70.3.0; the installed setuptools comes from uv.lock (see .trivyignore.yaml)
-# pip 內附 setuptools 70.3.0 之 pkg_resources 並記於其 SBOM，映像檔掃描因此列出 setuptools 70.3.0；實際安裝之 setuptools 依 uv.lock(見.trivyignore.yaml)
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+# pip, setuptools and wheel are pinned so that rebuilds install the assessed versions. pip 26.3 vendors pkg_resources from
+# setuptools 70.3.0 and lists that version in its SBOM (pip/_vendor/bom.cdx.json), so image scans report setuptools 70.3.0;
+# the installed setuptools is 84.2.1 (uv.lock). Assess .trivyignore.yaml again when upgrading pip
+# 固定 pip、setuptools 與 wheel 之版本，重建時安裝已評估之版本。pip 26.3 內附 setuptools 70.3.0 之 pkg_resources 並記於其 SBOM，
+# 映像檔掃描因此列出 setuptools 70.3.0；實際安裝之 setuptools 為 84.2.1(uv.lock)。升級 pip 時須重新評估 .trivyignore.yaml
+RUN pip install --no-cache-dir --upgrade pip==26.3 setuptools==84.2.1 wheel==0.48.0
 # RUN pip install --no-cache-dir -e .
 # Install the versions locked in uv.lock (group all plus the advgan and llm extras), then reinstall the CUDA 13 NCCL used by torch
 # 依 uv.lock 鎖定的版本安裝(all 群組及 advgan、llm 擴充套件)，再重新安裝 torch 使用的 CUDA 13 版 NCCL
