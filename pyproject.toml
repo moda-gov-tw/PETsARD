@@ -131,7 +131,7 @@ syn = [
     {include-group = "base-common"},
     "torch>=2.13.0,<3",   # PyTorch deep learning models / PyTorch 深度學習模型
     "opacus>=1.5.4,<2",   # DP-SGD for the DPflow_AdvGAN synthesizer, imported only when DPflow_AdvGAN is used / DPflow_AdvGAN 合成器的 DP-SGD，僅於使用 DPflow_AdvGAN 時載入
-    "dp-accounting>=0.6,<0.7",   # Privacy accounting (RDP) for the DPflow_* synthesizers in petsard/synthesizer / DPflow 差分隱私合成器之隱私帳目
+    "dp-accounting>=0.6,<0.8",   # Privacy accounting (RDP) for the DPflow_* synthesizers in petsard/synthesizer / DPflow 差分隱私合成器之隱私帳目
     # Shared synthesis dependencies
     "scipy>=1.15.3,<2 ; python_full_version < '3.11'",
     "scipy>=1.16.0,<2 ; python_full_version >= '3.11'",
@@ -251,7 +251,7 @@ all = [
     # syn (PyTorch and dependencies)
     "torch>=2.13.0,<3",
     "opacus>=1.5.4,<2",
-    "dp-accounting>=0.6,<0.7",
+    "dp-accounting>=0.6,<0.8",
     "fsspec>=2026.6.0",
     "filelock>=3.20.3,<3.20.4 ; python_full_version < '3.11'",
     "jinja2>=3.1.6,<4",
@@ -286,12 +286,12 @@ dev = [
 advgan = [
     "torch>=2.13.0,<3",
     "opacus>=1.5.4,<2",
-    "dp-accounting>=0.6,<0.7",   # DPflow_* synthesizers (dpflow) / DPflow 差分隱私合成器
+    "dp-accounting>=0.6,<0.8",   # DPflow_* synthesizers (dpflow) / DPflow 差分隱私合成器
 ]
 # Optional experiment evaluation scripts (Python 3.11)
 # 實驗評估腳本(選用，需 Python 3.11)
 experiment = [
-    "dp-accounting>=0.6,<0.7",
+    "dp-accounting>=0.6,<0.8",
     "polars>=1.30,<3 ; python_full_version >= '3.11'",
     "pyarrow>=23.0.1,<26 ; python_full_version >= '3.11'",
     "catboost>=1.2.8,<2 ; python_full_version >= '3.11'",
