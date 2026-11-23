@@ -45,7 +45,7 @@ This edition extends PETsARD from structured tables to semi-structured and unstr
 To prepare the environment for these features, follow [Extended Features Setup](installation/extended-features).
 
 {{< callout type="info" >}}
-The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. This version keeps the updated methods, whose whole flow is differentially private; see [Differentially Private Synthesizers](petsard-yaml/synthesizer-yaml/dp-synthesizers).
+The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have moved to the [initial-methods branch](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods) (tag `initial-methods-v1`), kept for research comparison and for reproducing results produced with them. The main branch provides the updated methods, whose whole flow is differentially private; see [Differentially Private Synthesizers](petsard-yaml/synthesizer-yaml/dp-synthesizers).
 {{< /callout >}}
 
 ## User Guide

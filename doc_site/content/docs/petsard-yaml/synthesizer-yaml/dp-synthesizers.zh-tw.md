@@ -20,7 +20,7 @@ PETsARD提供三種差分隱私合成器，從讀入資料到輸出合成資料�
 {{< /callout >}}
 
 {{< callout type="info" >}}
-初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除，本頁三種合成器為更新後方法。
+初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已移至[initial-methods分支](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)(標籤`initial-methods-v1`)，僅供研究比較；本頁三種合成器為更新後方法。
 {{< /callout >}}
 
 ## 使用前須知

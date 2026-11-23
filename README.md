@@ -9,9 +9,15 @@
 
 `PETsARD`（隱私強化技術分析、研究與開發）是一套為了促進合成資料生成與評估過程而設計的 Python 程式庫。
 
-> **Note 註記**: The synthetic output of the initial methods (the initial AdvGAN and the initial LLM synthesizer) does not carry a differential privacy guarantee covering the whole flow, so they have been removed from this version. This version keeps the updated methods `DPflow_Copula`, `DPflow_AdvGAN` and `dp-llm-synth` (`DP_LLM_synthesizer`), whose whole flow is differentially private; see [Differentially Private Synthesizers](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/). Install from the source code to use them; see [Extended Features Setup](https://moda-gov-tw.github.io/PETsARD/docs/installation/extended-features/).
->
-> 初版方法(初版AdvGAN、初版LLM合成器)之合成輸出不具涵蓋完整流程之差分隱私保證，已自本版本移除。本版本保留整個流程皆滿足差分隱私之更新後方法`DPflow_Copula`、`DPflow_AdvGAN`及`dp-llm-synth`(`DP_LLM_synthesizer`)，說明見[差分隱私合成器](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。使用時請自原始碼安裝，見[擴充功能安裝](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/installation/extended-features/)。
+---
+
+## **🔐 Synthesis Methods and Privacy Guarantees 合成方法與隱私保證**
+
+- **Updated methods (this branch)**: `DPflow_Copula`, `DPflow_AdvGAN` and `dp-llm-synth` (`DP_LLM_synthesizer`). The whole flow, from reading the data to writing the synthetic data, satisfies (ε, δ) differential privacy, and every run writes a privacy report; see [Differentially Private Synthesizers](https://moda-gov-tw.github.io/PETsARD/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/). Install from the source code to use them; see [Extended Features Setup](https://moda-gov-tw.github.io/PETsARD/docs/installation/extended-features/).
+- **Initial methods (`initial-methods` branch)**: the initial AdvGAN (`method: AdvGAN`) and the initial LLM synthesizer (`LLM_synthesizer`). Their synthetic output does not carry a differential privacy guarantee covering the whole flow: the differentially private mechanism of the initial AdvGAN (DP-SGD) covers only the training of the discriminator, and that of the initial LLM synthesizer covers only the nearest-neighbor vote, while its prompts contain records of the training data. They have moved to the [`initial-methods` branch](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods) (tag `initial-methods-v1`) and are kept only for research comparison and for reproducing results produced with them; do not use them for synthetic data that needs a differential privacy guarantee. The course recordings use the initial-method examples; see the course recording table in [`tutorial/README.md`](tutorial/README.md).
+
+- **更新後方法(本分支)**：`DPflow_Copula`、`DPflow_AdvGAN`及`dp-llm-synth`(`DP_LLM_synthesizer`)。自讀入資料至輸出合成資料之整個流程滿足(ε, δ)差分隱私，並於每次執行輸出隱私報告，說明見[差分隱私合成器](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/petsard-yaml/synthesizer-yaml/dp-synthesizers/)。使用時請自原始碼安裝，見[擴充功能安裝](https://moda-gov-tw.github.io/PETsARD/zh-tw/docs/installation/extended-features/)。
+- **初版方法(`initial-methods`分支)**：初版AdvGAN(`method: AdvGAN`)與初版LLM合成器(`LLM_synthesizer`)。其合成輸出不具涵蓋完整流程之差分隱私保證：初版AdvGAN之差分隱私機制(DP-SGD)僅涵蓋鑑別器之訓練，初版LLM合成器之差分隱私機制僅涵蓋最近鄰投票，且其提示含訓練資料之紀錄。初版方法已移至[`initial-methods`分支](https://github.com/moda-gov-tw/PETsARD/tree/initial-methods)(標籤`initial-methods-v1`)，僅供研究比較及重現以初版方法產生之結果；需具差分隱私保證之合成資料，請勿使用初版方法。課程錄影使用初版方法之範例，對照方式見[`tutorial/README.md`](tutorial/README.md)之課程錄影對照表。
 
 ---
 

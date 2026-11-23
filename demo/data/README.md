@@ -34,7 +34,7 @@ Download the files from the Release page on a computer with Internet access, the
 | `best-practices_categorical_high-cardinality` | `best-practices_categorical_high-cardinality.csv` | 1,568,943 | 10,000 x 19 | Best practices (categorical and high-cardinality data) | (3) |
 | `customer-churn` | `customer_churn.json` | 339,284 | 1,200 x 10 | `loader-yaml/json-format_full-evaluation.yaml`; documentation of the JSON reader and the Reporter JSON output | (4) |
 | `tw-salary` | `tw_salary.json` | 445,376 | 2,000 x 8 | `loader-yaml/json-format_traditional-chinese.yaml` | (4) |
-| `test-json-data` | `test_json_data.json` | 4,004 | 30 x 6 | No configuration in `demo/petsard-yaml/`; the JSON reader test `tutorial/run_json1.py` uses `tutorial/demo_json/data/test_json_data.json` | (4) |
+| `test-json-data` | `test_json_data.json` | 4,004 | 30 x 6 | No configuration in `demo/petsard-yaml/`; the initial-method JSON example `tutorial/run_json1.py` of the `initial-methods` branch uses a copy of it | (4) |
 | `bloodpressure-text` | `real_bloodpressure2.csv` | 7,708 | 101 x 1 (`text`) | `synthesizer-yaml/dp-llm-synthesizer_bloodpressure.yaml`, `evaluator-yaml/text-evaluation*.yaml`; documentation of the DP LLM text synthesizer and the text evaluation | (4) |
 
 The SHA-256 value of every file is recorded in `petsard/loader/benchmark_datasets.yaml`.
