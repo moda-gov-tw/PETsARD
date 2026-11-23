@@ -6,11 +6,13 @@
 
 ### Breaking Changes
 
-- **synthesizer**: Remove the initial AdvGAN synthesizer (`method: AdvGAN`) and the initial LLM
-  text synthesizer (`custom_method` with class `LLM_synthesizer`); their synthetic output does not
-  carry a differential privacy guarantee covering the whole flow. Use `method: DPflow_AdvGAN` and
-  the DP LLM text synthesizer (`DP_LLM_synthesizer`, dp-llm-synth). A configuration that still names
-  them stops with an error that names the replacement.
+- **synthesizer**: Move the initial AdvGAN synthesizer (`method: AdvGAN`) and the initial LLM
+  text synthesizer (`custom_method` with class `LLM_synthesizer`) to the `initial-methods` branch
+  (tag `initial-methods-v1`), kept for research comparison and for reproducing results produced
+  with them; their synthetic output does not carry a differential privacy guarantee covering the
+  whole flow. Use `method: DPflow_AdvGAN` and the DP LLM text synthesizer (`DP_LLM_synthesizer`,
+  dp-llm-synth). A configuration that still names them stops with an error that names the branch
+  and the replacement.
 
 ### Bug Fixes
 
@@ -64,8 +66,16 @@
 
 ### Documentation
 
-- Remove the guides, demo configurations, notebooks and tutorial scripts of the initial methods;
-  add removal notes to `README.md`, `tutorial/README.md` and the documentation site
+- Move the guides, demo configurations, notebooks and tutorial examples of the initial methods to
+  the `initial-methods` branch. `README.md` gets a "Synthesis Methods and Privacy Guarantees"
+  section; `tutorial/README.md` and the documentation site note the branch and the privacy limits
+  of the initial methods, and the former pages of the initial methods on the documentation site
+  now explain the move and point to the differentially private synthesizers
+
+- `tutorial/run_json1.py` runs the updated DP AdvGAN (`DPflow_AdvGAN`) on JSON records with JSON
+  output, and `tutorial/run_llm1.py` runs dp-llm-synth (the same script as `run_dp3_llm.py`), so
+  the commands of the course recording stay the same; `tutorial/README.md` maps the course units
+  and the initial-method examples of the recording to these files
 
 - Recommend Python 3.11.5 or later, install the text example with the `llm` extra, and describe
   the installation from the source root in `README.md`

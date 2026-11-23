@@ -1,0 +1,54 @@
+# JSON demo 1 of 3 -- updated DP AdvGAN (DPflow_AdvGAN) on JSON records, with JSON output.
+# JSON 範例 1/3：以更新版DP AdvGAN(DPflow_AdvGAN)合成JSON資料，並以JSON格式輸出。
+#
+# Run from tutorial/:  python -X utf8 run_json1.py
+# 請在 tutorial 資料夾執行：python -X utf8 run_json1.py
+#
+# - JSON Loader: a filepath ending in .json is read as a top-level array of records.
+#   JSON讀取：副檔名為.json之檔案以紀錄陣列讀入。
+# - DPflow_AdvGAN: the budget (epsilon, delta) covers the whole flow, from reading the data to writing the
+#   synthetic data; the privacy report gives the epsilon reached. The column declaration (column_spec) is the
+#   public description of the Adult Income data shared with run_dp2_advgan.py, so it uses no privacy budget.
+#   預算(ε, δ)涵蓋自讀入資料至輸出合成資料之整個流程，實際值寫在隱私報告；欄位宣告取自 Adult Income 之公開說明
+#   (與 run_dp2_advgan.py 共用)，不耗用隱私預算。
+# - Reporter JSON: type 'json' writes the synthetic data and the evaluation report as JSON.
+#   Reporter 設定 type: 'json'，合成資料與評估報告皆以JSON格式輸出。
+# - Do not add a Preprocessor; epochs: 1 keeps the example short. 不要加 Preprocessor；範例以 epochs: 1 快速完成。
+#
+# NOTE ON BLOCK ORDER: the execution order is the YAML key order. Do not reorder these blocks.
+# 執行順序即為下列區塊之順序，請勿調整。
+---
+Loader:
+  load_json:
+    filepath: ./demo_json/data/adult-income.json
+Synthesizer:
+  dp_advgan:
+    method: DPflow_AdvGAN
+    column_spec: ./demo_dp/configs/adult_income_column_spec.yaml
+    epsilon: 8
+    delta: 1.0e-5
+    epochs: 1
+    batch_size: 256
+    sample_num_rows: 1000
+    keep_from_seed: [income]   # the generator keeps this column from the DP seed / 此欄維持 DP 種子值
+    share_histograms: 0.1
+    share_copula: 0.6
+    seed: 0
+    privacy_report: ./demo_json/output/dp_advgan_json_privacy_report.json
+Evaluator:
+  # Only here so that save_report has something to report; it must sit before Reporter.
+  # 供 save_report 輸出評估報告，須位於 Reporter 之前。
+  diagnostic:
+    method: sdmetrics-diagnosticreport
+Reporter:
+  save_synthetic:
+    method: save_data
+    source: Synthesizer
+    output: ./demo_json/output/dp_advgan
+    type: 'json'
+  evaluation_report:
+    method: save_report
+    granularity: global
+    output: ./demo_json/output/dp_advgan
+    type: 'json'
+...
