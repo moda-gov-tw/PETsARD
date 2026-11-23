@@ -9,15 +9,22 @@ from petsard.metadater import Schema
 from petsard.synthesizer.synthesizer_base import BaseSynthesizer
 from petsard.utils import load_external_module
 
-# Module files of the initial methods removed from this version and the replacement
-# named in the error message when such a module_path is not found
+# Module files of the initial methods, which moved to the initial-methods branch, and the
+# replacement named in the error message when such a module_path is not found
 _ADVGAN_HINT = (
-    "The initial AdvGAN synthesizer has been removed from this version; "
+    "The initial AdvGAN synthesizer is not in this branch: "
+    "it has moved to the initial-methods branch (tag initial-methods-v1), kept for "
+    "research comparison only, because its synthetic output carries no differential "
+    "privacy guarantee covering the whole flow; "
     "use method: DPflow_AdvGAN (see the Differentially Private Synthesizers page)."
 )
 REMOVED_INITIAL_MODULES: dict[str, str] = {
     "LLM_synthesizer.py": (
-        "The initial LLM synthesizer has been removed from this version; use "
+        "The initial LLM synthesizer is not in this branch: "
+        "it has moved to the initial-methods branch (tag initial-methods-v1), kept for "
+        "research comparison only, because its synthetic output carries no differential "
+        "privacy guarantee covering the whole flow; "
+        "use "
         "module_path: petsard/synthesizer/DP_LLM_synthesizer.py with "
         "class_name: DP_LLM_synthesizer (see the Differentially Private Synthesizers page)."
     ),

@@ -36,16 +36,23 @@ VALID_SYNTHESIZER_METHODS = [
     "DPflow_AdvGAN",
 ]
 
-# Method names of the initial methods removed from this version (the part before the first
-# dash, upper case, as in SynthesizerMap.map) and the replacement named in the error message
+# Method names of the initial methods, which moved to the initial-methods branch (the part before
+# the first dash, upper case, as in SynthesizerMap.map), and the replacement named in the error message
 _REMOVED_LLM_HINT = (
-    "The initial LLM synthesizer has been removed from this version; use method: custom_method "
+    "The initial LLM synthesizer is not in this branch: "
+    "it has moved to the initial-methods branch (tag initial-methods-v1), kept for "
+    "research comparison only, because its synthetic output carries no differential "
+    "privacy guarantee covering the whole flow; "
+    "use method: custom_method "
     "with module_path: petsard/synthesizer/DP_LLM_synthesizer.py and "
     "class_name: DP_LLM_synthesizer (see the Differentially Private Synthesizers page)."
 )
 REMOVED_SYNTHESIZER_METHODS = {
     "ADVGAN": (
-        "The initial AdvGAN synthesizer has been removed from this version; "
+        "The initial AdvGAN synthesizer is not in this branch: "
+        "it has moved to the initial-methods branch (tag initial-methods-v1), kept for "
+        "research comparison only, because its synthetic output carries no differential "
+        "privacy guarantee covering the whole flow; "
         "use method: DPflow_AdvGAN (see the Differentially Private Synthesizers page)."
     ),
     # llm-synth, llm-synthesizer, LLM_synth, LLM_synthesizer

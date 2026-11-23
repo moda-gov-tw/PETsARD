@@ -113,11 +113,13 @@ class TestDPflowAdvGANOptionalDependency:
             Synthesizer(method="AdvGAN")
         assert "DPflow_AdvGAN" in exc_info.value.context["valid_methods"]
         assert "DPflow_AdvGAN" in exc_info.value.get_suggestion()
-        # 訊息說明初版 AdvGAN 已移除並指向 DPflow_AdvGAN
-        assert "has been removed" in exc_info.value.message
+        # 訊息說明初版 AdvGAN 已移至 initial-methods 分支並指向 DPflow_AdvGAN
+        assert (
+            "initial-methods branch (tag initial-methods-v1)" in exc_info.value.message
+        )
         assert "method: DPflow_AdvGAN" in exc_info.value.message
 
-    # 測試初版 LLM 合成器之方法名稱：說明已移除，並指出以 custom_method 載入 DP_LLM_synthesizer.py
+    # 測試初版 LLM 合成器之方法名稱：說明已移至 initial-methods 分支，並指出以 custom_method 載入 DP_LLM_synthesizer.py
     @pytest.mark.parametrize(
         "method",
         ["llm-synth", "LLM_synthesizer", "llm_synth", "LLM-synthesizer"],
@@ -126,19 +128,20 @@ class TestDPflowAdvGANOptionalDependency:
         with pytest.raises(UnsupportedMethodError) as exc_info:
             Synthesizer(method=method)
         message = exc_info.value.message
-        assert "The initial LLM synthesizer has been removed" in message
+        assert "The initial LLM synthesizer is not in this branch" in message
+        assert "initial-methods branch (tag initial-methods-v1)" in message
         assert "method: custom_method" in message
         assert "module_path: petsard/synthesizer/DP_LLM_synthesizer.py" in message
         assert "class_name: DP_LLM_synthesizer" in message
 
-    # 測試其他不支援的方法名稱不附初版方法移除說明
+    # 測試其他不支援的方法名稱不附初版方法說明
     def test_unknown_method_has_no_removal_hint(self):
         with pytest.raises(UnsupportedMethodError) as exc_info:
             Synthesizer(method="no_such_method")
-        assert "has been removed" not in exc_info.value.message
+        assert "initial-methods" not in exc_info.value.message
 
 
-# 測試以 custom_method 指定已移除之初版方法模組時，錯誤訊息指出替代方法
+# 測試以 custom_method 指定已移至 initial-methods 分支之初版方法模組時，錯誤訊息指出分支與替代方法
 class TestRemovedInitialModules:
     @staticmethod
     def _load(module_path: str, class_name: str):
@@ -157,6 +160,9 @@ class TestRemovedInitialModules:
         with pytest.raises(UnableToLoadError) as exc_info:
             self._load("petsard/synthesizer/LLM_synthesizer.py", "LLM_synthesizer")
         assert "not found" in exc_info.value.message
+        assert (
+            "initial-methods branch (tag initial-methods-v1)" in exc_info.value.message
+        )
         assert "class_name: DP_LLM_synthesizer" in exc_info.value.message
 
     # 測試初版 AdvGAN 模組(含 Windows 路徑寫法)：指向 DPflow_AdvGAN
@@ -191,4 +197,4 @@ class TestRemovedInitialModules:
     def test_other_missing_module_keeps_message(self):
         with pytest.raises(UnableToLoadError) as exc_info:
             self._load("no_such_dir/my_synthesizer.py", "MySynthesizer")
-        assert "has been removed" not in exc_info.value.message
+        assert "initial-methods" not in exc_info.value.message
