@@ -1,5 +1,9 @@
 # PETsARD 教學範例 Tutorial Examples
 
+> **註記 Note(`initial-methods` 分支 branch)**：本分支保留課程錄影使用之初版方法範例(`run_json1.py` 之初版AdvGAN、`run_llm1.py` 之初版LLM合成器)，僅供研究比較及重現以初版方法產生之結果。初版方法之合成輸出不具涵蓋完整流程之差分隱私保證；需具差分隱私保證之合成資料，請改用`main`分支 `tutorial` 資料夾之更新後方法範例(`run_dp1_copula.py`、`run_dp2_advgan.py`、`run_dp3_llm.py`)。以GitHub之ZIP檔下載本分支時，解壓縮後之資料夾名稱為 `PETsARD-initial-methods`，下列指令中的 `PETsARD-main` 請改為此名稱。
+>
+> This branch keeps the initial-method examples used in the course recording (the initial AdvGAN in `run_json1.py` and the initial LLM synthesizer in `run_llm1.py`) for research comparison and for reproducing results produced with them. The synthetic output of the initial methods does not carry a differential privacy guarantee covering the whole flow; for synthetic data that needs such a guarantee, use the updated-method examples in the `tutorial` folder of the `main` branch (`run_dp1_copula.py`, `run_dp2_advgan.py`, `run_dp3_llm.py`). When this branch is downloaded as a ZIP file from GitHub, the unzipped folder is named `PETsARD-initial-methods`; replace `PETsARD-main` in the commands below with this name.
+
 本資料夾為PETsARD教學課程的實作範例，涵蓋結構化資料(CSV)、半結構化資料(JSON)及非結構化資料(文字)的合成，以及三種差分隱私合成方法。範例資料均為公開資料集或教學示範資料，可直接執行。
 
 This folder contains the hands-on examples of the PETsARD tutorial course: synthesis of structured (CSV), semi-structured (JSON) and unstructured (text) data, and three differentially private synthesizers. All example data are public datasets or teaching samples.
